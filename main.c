@@ -50,16 +50,94 @@
 #include "driverlib.h"
 #include "device.h"
 
+//Function Prototypes.
+void init(void);
+void run(void);
+void initLookup(void);
+void initADC(void);
+void initEPWM(void);
+void initADCSOC(void);
+void requestTorque(int torque);
+__interrupt void adcA0ISR(void);
+
 //
 // Main
 //
 void main(void)
 {
+    init();
+    run();
+    return 0;
+}
+
+void run(void)
+{
     char i = 0;
+    char torque_request = 0;
     while (1)
     {
+        //check sensors
+
+        //check lookup table
+
+        //do any neccesary calculations
+
+        //send torque request to motor
+        requestTorque(torque_request);
         i = i + 1;
     }
+}
+
+//Initialize, runs all initialization functions
+void init(void)
+{
+    initLookUp();
+    initADC();
+    initEPWM();
+    initADCSOC();
+}
+
+//Initialize lookup tables
+void initLookup(void)
+{
+    //open file containing tables
+
+    //load tables into rom
+}
+
+//Initialize and power up the ADC
+void initADC(void)
+{
+    //Set ADC divider to /4.
+    ADC_setPrescaler(ADCA_BASE, ADC_CLK_DIV_4_0);
+
+    //Set resolution and signal mode and load the right trims.
+    ADC_setMode(ADCA_BASE, ADC_RESOLUTION_12BIT, ADC_MODE_SINGLE_ENDED);
+
+    //Set pulse position to late.
+    ADC_setInterruptPulseMode(ADCA_BASE, ADC_PULSE_END_OF_CONV);
+
+    //Power up ADC and delay for one ms.
+    ADC_enableConverter(ADCA_BASE);
+    DEVICE_DELAY_US(1000);
+}
+
+//Initialize EPWM
+void initEPWM(void)
+{
+
+}
+
+//Initialize ADC SOC
+void initADCSOC(void)
+{
+
+}
+
+//send torque request to motor controller
+void requestTorque(int torque)
+{
+
 }
 
 //
