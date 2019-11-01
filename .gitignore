@@ -3,3 +3,4 @@ Release
 *.xdchelp
 config
 .launches
+/CPU1_RAM/
