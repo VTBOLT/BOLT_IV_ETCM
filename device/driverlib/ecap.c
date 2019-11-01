@@ -1,14 +1,10 @@
-//#############################################################################
+//###########################################################################
 //
-// FILE:   empty_driverlib_main.c
+// FILE:   ecap.c
 //
-// TITLE:  Empty Project
+// TITLE: C28x ECAP driver
 //
-// Empty Project Example
-//
-// This example is an empty project setup for Driverlib development.
-//
-//#############################################################################
+//###########################################################################
 // $TI Release: F2837xD Support Library v3.05.00.00 $
 // $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
 // $Copyright:
@@ -42,26 +38,21 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // $
-//#############################################################################
+//###########################################################################
 
-//
-// Included Files
-//
-#include "driverlib.h"
-#include "device.h"
+#include "ecap.h"
 
+//*****************************************************************************
 //
-// Main
+// ECAP_setEmulationMode
 //
-void main(void)
+//*****************************************************************************
+void ECAP_setEmulationMode(uint32_t base, ECAP_EmulationMode mode)
 {
-    char i = 0;
-    while (1)
-    {
-        i = i + 1;
-    }
-}
+    ASSERT(ECAP_isBaseValid(base));
 
-//
-// End of File
-//
+    // write to FREE/SOFT bit
+    HWREGH(base + ECAP_O_ECCTL1) =
+            ((HWREGH(base + ECAP_O_ECCTL1) & (~ECAP_ECCTL1_FREE_SOFT_M)) |
+             ((uint16_t)mode << ECAP_ECCTL1_FREE_SOFT_S));
+}

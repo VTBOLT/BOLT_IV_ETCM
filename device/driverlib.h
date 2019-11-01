@@ -1,12 +1,8 @@
 //#############################################################################
 //
-// FILE:   empty_driverlib_main.c
+// FILE:   driverlib.h
 //
-// TITLE:  Empty Project
-//
-// Empty Project Example
-//
-// This example is an empty project setup for Driverlib development.
+// TITLE:  C28x Driverlib Header File
 //
 //#############################################################################
 // $TI Release: F2837xD Support Library v3.05.00.00 $
@@ -43,25 +39,44 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // $
 //#############################################################################
+#ifndef DRIVERLIB_H
+#define DRIVERLIB_H
+
+#include "inc/hw_memmap.h"
+
+#include "adc.h"
+#include "asysctl.h"
+#include "can.h"
+#include "cla.h"
+#include "cmpss.h"
+#include "cpu.h"
+#include "cputimer.h"
+#include "dac.h"
+#include "dcsm.h"
+#include "debug.h"
+#include "dma.h"
+#include "ecap.h"
+#include "emif.h"
+#include "epwm.h"
+#include "eqep.h"
+#include "flash.h"
+#include "gpio.h"
+#include "hrpwm.h"
+#include "i2c.h"
+#include "interrupt.h"
+#include "mcbsp.h"
+#include "memcfg.h"
+#include "pin_map.h"
+#include "sci.h"
+#include "sdfm.h"
+#include "spi.h"
+#include "sysctl.h"
+#include "upp.h"
+#include "version.h"
+#include "xbar.h"
+
+#endif  // end of DRIVERLIB_H definition
 
 //
-// Included Files
-//
-#include "driverlib.h"
-#include "device.h"
-
-//
-// Main
-//
-void main(void)
-{
-    char i = 0;
-    while (1)
-    {
-        i = i + 1;
-    }
-}
-
-//
-// End of File
+// End of file
 //

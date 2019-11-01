@@ -1,14 +1,10 @@
-//#############################################################################
+//###########################################################################
 //
-// FILE:   empty_driverlib_main.c
+// FILE:   dac.c
 //
-// TITLE:  Empty Project
+// TITLE:  C28x DAC driver.
 //
-// Empty Project Example
-//
-// This example is an empty project setup for Driverlib development.
-//
-//#############################################################################
+//###########################################################################
 // $TI Release: F2837xD Support Library v3.05.00.00 $
 // $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
 // $Copyright:
@@ -42,26 +38,56 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // $
-//#############################################################################
+//###########################################################################
 
-//
-// Included Files
-//
-#include "driverlib.h"
-#include "device.h"
+#include "dac.h"
 
+//*****************************************************************************
 //
-// Main
+// DAC_tuneOffsetTrim()
 //
-void main(void)
+//*****************************************************************************
+
+void
+DAC_tuneOffsetTrim(uint32_t base, float32_t referenceVoltage)
 {
-    char i = 0;
-    while (1)
-    {
-        i = i + 1;
-    }
+    uint16_t oldOffsetTrim;
+    float32_t newOffsetTrim;
+
+    //
+    // Check the arguments.
+    //
+    ASSERT(DAC_isBaseValid(base));
+    ASSERT(referenceVoltage > 0U);
+
+    //
+    // Get the sign-extended offset trim value
+    //
+    oldOffsetTrim = (HWREGH(base + DAC_O_TRIM) & DAC_TRIM_OFFSET_TRIM_M);
+    oldOffsetTrim = ((oldOffsetTrim & (uint16_t)DAC_REG_BYTE_MASK) ^
+                    (uint16_t)0x80) - (uint16_t)0x80;
+
+    //
+    // Calculate new offset trim value if DAC is operating at a reference
+    // voltage other than 2.5v.
+    //
+    newOffsetTrim = ((float32_t)(2.5/referenceVoltage) * 
+                     (int16_t)oldOffsetTrim);
+
+    //
+    // Check if the new offset trim value is valid
+    //
+    ASSERT(((int16_t)newOffsetTrim > -129) && ((int16_t)newOffsetTrim < 128));
+
+    //
+    // Set the new offset trim value
+    //
+    EALLOW;
+    HWREGH(base + DAC_O_TRIM) = (HWREGH(base + DAC_O_TRIM) &
+                                 ~DAC_TRIM_OFFSET_TRIM_M) | 
+                                 (int16_t)newOffsetTrim;
+
+    EDIS;
+
 }
 
-//
-// End of File
-//

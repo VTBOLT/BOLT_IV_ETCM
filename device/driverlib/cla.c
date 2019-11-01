@@ -1,14 +1,10 @@
-//#############################################################################
+//###########################################################################
 //
-// FILE:   empty_driverlib_main.c
+// FILE:   cla.c
 //
-// TITLE:  Empty Project
+// TITLE:  CLA Driver Implementation File
 //
-// Empty Project Example
-//
-// This example is an empty project setup for Driverlib development.
-//
-//#############################################################################
+//###########################################################################
 // $TI Release: F2837xD Support Library v3.05.00.00 $
 // $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
 // $Copyright:
@@ -42,26 +38,52 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // $
-//#############################################################################
+//###########################################################################
 
-//
-// Included Files
-//
-#include "driverlib.h"
-#include "device.h"
+#include "cla.h"
 
+//*****************************************************************************
 //
-// Main
+// CLA_setTriggerSource()
 //
-void main(void)
+//*****************************************************************************
+void
+CLA_setTriggerSource(CLA_TaskNumber taskNumber, CLA_Trigger trigger)
 {
-    char i = 0;
-    while (1)
-    {
-        i = i + 1;
-    }
-}
+    uint32_t srcSelReg;
+    uint32_t shiftVal;
 
-//
-// End of File
-//
+    //
+    // Calculate the shift value for the specified task.
+    //
+    shiftVal = ((uint32_t)taskNumber * SYSCTL_CLA1TASKSRCSEL1_TASK2_S) % 32U;
+
+    //
+    // Calculate the register address for the specified task.
+    //
+    if(taskNumber <= CLA_TASK_4)
+    {
+        //
+        // Tasks 1-4
+        //
+        srcSelReg = (uint32_t)DMACLASRCSEL_BASE + SYSCTL_O_CLA1TASKSRCSEL1;
+    }
+    else
+    {
+        //
+        // Tasks 5-8
+        //
+        srcSelReg = (uint32_t)DMACLASRCSEL_BASE + SYSCTL_O_CLA1TASKSRCSEL2;
+    }
+
+    EALLOW;
+
+    //
+    // Write trigger selection to the appropriate register.
+    //
+    HWREG(srcSelReg) &= ~((uint32_t)SYSCTL_CLA1TASKSRCSEL1_TASK1_M
+                           << shiftVal);
+    HWREG(srcSelReg) = HWREG(srcSelReg) | ((uint32_t)trigger << shiftVal);
+
+    EDIS;
+}

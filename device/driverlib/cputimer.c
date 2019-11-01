@@ -1,12 +1,8 @@
 //#############################################################################
 //
-// FILE:   empty_driverlib_main.c
+// FILE:   cputimer.c
 //
-// TITLE:  Empty Project
-//
-// Empty Project Example
-//
-// This example is an empty project setup for Driverlib development.
+// TITLE:  C28x CPU timer Driver
 //
 //#############################################################################
 // $TI Release: F2837xD Support Library v3.05.00.00 $
@@ -44,24 +40,20 @@
 // $
 //#############################################################################
 
-//
-// Included Files
-//
-#include "driverlib.h"
-#include "device.h"
+#include "cputimer.h"
 
+//*****************************************************************************
 //
-// Main
+// CPUTimer_setEmulationMode
 //
-void main(void)
+//*****************************************************************************
+void CPUTimer_setEmulationMode(uint32_t base, CPUTimer_EmulationMode mode)
 {
-    char i = 0;
-    while (1)
-    {
-        i = i + 1;
-    }
+    ASSERT(CPUTimer_isBaseValid(base));
+    // Write to FREE_SOFT bits of register TCR
+      HWREGH(base + CPUTIMER_O_TCR) =
+            (HWREGH(base + CPUTIMER_O_TCR) &
+            ~(CPUTIMER_TCR_FREE | CPUTIMER_TCR_SOFT)) |
+            (uint16_t)mode;
 }
 
-//
-// End of File
-//

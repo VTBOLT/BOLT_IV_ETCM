@@ -1,14 +1,10 @@
-//#############################################################################
+//###########################################################################
 //
-// FILE:   empty_driverlib_main.c
+// FILE:   version.c
 //
-// TITLE:  Empty Project
+// TITLE:  API to return the version number of the driverlib.lib in use.
 //
-// Empty Project Example
-//
-// This example is an empty project setup for Driverlib development.
-//
-//#############################################################################
+//###########################################################################
 // $TI Release: F2837xD Support Library v3.05.00.00 $
 // $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
 // $Copyright:
@@ -42,26 +38,17 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // $
-//#############################################################################
+//###########################################################################
 
-//
-// Included Files
-//
-#include "driverlib.h"
-#include "device.h"
+#include "version.h"
 
+//*****************************************************************************
 //
-// Main
+// Version_getLibVersion
 //
-void main(void)
+//*****************************************************************************
+uint32_t
+Version_getLibVersion(void)
 {
-    char i = 0;
-    while (1)
-    {
-        i = i + 1;
-    }
+    return(VERSION_NUMBER);
 }
-
-//
-// End of File
-//

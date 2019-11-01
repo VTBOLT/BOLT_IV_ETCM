@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>BOLT_IV_ETCM</name>
+	<name>BOLT_IV_ETCM_redo</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -24,4 +24,10 @@
 		<nature>org.eclipse.cdt.core.ccnature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 	</natures>
+	<variableList>
+		<variable>
+			<name>C2000WARE_DLIB_ROOT</name>
+			<value>$%7BCOM_TI_C2000WARE_SOFTWARE_PACKAGE_INSTALL_DIR%7D/driverlib/f2837xd/driverlib</value>
+		</variable>
+	</variableList>
 </projectDescription>

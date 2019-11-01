@@ -1,14 +1,10 @@
-//#############################################################################
+//###########################################################################
 //
-// FILE:   empty_driverlib_main.c
+// FILE:   epwm.c
 //
-// TITLE:  Empty Project
+// TITLE:  C28x EPWM driver.
 //
-// Empty Project Example
-//
-// This example is an empty project setup for Driverlib development.
-//
-//#############################################################################
+//###########################################################################
 // $TI Release: F2837xD Support Library v3.05.00.00 $
 // $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
 // $Copyright:
@@ -42,26 +38,21 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // $
-//#############################################################################
+//###########################################################################
 
-//
-// Included Files
-//
-#include "driverlib.h"
-#include "device.h"
+#include "epwm.h"
 
+//*****************************************************************************
 //
-// Main
+// EPWM_setEmulationMode
 //
-void main(void)
+//*****************************************************************************
+void EPWM_setEmulationMode(uint32_t base, EPWM_EmulationMode emulationMode)
 {
-    char i = 0;
-    while (1)
-    {
-        i = i + 1;
-    }
+    ASSERT(EPWM_isBaseValid(base));
+    // write to FREE_SOFT bits
+    HWREGH(base + EPWM_O_TBCTL) =
+           ((HWREGH(base + EPWM_O_TBCTL) & (~EPWM_TBCTL_FREE_SOFT_M)) |
+            ((uint16_t)emulationMode << EPWM_TBCTL_FREE_SOFT_S));
 }
 
-//
-// End of File
-//

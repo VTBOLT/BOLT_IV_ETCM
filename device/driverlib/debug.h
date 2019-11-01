@@ -1,14 +1,10 @@
-//#############################################################################
+//###########################################################################
 //
-// FILE:   empty_driverlib_main.c
+// FILE:   debug.h
 //
-// TITLE:  Empty Project
+// TITLE:  Assert definition macro for debug.
 //
-// Empty Project Example
-//
-// This example is an empty project setup for Driverlib development.
-//
-//#############################################################################
+//###########################################################################
 // $TI Release: F2837xD Support Library v3.05.00.00 $
 // $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
 // $Copyright:
@@ -42,26 +38,37 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // $
-//#############################################################################
+//###########################################################################
 
-//
-// Included Files
-//
-#include "driverlib.h"
-#include "device.h"
+#ifndef DEBUG_H
+#define DEBUG_H
 
+//*****************************************************************************
 //
-// Main
+// Prototype for the function that is called when an invalid argument is passed
+// to an API.  This is only used when doing a DEBUG build. It is the
+// application's responsibility to define the __error__ function.
 //
-void main(void)
-{
-    char i = 0;
-    while (1)
-    {
-        i = i + 1;
-    }
-}
+//*****************************************************************************
+extern void __error__(char *filename, uint32_t line);
 
+//*****************************************************************************
 //
-// End of File
+// The ASSERT macro, which does the actual assertion checking.  Typically, this
+// will be for procedure arguments.
 //
+//*****************************************************************************
+#ifdef DEBUG
+#define ASSERT(expr) do                                                       \
+                     {                                                        \
+                         if(!(expr))                                          \
+                         {                                                    \
+                             __error__(__FILE__, __LINE__);                   \
+                         }                                                    \
+                     }                                                        \
+                     while(0)
+#else
+#define ASSERT(expr)
+#endif
+
+#endif // DEBUG_H
