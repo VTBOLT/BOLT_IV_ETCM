@@ -5,10 +5,10 @@
 // TITLE:   Macros defining the memory map of the C28x.
 //
 //###########################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -66,6 +66,22 @@
 #define DMA_CH5_BASE                0x000010A0U // DMA Channel Registers
 #define DMA_CH6_BASE                0x000010C0U // DMA Channel Registers
 #define CLA1_BASE                   0x00001400U // CPU1.CLA1 Registers
+#define CLB1_BASE                   0x00003000U // CLB 1 Logic Config Registers
+#define CLB1_LOGICCFG_BASE          0x00003000U // CLB 2 Logic Config Registers
+#define CLB1_LOGICCTL_BASE          0x00003100U // CLB 1 Logic Control Registers
+#define CLB1_DATAEXCH_BASE          0x00003200U // CLB 1 Data Exchange Registers
+#define CLB2_BASE                   0x00003400U // CLB 2 Logic Config Registers
+#define CLB2_LOGICCFG_BASE          0x00003400U // CLB 2 Logic Config Registers
+#define CLB2_LOGICCTL_BASE          0x00003500U // CLB 2 Logic Control Registers
+#define CLB2_DATAEXCH_BASE          0x00003600U // CLB 2 Data Exchange Registers
+#define CLB3_BASE                   0x00003800U // CLB 3 Logic Config Registers
+#define CLB3_LOGICCFG_BASE          0x00003800U // CLB 3 Logic Config Registers
+#define CLB3_LOGICCTL_BASE          0x00003900U // CLB 3 Logic Control Registers
+#define CLB3_DATAEXCH_BASE          0x00003A00U // CLB 3 Data Exchange Registers
+#define CLB4_BASE                   0x00003C00U // CLB 4 Logic Config Registers
+#define CLB4_LOGICCFG_BASE          0x00003C00U // CLB 4 Logic Config Registers
+#define CLB4_LOGICCTL_BASE          0x00003D00U // CLB 4 Logic Control Registers
+#define CLB4_DATAEXCH_BASE          0x00003E00U // CLB 4 Data Exchange Registers
 #define EPWM1_BASE                  0x00004000U // EPWM1
 #define EPWM2_BASE                  0x00004100U // EPWM2
 #define EPWM3_BASE                  0x00004200U // EPWM3
@@ -126,6 +142,7 @@
 #define SYNCSOC_BASE                0x00007940U // SYNC SOC registers
 #define DMACLASRCSEL_BASE           0x00007980U // DMA CLA Triggers Source Select Registers
 #define EPWMXBAR_BASE               0x00007A00U // EPWM XBAR Configuration Registers
+#define CLBXBAR_BASE                0x00007A40U // CLB XBAR Configuration Registers
 #define OUTPUTXBAR_BASE             0x00007A80U // Output X-BAR Configuration Registers
 #define GPIOCTRL_BASE               0x00007C00U // GPIO 0 to 31 Mux A Configuration Registers
 #define GPIODATA_BASE               0x00007F00U // GPIO 0 to 31 Mux A Data Registers

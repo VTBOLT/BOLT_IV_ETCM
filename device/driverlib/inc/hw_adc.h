@@ -5,10 +5,10 @@
 // TITLE:   Definitions for the ADC registers.
 //
 //###########################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -93,6 +93,8 @@
 #define ADC_O_EVTCLR              0x32U        // ADC Event Clear Register
 #define ADC_O_EVTSEL              0x34U        // ADC Event Selection Register
 #define ADC_O_EVTINTSEL           0x36U        // ADC Event Interrupt Selection
+                                               // Register
+#define ADC_O_OSDETECT            0x38U        // ADC Open and Shorts Detect
                                                // Register
 #define ADC_O_COUNTER             0x39U        // ADC Counter Register
 #define ADC_O_REV                 0x3AU        // ADC Revision Register
@@ -257,13 +259,13 @@
 #define ADC_INTSEL1N2_INT1SEL_S   0U
 #define ADC_INTSEL1N2_INT1SEL_M   0xFU         // ADCINT1 EOC Source Select
 #define ADC_INTSEL1N2_INT1E       0x20U        // ADCINT1 Interrupt Enable
-#define ADC_INTSEL1N2_INT1CONT    0x40U        // ADCINT1 Continuous Mode
-                                               // Enable
+#define ADC_INTSEL1N2_INT1CONT    0x40U        // ADCINT1 Continue to Interrupt
+                                               // Mode
 #define ADC_INTSEL1N2_INT2SEL_S   8U
 #define ADC_INTSEL1N2_INT2SEL_M   0xF00U       // ADCINT2 EOC Source Select
 #define ADC_INTSEL1N2_INT2E       0x2000U      // ADCINT2 Interrupt Enable
-#define ADC_INTSEL1N2_INT2CONT    0x4000U      // ADCINT2 Continuous Mode
-                                               // Enable
+#define ADC_INTSEL1N2_INT2CONT    0x4000U      // ADCINT2 Continue to Interrupt
+                                               // Mode
 
 //*****************************************************************************
 //
@@ -273,13 +275,13 @@
 #define ADC_INTSEL3N4_INT3SEL_S   0U
 #define ADC_INTSEL3N4_INT3SEL_M   0xFU         // ADCINT3 EOC Source Select
 #define ADC_INTSEL3N4_INT3E       0x20U        // ADCINT3 Interrupt Enable
-#define ADC_INTSEL3N4_INT3CONT    0x40U        // ADCINT3 Continuous Mode
-                                               // Enable
+#define ADC_INTSEL3N4_INT3CONT    0x40U        // ADCINT3 Continue to Interrupt
+                                               // Mode
 #define ADC_INTSEL3N4_INT4SEL_S   8U
 #define ADC_INTSEL3N4_INT4SEL_M   0xF00U       // ADCINT4 EOC Source Select
 #define ADC_INTSEL3N4_INT4E       0x2000U      // ADCINT4 Interrupt Enable
-#define ADC_INTSEL3N4_INT4CONT    0x4000U      // ADCINT4 Continuous Mode
-                                               // Enable
+#define ADC_INTSEL3N4_INT4CONT    0x4000U      // ADCINT4 Continue to Interrupt
+                                               // Mode
 
 //*****************************************************************************
 //
@@ -804,6 +806,15 @@
                                                // Low Interrupt Enable
 #define ADC_EVTINTSEL_PPB4ZERO    0x4000U      // Post Processing Block 4 Zero
                                                // Crossing Interrupt Enable
+
+//*****************************************************************************
+//
+// The following are defines for the bit fields in the ADCOSDETECT register
+//
+//*****************************************************************************
+#define ADC_OSDETECT_DETECTCFG_S  0U
+#define ADC_OSDETECT_DETECTCFG_M  0x7U         // ADC Opens and Shorts Detect
+                                               // Configuration
 
 //*****************************************************************************
 //

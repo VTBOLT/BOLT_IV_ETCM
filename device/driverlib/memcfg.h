@@ -5,10 +5,10 @@
 // TITLE:  C28x RAM config driver.
 //
 //###########################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -75,7 +75,9 @@ extern "C"
 // application code.
 //
 //*****************************************************************************
-// Masks to decode RAM section defines.
+//
+// Masks to decode memory section defines.
+//
 #define MEMCFG_SECT_TYPE_MASK   0xFF000000U
 #define MEMCFG_SECT_TYPE_D      0x00000000U
 #define MEMCFG_SECT_TYPE_LS     0x01000000U
@@ -87,10 +89,12 @@ extern "C"
                                  (uint32_t)MEMCFG_GSXACCPROT0_DMAWRPROT_GS0)
 #define MEMCFG_XTEST_M          MEMCFG_DXTEST_TEST_M0_M
 
+//
 // Used for access violation functions.
-#define MEMCFG_NMVIOL_MASK      0x00000FFFU
-#define MEMCFG_MVIOL_MASK       0x0000F000U
-#define MEMCFG_MVIOL_SHIFT      12U
+//
+#define MEMCFG_NMVIOL_MASK      0x0000FFFFU
+#define MEMCFG_MVIOL_MASK       0x000F0000U
+#define MEMCFG_MVIOL_SHIFT      16U
 
 #ifndef DOXYGEN_PDF_IGNORE
 //*****************************************************************************
@@ -98,17 +102,21 @@ extern "C"
 // Values that can be passed to MemCfg_lockConfig(), MemCfg_unlockConfig(),
 // MemCfg_commitConfig(), MemCfg_setProtection(), MemCfg_initSections(),
 // MemCfg_setCLAMemType(), MemCfg_setLSRAMMasterSel(), MemCfg_getInitStatus()
-// as the ramSection(s) parameter.
+// as the memSection(s) or ramSection(s) parameter.
 //
 //*****************************************************************************
+//
 // DxRAM - Dedicated RAM config
+//
 #define MEMCFG_SECT_M0              0x00000001U //!< M0 RAM
 #define MEMCFG_SECT_M1              0x00000002U //!< M1 RAM
 #define MEMCFG_SECT_D0              0x00000004U //!< D0 RAM
 #define MEMCFG_SECT_D1              0x00000008U //!< D1 RAM
 #define MEMCFG_SECT_DX_ALL          0x0000000FU //!< All M and D RAM
 
+//
 // LSxRAM - Local shared RAM config
+//
 #define MEMCFG_SECT_LS0             0x01000001U //!< LS0 RAM
 #define MEMCFG_SECT_LS1             0x01000002U //!< LS1 RAM
 #define MEMCFG_SECT_LS2             0x01000004U //!< LS2 RAM
@@ -117,7 +125,9 @@ extern "C"
 #define MEMCFG_SECT_LS5             0x01000020U //!< LS5 RAM
 #define MEMCFG_SECT_LSX_ALL         0x0100003FU //!< All LS RAM
 
+//
 // GSxRAM - Global shared RAM config
+//
 #define MEMCFG_SECT_GS0             0x02000001U //!< GS0 RAM
 #define MEMCFG_SECT_GS1             0x02000002U //!< GS1 RAM
 #define MEMCFG_SECT_GS2             0x02000004U //!< GS2 RAM
@@ -136,13 +146,17 @@ extern "C"
 #define MEMCFG_SECT_GS15            0x02008000U //!< GS15 RAM
 #define MEMCFG_SECT_GSX_ALL         0x0200FFFFU //!< All GS RAM
 
+//
 // MSGxRAM - Message RAM config
+//
 #define MEMCFG_SECT_MSGCPUTOCPU     0x03000001U //!< CPU-to-CPU message RAM
 #define MEMCFG_SECT_MSGCPUTOCLA1    0x03000002U //!< CPU-to-CLA1 message RAM
 #define MEMCFG_SECT_MSGCLA1TOCPU    0x03000004U //!< CLA1-to-CPU message RAM
 #define MEMCFG_SECT_MSGX_ALL        0x03000007U //!< All message RAM
 
+//
 // All sections
+//
 #define MEMCFG_SECT_ALL             0xFFFFFFFFU //!< All configurable RAM
 
 //*****************************************************************************
@@ -177,9 +191,9 @@ extern "C"
 #define MEMCFG_NMVIOL_CLA1WRITE  0x00000020U //!< Non-master CLA1 write access
 #define MEMCFG_NMVIOL_CLA1FETCH  0x00000040U //!< Non-master CLA1 fetch access
 
-#define MEMCFG_MVIOL_CPUFETCH    0x00001000U //!< Master CPU fetch access
-#define MEMCFG_MVIOL_CPUWRITE    0x00002000U //!< Master CPU write access
-#define MEMCFG_MVIOL_DMAWRITE    0x00004000U //!< Master DMA write access
+#define MEMCFG_MVIOL_CPUFETCH    0x00010000U //!< Master CPU fetch access
+#define MEMCFG_MVIOL_CPUWRITE    0x00020000U //!< Master CPU write access
+#define MEMCFG_MVIOL_DMAWRITE    0x00040000U //!< Master DMA write access
 
 //*****************************************************************************
 //
@@ -206,6 +220,7 @@ extern "C"
 #define MEMCFG_UCERR_CPUREAD     0x0001U //!< Uncorrectable CPU read error
 #define MEMCFG_UCERR_DMAREAD     0x0002U //!< Uncorrectable DMA read error
 #define MEMCFG_UCERR_CLA1READ    0x0004U //!< Uncorrectable CLA1 read error
+
 #endif
 
 //*****************************************************************************
@@ -308,12 +323,16 @@ MemCfg_setCLAMemType(uint32_t ramSections, MemCfg_CLAMemoryType claMemType)
 
     if(claMemType == MEMCFG_CLA_MEM_PROGRAM)
     {
+        //
         // Program memory
+        //
         HWREG(MEMCFG_BASE + MEMCFG_O_LSXCLAPGM) |= ramSections;
     }
     else
     {
+        //
         // Data memory
+        //
         HWREG(MEMCFG_BASE + MEMCFG_O_LSXCLAPGM) &= ~ramSections;
     }
 
@@ -336,7 +355,6 @@ MemCfg_setCLAMemType(uint32_t ramSections, MemCfg_CLAMemoryType claMemType)
 //!  - \b MEMCFG_MVIOL_CPUFETCH - Master CPU fetch access
 //!  - \b MEMCFG_MVIOL_CPUWRITE - Master CPU write access
 //!  - \b MEMCFG_MVIOL_DMAWRITE - Master DMA write access
-//!
 //! This function enables the indicated RAM access violation interrupt sources.
 //! Only the sources that are enabled can be reflected to the processor
 //! interrupt; disabled sources have no effect on the processor.
@@ -425,7 +443,6 @@ MemCfg_disableViolationInterrupt(uint32_t intFlags)
 //!  - \b MEMCFG_MVIOL_CPUFETCH - Master CPU fetch access
 //!  - \b MEMCFG_MVIOL_CPUWRITE - Master CPU write access
 //!  - \b MEMCFG_MVIOL_DMAWRITE - Master DMA write access
-//
 //*****************************************************************************
 static inline uint32_t
 MemCfg_getViolationInterruptStatus(void)
@@ -716,8 +733,8 @@ MemCfg_getCorrErrorStatus(void)
 //! Gets the current uncorrectable RAM error status.
 //!
 //! \return Returns the current error status, enumerated as a bit field of
-//! \b MEMCFG_UCERR_CPUREAD, \b MEMCFG_UCERR_DMAREAD, or
-//! \b MEMCFG_UCERR_CLA1READ.
+//! \b MEMCFG_UCERR_CPUREAD, \b MEMCFG_UCERR_DMAREAD, \b MEMCFG_UCERR_CLA1READ,
+//! or \b MEMCFG_UCERR_ECATMEMREAD.
 //
 //*****************************************************************************
 static inline uint32_t
@@ -761,7 +778,8 @@ MemCfg_forceCorrErrorStatus(uint32_t stsFlags)
 //!
 //! \param stsFlags is a bit mask of the error sources. This parameter can be
 //! any of the following values: \b MEMCFG_UCERR_CPUREAD,
-//! \b MEMCFG_UCERR_DMAREAD, or \b MEMCFG_UCERR_CLA1READ.
+//! \b MEMCFG_UCERR_DMAREAD, \b MEMCFG_UCERR_CLA1READ, or
+//! \b MEMCFG_UCERR_ECATMEMREAD.
 //!
 //! This function sets the specified uncorrectable RAM error status flag.
 //!
@@ -813,7 +831,8 @@ MemCfg_clearCorrErrorStatus(uint32_t stsFlags)
 //!
 //! \param stsFlags is a bit mask of the status flags to be cleared.
 //! This parameter can be any of the \b MEMCFG_UCERR_CPUREAD,
-//! \b MEMCFG_UCERR_DMAREAD, or \b MEMCFG_UCERR_CLA1READ values.
+//! \b MEMCFG_UCERR_DMAREAD, \b MEMCFG_UCERR_CLA1READ, or
+//! \b MEMCFG_UCERR_ECATMEMREAD values.
 //!
 //! This function clears the specified uncorrectable RAM error flags.
 //!
@@ -929,16 +948,16 @@ MemCfg_disableROMPrefetch(void)
 
 //*****************************************************************************
 //
-//! Locks the writes to the configuration of specified RAM sections.
+//! Locks the writes to the configuration of specified memory sections.
 //!
-//! \param ramSections is the logical OR of the sections to be configured.
+//! \param memSections is the logical OR of the sections to be configured.
 //!
 //! This function locks writes to the access protection and master select
-//! configuration of a RAM section. That means calling MemCfg_setProtection()
-//! or MemCfg_setLSRAMMasterSel() for a locked RAM section will have no effect
-//! until MemCfg_unlockConfig() is called.
+//! configuration of a memory section.That means calling MemCfg_setProtection()
+//! or MemCfg_setLSRAMMasterSel() for a locked memory section will have no
+//! effect until MemCfg_unlockConfig() is called.
 //!
-//! The \e ramSections parameter is an OR of one of the following sets of
+//! The \e memSections parameter is an OR of one of the following sets of
 //! indicators:
 //! - \b MEMCFG_SECT_D0 and \b MEMCFG_SECT_D1 or \b MEMCFG_SECT_DX_ALL
 //! - \b MEMCFG_SECT_LS0 through \b MEMCFG_SECT_LSx or \b MEMCFG_SECT_LSX_ALL
@@ -949,19 +968,19 @@ MemCfg_disableROMPrefetch(void)
 //
 //*****************************************************************************
 extern void
-MemCfg_lockConfig(uint32_t ramSections);
+MemCfg_lockConfig(uint32_t memSections);
 
 //*****************************************************************************
 //
-//! Unlocks the writes to the configuration of a RAM section.
+//! Unlocks the writes to the configuration of a memory section.
 //!
-//! \param ramSections is the logical OR of the sections to be configured.
+//! \param memSections is the logical OR of the sections to be configured.
 //!
 //! This function unlocks writes to the access protection and master select
-//! configuration of a RAM section that has been locked using
+//! configuration of a memory section that has been locked using
 //! MemCfg_lockConfig().
 //!
-//! The \e ramSections parameter is an OR of one of the following sets of
+//! The \e memSections parameter is an OR of one of the following sets of
 //! indicators:
 //! - \b MEMCFG_SECT_D0 and \b MEMCFG_SECT_D1 or \b MEMCFG_SECT_DX_ALL
 //! - \b MEMCFG_SECT_LS0 through \b MEMCFG_SECT_LSx or \b MEMCFG_SECT_LSX_ALL
@@ -972,21 +991,21 @@ MemCfg_lockConfig(uint32_t ramSections);
 //
 //*****************************************************************************
 extern void
-MemCfg_unlockConfig(uint32_t ramSections);
+MemCfg_unlockConfig(uint32_t memSections);
 
 //*****************************************************************************
 //
-//! Permanently locks writes to the configuration of a RAM section.
+//! Permanently locks writes to the configuration of a memory section.
 //!
-//! \param ramSections is the logical OR of the sections to be configured.
+//! \param memSections is the logical OR of the sections to be configured.
 //!
 //! This function permanently locks writes to the access protection and master
-//! select configuration of a RAM section. That means calling
-//! MemCfg_setProtection() or MemCfg_setLSRAMMasterSel() for a locked RAM
+//! select configuration of a memory section. That means calling
+//! MemCfg_setProtection() or MemCfg_setLSRAMMasterSel() for a locked memory
 //! section will have no effect. To lock the configuration in a nonpermanent
 //! way, use MemCfg_lockConfig().
 //!
-//! The \e ramSections parameter is an OR of one of the following sets of
+//! The \e memSections parameter is an OR of one of the following sets of
 //! indicators:
 //! - \b MEMCFG_SECT_D0 and \b MEMCFG_SECT_D1 or \b MEMCFG_SECT_DX_ALL
 //! - \b MEMCFG_SECT_LS0 through \b MEMCFG_SECT_LSx or \b MEMCFG_SECT_LSX_ALL
@@ -997,23 +1016,23 @@ MemCfg_unlockConfig(uint32_t ramSections);
 //
 //*****************************************************************************
 extern void
-MemCfg_commitConfig(uint32_t ramSections);
+MemCfg_commitConfig(uint32_t memSections);
 
 //*****************************************************************************
 //
-//! Sets the access protection mode of a single RAM section.
+//! Sets the access protection mode of a single memory section.
 //!
-//! \param ramSection is the RAM section to be configured.
+//! \param memSection is the memory section to be configured.
 //! \param protectMode is the logical OR of the settings to be applied.
 //!
-//! This function sets the access protection mode of the specified RAM section.
+//! This function sets the access protection mode of a specified memory section.
 //! The mode is passed into the \e protectMode parameter as the logical OR of
 //! the following values:
 //! - \b MEMCFG_PROT_ALLOWCPUFETCH or \b MEMCFG_PROT_BLOCKCPUFETCH - CPU fetch
 //! - \b MEMCFG_PROT_ALLOWCPUWRITE or \b MEMCFG_PROT_BLOCKCPUWRITE - CPU write
 //! - \b MEMCFG_PROT_ALLOWDMAWRITE or \b MEMCFG_PROT_BLOCKDMAWRITE - DMA write
 //!
-//! The \e ramSection parameter is one of the following indicators:
+//! The \e memSection parameter is one of the following indicators:
 //! - \b MEMCFG_SECT_D0 or \b MEMCFG_SECT_D1
 //! - \b MEMCFG_SECT_LS0 through \b MEMCFG_SECT_LSx
 //! - \b MEMCFG_SECT_GS0 through \b MEMCFG_SECT_GSx
@@ -1026,17 +1045,17 @@ MemCfg_commitConfig(uint32_t ramSections);
 //
 //*****************************************************************************
 extern void
-MemCfg_setProtection(uint32_t ramSection, uint32_t protectMode);
+MemCfg_setProtection(uint32_t memSection, uint32_t protectMode);
 
 //*****************************************************************************
 //
-//! Sets the master of the specified RAM section.
+//! Sets the master of the specified LSxRAM section.
 //!
-//! \param ramSection is the RAM section to be configured.
+//! \param ramSection is the LSxRAM section to be configured.
 //! \param masterSel is the sharing selection.
 //!
-//! This function sets the master select configuration of the RAM section. If
-//! the \e masterSel parameter is \b MEMCFG_LSRAMMASTER_CPU_ONLY, the RAM
+//! This function sets the master select configuration of the LSxRAM section.If
+//! the \e masterSel parameter is \b MEMCFG_LSRAMMASTER_CPU_ONLY, the LSxRAM
 //! section passed into the \e ramSection parameter will be dedicated to the
 //! CPU. If \b MEMCFG_LSRAMMASTER_CPU_CLA1, the memory section will be shared
 //! between the CPU and the CLA.
@@ -1047,7 +1066,7 @@ MemCfg_setProtection(uint32_t ramSection, uint32_t protectMode);
 //! This function will have no effect if the associated registers have been
 //! locked by MemCfg_lockConfig() or MemCfg_commitConfig().
 //!
-//! \note This API only applies to LSx RAM.
+//! \note This API only applies to LSxRAM.
 //!
 //! \return None.
 //
@@ -1057,13 +1076,13 @@ MemCfg_setLSRAMMasterSel(uint32_t ramSection, MemCfg_LSRAMMasterSel masterSel);
 
 //*****************************************************************************
 //
-//! Sets the master of the specified RAM section.
+//! Sets the master of the specified GSxRAM section.
 //!
 //! \param ramSections is the logical OR of the sections to be configured.
 //! \param masterSel is the sharing selection.
 //!
-//! This function sets the master select configuration of the RAM section. If
-//! the \e masterSel parameter is \b MEMCFG_GSRAMMASTER_CPU1, the RAM
+//! This function sets the master select configuration of the GSxRAM section.If
+//! the \e masterSel parameter is \b MEMCFG_GSRAMMASTER_CPU1, the GSRAM
 //! sections passed into the \e ramSections parameter will be dedicated to
 //! CPU1. If \b MEMCFG_GSRAMMASTER_CPU2, the memory section will be dedicated
 //! to CPU2.
@@ -1074,7 +1093,7 @@ MemCfg_setLSRAMMasterSel(uint32_t ramSection, MemCfg_LSRAMMasterSel masterSel);
 //! This function will have no effect if the associated registers have been
 //! locked by MemCfg_lockConfig() or MemCfg_commitConfig().
 //!
-//! \note This API only applies to GSx RAM.
+//! \note This API only applies to GSxRAM.
 //!
 //! \return None.
 //
@@ -1083,11 +1102,12 @@ extern void
 MemCfg_setGSRAMMasterSel(uint32_t ramSections,
                          MemCfg_GSRAMMasterSel masterSel);
 
+
 //*****************************************************************************
 //
-//! Sets the test mode of the specified RAM section.
+//! Sets the test mode of the specified memory section.
 //!
-//! \param ramSection is the RAM section to be configured.
+//! \param memSection is the memory section to be configured.
 //! \param testMode is the test mode selected.
 //!
 //! This function sets the test mode configuration of the RAM section. The
@@ -1097,7 +1117,7 @@ MemCfg_setGSRAMMasterSel(uint32_t ramSections,
 //! - \b MEMCFG_TEST_WRITE_ECC (DxRAM) or MEMCFG_TEST_WRITE_PARITY (LSx, GSx,
 //!   or MSGxRAM)
 //!
-//! The \e ramSection parameter is one of the following indicators:
+//! The \e memSection parameter is one of the following indicators:
 //! - \b MEMCFG_SECT_M0 or \b MEMCFG_SECT_M1
 //! - \b MEMCFG_SECT_D0 or \b MEMCFG_SECT_D1
 //! - \b MEMCFG_SECT_LS0 through \b MEMCFG_SECT_LSx
@@ -1109,7 +1129,7 @@ MemCfg_setGSRAMMasterSel(uint32_t ramSections,
 //
 //*****************************************************************************
 extern void
-MemCfg_setTestMode(uint32_t ramSection, MemCfg_TestMode testMode);
+MemCfg_setTestMode(uint32_t memSection, MemCfg_TestMode testMode);
 
 //*****************************************************************************
 //
@@ -1206,7 +1226,8 @@ MemCfg_getCorrErrorAddress(uint32_t stsFlag);
 //!
 //! \param stsFlag is the type of error to which the returned address will
 //! correspond. It may be passed one of these values: \b MEMCFG_UCERR_CPUREAD,
-//! \b MEMCFG_UCERR_DMAREAD, or \b MEMCFG_UCERR_CLA1READ values.
+//! \b MEMCFG_UCERR_DMAREAD, \b MEMCFG_UCERR_CLA1READ, or
+//! \b MEMCFG_UCERR_ECATMEMREAD values.
 //!
 //! \return Returns the error address associated with the stsFlag.
 //

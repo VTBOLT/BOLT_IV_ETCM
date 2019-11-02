@@ -5,10 +5,10 @@
 // TITLE:   Definitions for the XBAR registers.
 //
 //###########################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -1046,7 +1046,7 @@
 // The following are defines for the bit fields in the OUTPUT2MUXENABLE register
 //
 //*****************************************************************************
-#define XBAR_OUTPUT2MUXENABLE_MUX0  0x1U         // mux0 to drive OUTPUT2 of
+#define XBAR_OUTPUT2MUXENABLE_MUX0  0x1U         // Mux0 to drive OUTPUT2 of
                                                // OUTPUT-XBAR
 #define XBAR_OUTPUT2MUXENABLE_MUX1  0x2U         // Mux1 to drive OUTPUT2 of
                                                // OUTPUT-XBAR
@@ -1116,7 +1116,7 @@
 // The following are defines for the bit fields in the OUTPUT3MUXENABLE register
 //
 //*****************************************************************************
-#define XBAR_OUTPUT3MUXENABLE_MUX0  0x1U         // mux0 to drive OUTPUT3 of
+#define XBAR_OUTPUT3MUXENABLE_MUX0  0x1U         // Mux0 to drive OUTPUT3 of
                                                // OUTPUT-XBAR
 #define XBAR_OUTPUT3MUXENABLE_MUX1  0x2U         // Mux1 to drive OUTPUT3 of
                                                // OUTPUT-XBAR
@@ -1186,7 +1186,7 @@
 // The following are defines for the bit fields in the OUTPUT4MUXENABLE register
 //
 //*****************************************************************************
-#define XBAR_OUTPUT4MUXENABLE_MUX0  0x1U         // mux0 to drive OUTPUT4 of
+#define XBAR_OUTPUT4MUXENABLE_MUX0  0x1U         // Mux0 to drive OUTPUT4 of
                                                // OUTPUT-XBAR
 #define XBAR_OUTPUT4MUXENABLE_MUX1  0x2U         // Mux1 to drive OUTPUT4 of
                                                // OUTPUT-XBAR
@@ -1256,7 +1256,7 @@
 // The following are defines for the bit fields in the OUTPUT5MUXENABLE register
 //
 //*****************************************************************************
-#define XBAR_OUTPUT5MUXENABLE_MUX0  0x1U         // mux0 to drive OUTPUT5 of
+#define XBAR_OUTPUT5MUXENABLE_MUX0  0x1U         // Mux0 to drive OUTPUT5 of
                                                // OUTPUT-XBAR
 #define XBAR_OUTPUT5MUXENABLE_MUX1  0x2U         // Mux1 to drive OUTPUT5 of
                                                // OUTPUT-XBAR
@@ -1326,7 +1326,7 @@
 // The following are defines for the bit fields in the OUTPUT6MUXENABLE register
 //
 //*****************************************************************************
-#define XBAR_OUTPUT6MUXENABLE_MUX0  0x1U         // mux0 to drive OUTPUT6 of
+#define XBAR_OUTPUT6MUXENABLE_MUX0  0x1U         // Mux0 to drive OUTPUT6 of
                                                // OUTPUT-XBAR
 #define XBAR_OUTPUT6MUXENABLE_MUX1  0x2U         // Mux1 to drive OUTPUT6 of
                                                // OUTPUT-XBAR
@@ -1358,7 +1358,7 @@
                                                // OUTPUT-XBAR
 #define XBAR_OUTPUT6MUXENABLE_MUX15  0x8000U      // Mux15 to drive OUTPUT6 of
                                                // OUTPUT-XBAR
-#define XBAR_OUTPUT6MUXENABLE_MUX16  0x10000U     // Mux16 to OUTPUT6 of
+#define XBAR_OUTPUT6MUXENABLE_MUX16  0x10000U     // Mux16 to drive OUTPUT6 of
                                                // OUTPUT-XBAR
 #define XBAR_OUTPUT6MUXENABLE_MUX17  0x20000U     // Mux17 to drive OUTPUT6 of
                                                // OUTPUT-XBAR
@@ -1396,7 +1396,7 @@
 // The following are defines for the bit fields in the OUTPUT7MUXENABLE register
 //
 //*****************************************************************************
-#define XBAR_OUTPUT7MUXENABLE_MUX0  0x1U         // mux0 to drive OUTPUT7 of
+#define XBAR_OUTPUT7MUXENABLE_MUX0  0x1U         // Mux0 to drive OUTPUT7 of
                                                // OUTPUT-XBAR
 #define XBAR_OUTPUT7MUXENABLE_MUX1  0x2U         // Mux1 to drive OUTPUT7 of
                                                // OUTPUT-XBAR
@@ -1466,7 +1466,7 @@
 // The following are defines for the bit fields in the OUTPUT8MUXENABLE register
 //
 //*****************************************************************************
-#define XBAR_OUTPUT8MUXENABLE_MUX0  0x1U         // mux0 to drive OUTPUT8 of
+#define XBAR_OUTPUT8MUXENABLE_MUX0  0x1U         // Mux0 to drive OUTPUT8 of
                                                // OUTPUT-XBAR
 #define XBAR_OUTPUT8MUXENABLE_MUX1  0x2U         // Mux1 to drive OUTPUT8 of
                                                // OUTPUT-XBAR

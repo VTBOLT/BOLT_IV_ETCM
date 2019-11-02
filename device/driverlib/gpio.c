@@ -5,10 +5,10 @@
 // TITLE:  C28x GPIO driver.
 //
 //###########################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -69,12 +69,16 @@ GPIO_setDirectionMode(uint32_t pin, GPIO_Direction pinIO)
     //
     if(pinIO == GPIO_DIR_MODE_OUT)
     {
+        //
         // Output
+        //
         gpioBaseAddr[GPIO_GPxDIR_INDEX] |= pinMask;
     }
     else
     {
+        //
         // Input
+        //
         gpioBaseAddr[GPIO_GPxDIR_INDEX] &= ~pinMask;
     }
 
@@ -145,9 +149,11 @@ GPIO_setInterruptPin(uint32_t pin, GPIO_ExternalIntNum extIntNum)
             break;
 
         default:
+            //
             // Invalid interrupt. Shouldn't happen if enum value is used.
             // XBAR_INPUT1 isn't tied to an XINT, so we'll use it to check for
             // a bad value.
+            //
             input = XBAR_INPUT1;
             break;
     }
@@ -180,7 +186,9 @@ GPIO_setPadConfig(uint32_t pin, uint32_t pinType)
 
     EALLOW;
 
+    //
     // Enable open drain if necessary
+    //
     if((pinType & GPIO_PIN_TYPE_OD) != 0U)
     {
         gpioBaseAddr[GPIO_GPxODR_INDEX] |= pinMask;
@@ -190,7 +198,9 @@ GPIO_setPadConfig(uint32_t pin, uint32_t pinType)
         gpioBaseAddr[GPIO_GPxODR_INDEX] &= ~pinMask;
     }
 
+    //
     // Enable pull-up if necessary
+    //
     if((pinType & GPIO_PIN_TYPE_PULLUP) != 0U)
     {
         gpioBaseAddr[GPIO_GPxPUD_INDEX] &= ~pinMask;
@@ -200,7 +210,9 @@ GPIO_setPadConfig(uint32_t pin, uint32_t pinType)
         gpioBaseAddr[GPIO_GPxPUD_INDEX] |= pinMask;
     }
 
+    //
     // Invert polarity if necessary
+    //
     if((pinType & GPIO_PIN_TYPE_INVERT) != 0U)
     {
         gpioBaseAddr[GPIO_GPxINV_INDEX] |= pinMask;
@@ -236,19 +248,25 @@ GPIO_getPadConfig(uint32_t pin)
 
     pinTypeRes = GPIO_PIN_TYPE_STD;
 
+    //
     // Get open drain value
+    //
     if((gpioBaseAddr[GPIO_GPxODR_INDEX] & pinMask) != 0U)
     {
         pinTypeRes |= GPIO_PIN_TYPE_OD;
     }
 
+    //
     // Get pull-up value
+    //
     if((gpioBaseAddr[GPIO_GPxPUD_INDEX] & pinMask) == 0U)
     {
         pinTypeRes |= GPIO_PIN_TYPE_PULLUP;
     }
 
+    //
     // Get polarity value
+    //
     if((gpioBaseAddr[GPIO_GPxINV_INDEX] & pinMask) != 0U)
     {
         pinTypeRes |= GPIO_PIN_TYPE_INVERT;
@@ -418,12 +436,16 @@ GPIO_setAnalogMode(uint32_t pin, GPIO_AnalogMode mode)
     //
     if(mode == GPIO_ANALOG_ENABLED)
     {
+        //
         // Enable analog mode
+        //
         gpioBaseAddr[GPIO_GPxAMSEL_INDEX] |= pinMask;
     }
     else
     {
+        //
         // Disable analog mode
+        //
         gpioBaseAddr[GPIO_GPxAMSEL_INDEX] &= ~pinMask;
     }
 

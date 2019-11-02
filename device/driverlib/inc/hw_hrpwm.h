@@ -5,10 +5,10 @@
 // TITLE:   Definitions for the HRPWM registers.
 //
 //###########################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -82,8 +82,7 @@
                                                // Register
 #define HRPWM_O_GLDCFG            0x35U        // Global PWM Load Config
                                                // Register
-#define HRPWM_O_XLINK             0x38U       // EPWMx Link Register
-#define HRPWM_O_EPWMREV           0x3EU        // EPWM Revision Register
+#define HRPWM_O_EPWMXLINK         0x38U        // EPWMx Link Register
 #define HRPWM_O_AQCTLA            0x40U        // Action Qualifier Control
                                                // Register For Output A
 #define HRPWM_O_AQCTLA2           0x41U        // Additional Action Qualifier
@@ -433,10 +432,11 @@
 //
 //*****************************************************************************
 #define HRPWM_HRPCTL_HRPE         0x1U         // High Resolution Period Enable
-#define HRPWM_HRPCTL_PWMSYNCSEL   0x2U         // PWMSYNC Source Select
+#define HRPWM_HRPCTL_PWMSYNCSEL   0x2U         // EPWMSYNCPER Source Select
 #define HRPWM_HRPCTL_TBPHSHRLOADE  0x4U         // TBPHSHR Load Enable
 #define HRPWM_HRPCTL_PWMSYNCSELX_S  4U
-#define HRPWM_HRPCTL_PWMSYNCSELX_M  0x70U        // PWMSYNCX Source Select Bit:
+#define HRPWM_HRPCTL_PWMSYNCSELX_M  0x70U        // EPWMSYNCPER Extended Source
+                                               // Select Bit:
 
 //*****************************************************************************
 //
@@ -459,10 +459,10 @@
 #define HRPWM_GLDCTL_OSHTMODE     0x20U        // One Shot Load mode control
                                                // bit
 #define HRPWM_GLDCTL_GLDPRD_S     7U
-#define HRPWM_GLDCTL_GLDPRD_M     0x380U       // Global Reload Strobe Period
+#define HRPWM_GLDCTL_GLDPRD_M     0x380U       // Global Load Strobe Period
                                                // Select Register
 #define HRPWM_GLDCTL_GLDCNT_S     10U
-#define HRPWM_GLDCTL_GLDCNT_M     0x1C00U      // Global Reload Strobe Counter
+#define HRPWM_GLDCTL_GLDCNT_M     0x1C00U      // Global Load Strobe Counter
                                                // Register
 
 //*****************************************************************************
@@ -498,28 +498,18 @@
 // The following are defines for the bit fields in the EPWMXLINK register
 //
 //*****************************************************************************
-#define HRPWM_XLINK_TBPRDLINK_S   0U
-#define HRPWM_XLINK_TBPRDLINK_M   0xFU        // TBPRD:TBPRDHR  Link
-#define HRPWM_XLINK_CMPALINK_S    4U
-#define HRPWM_XLINK_CMPALINK_M    0xF0U       // CMPA:CMPAHR Link
-#define HRPWM_XLINK_CMPBLINK_S    8U
-#define HRPWM_XLINK_CMPBLINK_M    0xF00U      // CMPB:CMPBHR Link
-#define HRPWM_XLINK_CMPCLINK_S    12U
-#define HRPWM_XLINK_CMPCLINK_M    0xF000U     // CMPC Link
-#define HRPWM_XLINK_CMPDLINK_S    16U
-#define HRPWM_XLINK_CMPDLINK_M    0xF0000U    // CMPD Link
-#define HRPWM_XLINK_GLDCTL2LINK_S  28U
-#define HRPWM_XLINK_GLDCTL2LINK_M  0xF0000000U // GLDCTL2 Link
-
-//*****************************************************************************
-//
-// The following are defines for the bit fields in the EPWMREV register
-//
-//*****************************************************************************
-#define HRPWM_EPWMREV_REV_S       0U
-#define HRPWM_EPWMREV_REV_M       0xFFU        // EPWM Silicon Revision bits
-#define HRPWM_EPWMREV_TYPE_S      8U
-#define HRPWM_EPWMREV_TYPE_M      0xFF00U      // EPWM Type Bits
+#define HRPWM_EPWMXLINK_TBPRDLINK_S  0U
+#define HRPWM_EPWMXLINK_TBPRDLINK_M  0xFU         // TBPRD:TBPRDHR  Link
+#define HRPWM_EPWMXLINK_CMPALINK_S  4U
+#define HRPWM_EPWMXLINK_CMPALINK_M  0xF0U        // CMPA:CMPAHR Link
+#define HRPWM_EPWMXLINK_CMPBLINK_S  8U
+#define HRPWM_EPWMXLINK_CMPBLINK_M  0xF00U       // CMPB:CMPBHR Link
+#define HRPWM_EPWMXLINK_CMPCLINK_S  12U
+#define HRPWM_EPWMXLINK_CMPCLINK_M  0xF000U      // CMPC Link
+#define HRPWM_EPWMXLINK_CMPDLINK_S  16U
+#define HRPWM_EPWMXLINK_CMPDLINK_M  0xF0000U     // CMPD Link
+#define HRPWM_EPWMXLINK_GLDCTL2LINK_S  28U
+#define HRPWM_EPWMXLINK_GLDCTL2LINK_M  0xF0000000U  // GLDCTL2 Link
 
 //*****************************************************************************
 //

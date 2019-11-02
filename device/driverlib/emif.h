@@ -5,10 +5,10 @@
 // TITLE:  C28x EMIF driver.
 //
 //###########################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -118,12 +118,12 @@ extern "C"
 // aren't associated with async configuration.
 //
 //*****************************************************************************
-#define EMIF_ASYNC_CS_CR_MASK    ((uint32_t)EMIF_ASYNC_CS2_CR_R_HOLD_M    |  \
-                                  (uint32_t)EMIF_ASYNC_CS2_CR_R_STROBE_M  |  \
-                                  (uint32_t)EMIF_ASYNC_CS2_CR_R_SETUP_M   |  \
-                                  (uint32_t)EMIF_ASYNC_CS2_CR_W_HOLD_M    |  \
-                                  (uint32_t)EMIF_ASYNC_CS2_CR_W_STROBE_M  |  \
-                                  (uint32_t)EMIF_ASYNC_CS2_CR_W_SETUP_M   |  \
+#define EMIF_ASYNC_CS_CR_MASK    ((uint32_t)EMIF_ASYNC_CS2_CR_R_HOLD_M    |   \
+                                  (uint32_t)EMIF_ASYNC_CS2_CR_R_STROBE_M  |   \
+                                  (uint32_t)EMIF_ASYNC_CS2_CR_R_SETUP_M   |   \
+                                  (uint32_t)EMIF_ASYNC_CS2_CR_W_HOLD_M    |   \
+                                  (uint32_t)EMIF_ASYNC_CS2_CR_W_STROBE_M  |   \
+                                  (uint32_t)EMIF_ASYNC_CS2_CR_W_SETUP_M   |   \
                                   (uint32_t)EMIF_ASYNC_CS2_CR_TA_M)
 
 //*****************************************************************************
@@ -132,8 +132,8 @@ extern "C"
 // with interrupts.
 //
 //*****************************************************************************
-#define EMIF_ASYNC_INT_MASK      ((uint16_t)EMIF_INT_MSK_SET_AT_MASK_SET  |  \
-                                  (uint16_t)EMIF_INT_MSK_SET_LT_MASK_SET  |  \
+#define EMIF_ASYNC_INT_MASK      ((uint16_t)EMIF_INT_MSK_SET_AT_MASK_SET  |   \
+                                  (uint16_t)EMIF_INT_MSK_SET_LT_MASK_SET  |   \
                                   (uint16_t)EMIF_INT_MSK_SET_WR_MASK_SET_M)
 
 //*****************************************************************************
@@ -171,11 +171,11 @@ extern "C"
 // associated with SDRAM configuration parameters.
 //
 //*****************************************************************************
-#define EMIF_SYNC_SDRAM_CR_MASK   ((uint32_t)EMIF_SDRAM_CR_PAGESIGE_M    |  \
-                                   (uint32_t)EMIF_SDRAM_CR_IBANK_M       |  \
-                                   (uint32_t)EMIF_SDRAM_CR_BIT_11_9_LOCK |  \
-                                   (uint32_t)EMIF_SDRAM_CR_CL_M          |  \
-                                   (uint32_t)EMIF_SDRAM_CR_NM            |  \
+#define EMIF_SYNC_SDRAM_CR_MASK   ((uint32_t)EMIF_SDRAM_CR_PAGESIGE_M    |    \
+                                   (uint32_t)EMIF_SDRAM_CR_IBANK_M       |    \
+                                   (uint32_t)EMIF_SDRAM_CR_BIT_11_9_LOCK |    \
+                                   (uint32_t)EMIF_SDRAM_CR_CL_M          |    \
+                                   (uint32_t)EMIF_SDRAM_CR_NM            |    \
                                    (uint32_t)EMIF_SDRAM_CR_SR)
 
 //*****************************************************************************
@@ -184,12 +184,12 @@ extern "C"
 // associated with SDRAM timings parameters.
 //
 //*****************************************************************************
-#define EMIF_SYNC_SDRAM_TR_MASK  ((uint32_t)EMIF_SDRAM_TR_T_RRD_M  |  \
-                                  (uint32_t)EMIF_SDRAM_TR_T_RC_M   |  \
-                                  (uint32_t)EMIF_SDRAM_TR_T_RAS_M  |  \
-                                  (uint32_t)EMIF_SDRAM_TR_T_WR_M   |  \
-                                  (uint32_t)EMIF_SDRAM_TR_T_RCD_M  |  \
-                                  (uint32_t)EMIF_SDRAM_TR_T_RP_M   |  \
+#define EMIF_SYNC_SDRAM_TR_MASK  ((uint32_t)EMIF_SDRAM_TR_T_RRD_M  |          \
+                                  (uint32_t)EMIF_SDRAM_TR_T_RC_M   |          \
+                                  (uint32_t)EMIF_SDRAM_TR_T_RAS_M  |          \
+                                  (uint32_t)EMIF_SDRAM_TR_T_WR_M   |          \
+                                  (uint32_t)EMIF_SDRAM_TR_T_RCD_M  |          \
+                                  (uint32_t)EMIF_SDRAM_TR_T_RP_M   |          \
                                   (uint32_t)EMIF_SDRAM_TR_T_RFC_M)
 
 //*****************************************************************************
@@ -570,7 +570,7 @@ EMIF_lockAccessConfig(uint32_t configBase)
 //!
 //! \param configBase is the configuration address of the EMIF instance used.
 //!
-//! This function unlocks the write to access configuration fields i.e.
+//! This function unlocks the write to access configuration fields such as
 //! ACCPROT0 & Mselect fields, for an EMIF instance.
 //!
 //! \return None.
@@ -770,8 +770,8 @@ EMIF_setAsyncMaximumWaitCycles(uint32_t base, uint16_t value)
     // Sets the bit that enables extended wait mode.
     //
     HWREGH(base + EMIF_O_ASYNC_WCCR) = (HWREGH(base + EMIF_O_ASYNC_WCCR)
-                                      & ~((uint16_t)EMIF_ASYNC_WCCR_MAX_EXT_WAIT_M))
-                                      | value;
+                                  & ~((uint16_t)EMIF_ASYNC_WCCR_MAX_EXT_WAIT_M))
+                                  | value;
 }
 
 //*****************************************************************************
@@ -794,7 +794,7 @@ EMIF_setAsyncMaximumWaitCycles(uint32_t base, uint16_t value)
 //*****************************************************************************
 static inline void
 EMIF_setAsyncTimingParams(uint32_t base, EMIF_AsyncCSOffset offset,
-                          const EMIF_AsyncTimingParams* tParam)
+                          const EMIF_AsyncTimingParams *tParam)
 {
     uint32_t temp;
     //
@@ -1006,7 +1006,7 @@ EMIF_clearAsyncInterruptStatus(uint32_t base, uint16_t intFlags)
 //
 //*****************************************************************************
 static inline void
-EMIF_setSyncTimingParams(uint32_t base, const EMIF_SyncTimingParams* tParam)
+EMIF_setSyncTimingParams(uint32_t base, const EMIF_SyncTimingParams *tParam)
 {
     uint32_t temp;
     //
@@ -1115,7 +1115,7 @@ EMIF_setSyncRefreshRate(uint32_t base, uint16_t refRate)
 //
 //*****************************************************************************
 static inline void
-EMIF_setSyncMemoryConfig(uint32_t base, const EMIF_SyncConfig* config)
+EMIF_setSyncMemoryConfig(uint32_t base, const EMIF_SyncConfig *config)
 {
     uint32_t temp;
     //

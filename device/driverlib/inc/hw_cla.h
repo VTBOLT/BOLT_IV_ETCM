@@ -5,10 +5,10 @@
 // TITLE:   Definitions for the CLA registers.
 //
 //###########################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -228,42 +228,42 @@
 // The following are defines for the bit fields in the SOFTINTEN register
 //
 //*****************************************************************************
-#define CLA_SOFTINTEN_TASK1       0x1U         // Task 1 Software Interrupt
-                                               // Enable
-#define CLA_SOFTINTEN_TASK2       0x2U         // Task 2 Software Interrupt
-                                               // Enable
-#define CLA_SOFTINTEN_TASK3       0x4U         // Task 3 Software Interrupt
-                                               // Enable
-#define CLA_SOFTINTEN_TASK4       0x8U         // Task 4 Software Interrupt
-                                               // Enable
-#define CLA_SOFTINTEN_TASK5       0x10U        // Task 5 Software Interrupt
-                                               // Enable
-#define CLA_SOFTINTEN_TASK6       0x20U        // Task 6 Software Interrupt
-                                               // Enable
-#define CLA_SOFTINTEN_TASK7       0x40U        // Task 7 Software Interrupt
-                                               // Enable
-#define CLA_SOFTINTEN_TASK8       0x80U        // Task 8 Software Interrupt
-                                               // Enable
+#define CLA_SOFTINTEN_TASK1       0x1U         // Configure Software Interrupt
+                                               // or End of Task interrupt.
+#define CLA_SOFTINTEN_TASK2       0x2U         // Configure Software Interrupt
+                                               // or End of Task interrupt.
+#define CLA_SOFTINTEN_TASK3       0x4U         // Configure Software Interrupt
+                                               // or End of Task interrupt.
+#define CLA_SOFTINTEN_TASK4       0x8U         // Configure Software Interrupt
+                                               // or End of Task interrupt.
+#define CLA_SOFTINTEN_TASK5       0x10U        // Configure Software Interrupt
+                                               // or End of Task interrupt.
+#define CLA_SOFTINTEN_TASK6       0x20U        // Configure Software Interrupt
+                                               // or End of Task interrupt.
+#define CLA_SOFTINTEN_TASK7       0x40U        // Configure Software Interrupt
+                                               // or End of Task interrupt.
+#define CLA_SOFTINTEN_TASK8       0x80U        // Configure Software Interrupt
+                                               // or End of Task interrupt.
 
 //*****************************************************************************
 //
 // The following are defines for the bit fields in the SOFTINTFRC register
 //
 //*****************************************************************************
-#define CLA_SOFTINTFRC_TASK1      0x1U         // Task 1 Software Interrupt
-                                               // Force
-#define CLA_SOFTINTFRC_TASK2      0x2U         // Task 2 Software Interrupt
-                                               // Force
-#define CLA_SOFTINTFRC_TASK3      0x4U         // Task 3 Software Interrupt
-                                               // Force
-#define CLA_SOFTINTFRC_TASK4      0x8U         // Task 4 Software Interrupt
-                                               // Force
-#define CLA_SOFTINTFRC_TASK5      0x10U        // Task 5 Software Interrupt
-                                               // Force
-#define CLA_SOFTINTFRC_TASK6      0x20U        // Task 6 Software Interrupt
-                                               // Force
-#define CLA_SOFTINTFRC_TASK7      0x40U        // Task 7 Software Interrupt
-                                               // Force
-#define CLA_SOFTINTFRC_TASK8      0x80U        // Task 8 Software Interrupt
-                                               // Force
+#define CLA_SOFTINTFRC_TASK1      0x1U         // Force CLA software interrupt
+                                               // for the corresponding task.
+#define CLA_SOFTINTFRC_TASK2      0x2U         // Force CLA software interrupt
+                                               // for the corresponding task.
+#define CLA_SOFTINTFRC_TASK3      0x4U         // Force CLA software interrupt
+                                               // for the corresponding task.
+#define CLA_SOFTINTFRC_TASK4      0x8U         // Force CLA software interrupt
+                                               // for the corresponding task.
+#define CLA_SOFTINTFRC_TASK5      0x10U        // Force CLA software interrupt
+                                               // for the corresponding task.
+#define CLA_SOFTINTFRC_TASK6      0x20U        // Force CLA software interrupt
+                                               // for the corresponding task.
+#define CLA_SOFTINTFRC_TASK7      0x40U        // Force CLA software interrupt
+                                               // for the corresponding task.
+#define CLA_SOFTINTFRC_TASK8      0x80U        // Force CLA software interrupt
+                                               // for the corresponding task.
 #endif

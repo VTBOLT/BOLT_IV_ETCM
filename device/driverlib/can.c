@@ -5,10 +5,10 @@
 // TITLE:  C28x CAN driver.
 //
 //###########################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -71,6 +71,7 @@ CAN_initModule(uint32_t base)
     // Force module to reset state
     //
     EALLOW;
+
     HWREGH(base + CAN_O_CTL) |=  CAN_CTL_SWR;
     EDIS;
 
@@ -115,11 +116,11 @@ CAN_setBitRate(uint32_t base, uint32_t clock, uint32_t bitRate,
     //
     // Calculate bit timing values
     //
-    brp = (uint16_t)(clock/(bitRate * bitTime));
+    brp = (uint16_t)(clock / (bitRate * bitTime));
     tPhase = bitTime - (tSync + tProp);
-    if((tPhase/2U) <= 8U)
+    if((tPhase / 2U) <= 8U)
     {
-        phaseSeg2 = tPhase/2U;
+        phaseSeg2 = tPhase / 2U;
     }
     else
     {
@@ -127,7 +128,7 @@ CAN_setBitRate(uint32_t base, uint32_t clock, uint32_t bitRate,
     }
     tSeg1 = ((tPhase - phaseSeg2) + tProp) - 1U;
     tSeg2 = phaseSeg2 - 1U;
-    if (phaseSeg2 > 4U)
+    if(phaseSeg2 > 4U)
     {
         sjw = 3U;
     }
@@ -135,7 +136,7 @@ CAN_setBitRate(uint32_t base, uint32_t clock, uint32_t bitRate,
     {
         sjw = tSeg2;
     }
-    prescalerExtension = ((brp - 1U)/64U);
+    prescalerExtension = ((brp - 1U) / 64U);
     prescaler = ((brp - 1U) % 64U);
 
     //
@@ -243,8 +244,8 @@ CAN_clearInterruptStatus(uint32_t base, uint32_t intClr)
         //
         // Send the clear pending interrupt command to the CAN controller.
         //
-        HWREG_BP(base + CAN_O_IF1CMD) = CAN_IF1CMD_CLRINTPND | 
-                                        (intClr & CAN_IF1CMD_MSG_NUM_M);
+        HWREG_BP(base + CAN_O_IF1CMD) = ((uint32_t)CAN_IF1CMD_CLRINTPND |
+                                        (intClr & CAN_IF1CMD_MSG_NUM_M));
 
         //
         // Wait to be sure that this interface is not busy.
@@ -394,13 +395,14 @@ CAN_setupMessageObject(uint32_t base, uint32_t objID, uint32_t msgID,
     }
 
     //
-    // Set the data length since this is set for all transfers.  This is
-    // also a single transfer and not a FIFO transfer so set EOB bit.
+    // Set the data length for the transfers.
+    // This is applicable for Tx mailboxes.
     //
     msgCtrl |= ((uint32_t)msgLen & CAN_IF1MCTL_DLC_M);
 
     //
-    // Mark this as the last entry if this is not the last entry in a FIFO.
+    // If this is a single transfer or the last mailbox of a FIFO, set EOB bit.
+    // If this is not the last entry in a FIFO, leave the EOB bit as 0.
     //
     if((flags & CAN_MSG_OBJ_FIFO) == 0U)
     {
@@ -436,7 +438,8 @@ CAN_setupMessageObject(uint32_t base, uint32_t objID, uint32_t msgID,
     //
     // Transfer data to message object RAM
     //
-    HWREG_BP(base + CAN_O_IF1CMD) = cmdMaskReg | (objID & CAN_IF1CMD_MSG_NUM_M);
+    HWREG_BP(base + CAN_O_IF1CMD) =
+    cmdMaskReg | (objID & CAN_IF1CMD_MSG_NUM_M);
 }
 
 //*****************************************************************************
@@ -460,11 +463,11 @@ CAN_sendMessage(uint32_t base, uint32_t objID, uint16_t msgLen,
     //
     // Set IF command to read message object control value
     //
-    // Set up the request for data from the message object.   
+    // Set up the request for data from the message object.
     // Transfer the message object to the IF register.
     //
-    HWREG_BP(base + CAN_O_IF1CMD) = CAN_IF1CMD_CONTROL | 
-                                   (objID & CAN_IF1CMD_MSG_NUM_M);
+    HWREG_BP(base + CAN_O_IF1CMD) = ((uint32_t)CAN_IF1CMD_CONTROL |
+                                     (objID & CAN_IF1CMD_MSG_NUM_M));
 
     //
     // Wait for busy bit to clear
@@ -486,7 +489,7 @@ CAN_sendMessage(uint32_t base, uint32_t objID, uint16_t msgLen,
     //
     // Write the data out to the CAN Data registers.
     //
-    CAN_writeDataReg(msgData, (int16_t *)(base + CAN_O_IF1DATA),
+    CAN_writeDataReg(msgData, (base + CAN_O_IF1DATA),
                      (msgCtrl & CAN_IF1MCTL_DLC_M));
 
     //
@@ -509,8 +512,8 @@ CAN_sendMessage(uint32_t base, uint32_t objID, uint16_t msgLen,
     // Transfer the message object to the message object specified by
     // objID.
     //
-    HWREG_BP(base + CAN_O_IF1CMD) = (msgCtrl | CAN_IF1CMD_DIR | 
-                                     CAN_IF1CMD_TXRQST |
+    HWREG_BP(base + CAN_O_IF1CMD) = (msgCtrl | (uint32_t)CAN_IF1CMD_DIR |
+                                     (uint32_t)CAN_IF1CMD_TXRQST |
                                      (objID & CAN_IF1CMD_MSG_NUM_M));
 }
 
@@ -520,7 +523,8 @@ CAN_sendMessage(uint32_t base, uint32_t objID, uint16_t msgLen,
 //
 //*****************************************************************************
 bool
-CAN_readMessage(uint32_t base, uint32_t objID, uint16_t *msgData)
+CAN_readMessage(uint32_t base, uint32_t objID,
+                uint16_t *msgData)
 {
     bool status;
     uint16_t msgCtrl = 0U;
@@ -537,9 +541,9 @@ CAN_readMessage(uint32_t base, uint32_t objID, uint16_t *msgData)
     //
     // Transfer the message object to the message object IF register.
     //
-    HWREG_BP(base + CAN_O_IF2CMD) = (CAN_IF2CMD_DATA_A | CAN_IF2CMD_DATA_B |
-                                     CAN_IF2CMD_CONTROL | 
-                                     (objID & CAN_IF2CMD_MSG_NUM_M));
+    HWREG_BP(base + CAN_O_IF2CMD) =
+    ((uint32_t)CAN_IF2CMD_DATA_A | (uint32_t)CAN_IF2CMD_DATA_B |
+     (uint32_t)CAN_IF2CMD_CONTROL | (objID & CAN_IF2CMD_MSG_NUM_M));
 
     //
     // Wait for busy bit to clear
@@ -561,7 +565,7 @@ CAN_readMessage(uint32_t base, uint32_t objID, uint16_t *msgData)
         //
         // Read out the data from the CAN registers.
         //
-        CAN_readDataReg(msgData, (int16_t *)(base + CAN_O_IF2DATA),
+        CAN_readDataReg(msgData, (base + CAN_O_IF2DATA),
                         (msgCtrl & CAN_IF2MCTL_DLC_M));
 
         status = true;
@@ -569,16 +573,14 @@ CAN_readMessage(uint32_t base, uint32_t objID, uint16_t *msgData)
         //
         // Now clear out the new data flag
         //
-        // Transfer the message object to the message object specified by
-        // objID.
-        //
-        HWREG_BP(base + CAN_O_IF2CMD) = CAN_IF2CMD_TXRQST | 
-                                             (objID & CAN_IF2CMD_MSG_NUM_M);
+        HWREG_BP(base + CAN_O_IF2CMD) = ((uint32_t)CAN_IF2CMD_TXRQST |
+                                        (objID & CAN_IF2CMD_MSG_NUM_M));
 
         //
         // Wait for busy bit to clear
         //
-        while((HWREGH(base + CAN_O_IF2CMD) & CAN_IF2CMD_BUSY) == CAN_IF2CMD_BUSY)
+        while((HWREGH(base + CAN_O_IF2CMD) & CAN_IF2CMD_BUSY) ==
+               CAN_IF2CMD_BUSY)
         {
         }
     }
@@ -621,6 +623,7 @@ CAN_clearMessage(uint32_t base, uint32_t objID)
     //
     // Initiate programming the message object
     //
-    HWREG_BP(base + CAN_O_IF1CMD) = (CAN_IF1CMD_DIR | CAN_IF1CMD_ARB) | 
-                                    (objID & CAN_IF1CMD_MSG_NUM_M);
+    HWREG_BP(base + CAN_O_IF1CMD) =
+    (((uint32_t)CAN_IF1CMD_DIR | (uint32_t)CAN_IF1CMD_ARB) |
+     (objID & CAN_IF1CMD_MSG_NUM_M));
 }

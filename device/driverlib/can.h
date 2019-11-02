@@ -5,10 +5,10 @@
 // TITLE:  C28x CAN driver.
 //
 //###########################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -39,9 +39,9 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // $
 //###########################################################################
-
 #ifndef CAN_H
 #define CAN_H
+
 
 //*****************************************************************************
 //
@@ -63,9 +63,9 @@ extern "C"
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "inc/hw_can.h"
 #include "inc/hw_memmap.h"
 #include "inc/hw_types.h"
+#include "inc/hw_can.h"
 #include "debug.h"
 #include "sysctl.h"
 
@@ -232,8 +232,8 @@ extern "C"
 
 //*****************************************************************************
 //
-//! This data type is used to identify the interrupt status register.  This is
-//! used when calling the CAN_setupMessageObject() function.
+//! This data type is used to decide between STD_ID or EXT_ID for a mailbox.
+//! This is used when calling the CAN_setupMessageObject() function.
 //
 //*****************************************************************************
 typedef enum
@@ -305,10 +305,10 @@ typedef enum
 //
 //*****************************************************************************
 #ifdef DEBUG
-static bool
+static inline bool
 CAN_isBaseValid(uint32_t base)
 {
-    return((base == CANA_BASE)||(base == CANB_BASE));
+    return((base == CANA_BASE) || (base == CANB_BASE));
 }
 #endif
 
@@ -317,11 +317,11 @@ CAN_isBaseValid(uint32_t base)
 //
 //! \internal
 //!
-//! Copies data from a buffer to the CAN Data registers.
+//! Copies data from the CAN Data registers to a buffer.
 //!
 //! \param data is a pointer to the data to be written out to the CAN
 //! controller's data registers.
-//! \param address is an int16_t pointer to the first register of the
+//! \param address is a uint32_t value for the first register of the
 //! CAN controller's data registers.  For example, in order to use the IF1
 //! register set on CAN controller 0, the value would be: \b CANA_BASE \b +
 //! \b CAN_O_IF1DATA.
@@ -334,12 +334,12 @@ CAN_isBaseValid(uint32_t base)
 //! \return None.
 //
 //*****************************************************************************
-static void
-CAN_writeDataReg(const uint16_t *const data, int16_t *address,
-                  uint32_t size)
+static inline void
+CAN_writeDataReg(const uint16_t *const data, uint32_t address,
+                 uint32_t size)
 {
     uint32_t idx;
-    int16_t *dataReg = address;
+    uint32_t dataReg = address;
 
     //
     // Loop always copies 1 byte per iteration.
@@ -362,11 +362,11 @@ CAN_writeDataReg(const uint16_t *const data, int16_t *address,
 //
 //! \internal
 //!
-//! Copies data from a buffer to the CAN Data registers.
+//! Copies data from the CAN Data registers to a buffer.
 //!
 //! \param data is a pointer to the location to store the data read from the
 //! CAN controller's data registers.
-//! \param address is an int16_t pointer to the first register of the
+//! \param address is a uint32_t value for the first register of the
 //! CAN controller's data registers.  For example, in order to use the IF1
 //! register set on CAN controller 1, the value would be: \b CANA_BASE \b +
 //! \b CAN_O_IF1DATA.
@@ -379,11 +379,11 @@ CAN_writeDataReg(const uint16_t *const data, int16_t *address,
 //! \return None.
 //
 //*****************************************************************************
-static void
-CAN_readDataReg(uint16_t *data, int16_t *address, uint32_t size)
+static inline void
+CAN_readDataReg(uint16_t *data, const uint32_t address, uint32_t size)
 {
     uint32_t idx;
-    int16_t *dataReg = address;
+    uint32_t dataReg = address;
 
     //
     // Loop always copies 1 byte per iteration.
@@ -480,7 +480,10 @@ CAN_selectClockSource(uint32_t base, CAN_ClockSource source)
             break;
 
         default:
+
+            //
             // Do nothing. Not a valid mode value.
+            //
             break;
     }
 
@@ -1425,6 +1428,12 @@ CAN_initModule(uint32_t base);
 //! CAN_setBitTiming() function is available for full customization of all of
 //! the CAN bit timing values.
 //!
+//! \note The CANBTR register values calculated by the function CAN_setBitRate
+//!       may not be suitable for your network parameters. If this is the case
+//!       and you have computed the correct values for your network, you could
+//!       directly write those parameters in CANBTR register using the
+//!       function CAN_setBitTiming.
+//!
 //! \return None.
 //
 //*****************************************************************************
@@ -1521,6 +1530,14 @@ CAN_clearInterruptStatus(uint32_t base, uint32_t intClr);
 //!                                     structure and isn't the final message
 //!                                     object in FIFO
 //!
+//! If filtering is based on message identifier, the value
+//! \b CAN_MSG_OBJ_USE_ID_FILTER has to be logically ORed with the \e flag
+//! parameter and \b CAN_MSG_OBJ_USE_EXT_FILTER also has to be ORed for
+//! message identifier filtering to be based on the extended identifier.
+//!
+//! \note The \b msgLen Parameter for the Receive Message Object is a "don't
+//!       care" but its value should be between 0-8 due to the assert.
+//!
 //! \return None.
 //
 //*****************************************************************************
@@ -1574,7 +1591,8 @@ CAN_sendMessage(uint32_t base, uint32_t objID, uint16_t msgLen,
 //
 //*****************************************************************************
 extern bool
-CAN_readMessage(uint32_t base, uint32_t objID, uint16_t *msgData);
+CAN_readMessage(uint32_t base, uint32_t objID,
+                uint16_t *msgData);
 
 
 //*****************************************************************************

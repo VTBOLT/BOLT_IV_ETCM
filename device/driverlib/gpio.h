@@ -5,10 +5,10 @@
 // TITLE:  C28x GPIO driver.
 //
 //###########################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -68,13 +68,15 @@ extern "C"
 #include "inc/hw_types.h"
 #include "inc/hw_xint.h"
 #include "cpu.h"
-#include "debug.h"
 #include "xbar.h"
+#include "debug.h"
 
 //*****************************************************************************
 //
-// Useful defines used within the driver functions. Not intended for use by
-// application code.
+// Useful defines used within the driver functions to access gpio registers.
+// Not intended for use by application code.
+//
+// Divide by 2 is for C28x which has word access
 //
 //*****************************************************************************
 #define GPIO_CTRL_REGS_STEP     ((GPIO_O_GPBCTRL - GPIO_O_GPACTRL) / 2U)
@@ -370,6 +372,35 @@ GPIO_disableInterrupt(GPIO_ExternalIntNum extIntNum)
 
 //*****************************************************************************
 //
+//! Gets the value of the external interrupt counter.
+//!
+//! \param extIntNum specifies the external interrupt.
+//!
+//! The following defines can be used to specify the external interrupt for the
+//! \e extIntNum parameter:
+//!
+//! - \b GPIO_INT_XINT1
+//! - \b GPIO_INT_XINT2
+//! - \b GPIO_INT_XINT3
+//!
+//! \b Note: The counter is clocked at the SYSCLKOUT rate.
+//!
+//! \return Returns external interrupt counter value.
+//
+//*****************************************************************************
+static inline uint16_t
+GPIO_getInterruptCounter(GPIO_ExternalIntNum extIntNum)
+{
+    ASSERT(extIntNum <= GPIO_INT_XINT3);
+
+    //
+    // Read the counter value from the appropriate register.
+    //
+    return((HWREGH(XINT_BASE + XINT_O_1CTR + (uint16_t)extIntNum)));
+}
+
+//*****************************************************************************
+//
 //! Reads the value present on the specified pin.
 //!
 //! \param pin is the identifying GPIO number of the pin.
@@ -398,6 +429,7 @@ GPIO_readPin(uint32_t pin)
 
     return((gpioDataReg[GPIO_GPxDAT_INDEX] >> (pin % 32U)) & (uint32_t)0x1U);
 }
+
 
 //*****************************************************************************
 //
@@ -479,7 +511,7 @@ GPIO_togglePin(uint32_t pin)
 //! \param port is the GPIO port being accessed in the form of \b GPIO_PORT_X
 //! where X is the port letter.
 //!
-//! \return Returns the value in the data register for the specified port. Each
+//! \return Returns the value available on pin for the specified port. Each
 //! bit of the the return value represents a pin on the port, where bit 0
 //! represents GPIO port pin 0, bit 1 represents GPIO port pin 1, and so on.
 //
@@ -497,6 +529,7 @@ GPIO_readPortData(GPIO_Port port)
 
     return(gpioDataReg[GPIO_GPxDAT_INDEX]);
 }
+
 
 //*****************************************************************************
 //
@@ -676,7 +709,7 @@ GPIO_lockPortConfig(GPIO_Port port, uint32_t pinMask)
 //! \param port is the GPIO port being accessed.
 //! \param pinMask is a mask of which of the 32 pins on the port are affected.
 //!
-//! This function locks the configuration registers of the pins specified by
+//! This function unlocks the configuration registers of the pins specified by
 //! the \e pinMask parameter on the port specified by the \e port parameter
 //! which takes a value in the form of \b GPIO_PORT_X where X is the port
 //! letter. For example, use \b GPIO_PORT_A to affect port A (GPIOs 0-31).

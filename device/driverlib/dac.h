@@ -5,10 +5,10 @@
 // TITLE:  C28x DAC driver.
 //
 //###########################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -134,10 +134,10 @@ typedef enum
 //
 //*****************************************************************************
 #ifdef DEBUG
-static bool
+static inline bool
 DAC_isBaseValid(uint32_t base)
 {
-    return((base == DACA_BASE) || (base == DACB_BASE)||
+    return((base == DACA_BASE) || (base == DACB_BASE) ||
            (base == DACC_BASE));
 }
 #endif
@@ -479,7 +479,7 @@ DAC_getOffsetTrim(uint32_t base)
     value = ((value & (uint16_t)DAC_REG_BYTE_MASK) ^ (uint16_t)0x80) -
             (uint16_t)0x80;
 
-    return ((int16_t)value);
+    return((int16_t)value);
 }
 
 //*****************************************************************************
@@ -562,16 +562,16 @@ DAC_isRegisterLocked(uint32_t base, uint16_t reg)
 //! Tune DAC Offset Trim
 //!
 //! \param base is the DAC module base address
-//! \param referenceVoltage is the reference voltage the DAC 
+//! \param referenceVoltage is the reference voltage the DAC
 //! module is operating at.
 //!
-//! This function adjusts/tunes the DAC offset trim. The \e referenceVoltage  
-//! value should be a floating point number in the range specified in the  
+//! This function adjusts/tunes the DAC offset trim. The \e referenceVoltage
+//! value should be a floating point number in the range specified in the
 //! device data manual.
 //!
-//! \note Use this function to adjust the DAC offset trim if operating 
-//! at a reference voltage other than 2.5v. Since this function modifies 
-//! the DAC offset trim register, it should only be called once after 
+//! \note Use this function to adjust the DAC offset trim if operating
+//! at a reference voltage other than 2.5v. Since this function modifies
+//! the DAC offset trim register, it should only be called once after
 //! Device_cal. If it is called multiple times after Device_cal, the offset
 //! value scaled would be the wrong value.
 //!

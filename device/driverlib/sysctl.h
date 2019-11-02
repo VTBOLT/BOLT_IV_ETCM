@@ -5,10 +5,10 @@
 // TITLE:  C28x system control driver.
 //
 //###########################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -71,41 +71,59 @@ extern "C"
 #include "debug.h"
 #include "interrupt.h"
 
+
 //*****************************************************************************
 //
 // Defines for system control functions. Not intended for use by application
 // code.
 //
 //*****************************************************************************
+//
 // Shifted pattern for WDCR register's WDCHK field.
+//
 #define SYSCTL_WD_CHKBITS       0x0028U
 
+//
 // Keys for WDKEY field. The first enables resets and the second resets.
+//
 #define SYSCTL_WD_ENRSTKEY      0x0055U
 #define SYSCTL_WD_RSTKEY        0x00AAU
 
+//
 // Values to help decode peripheral parameter
+//
 #define SYSCTL_PERIPH_REG_M     0x001FU
 #define SYSCTL_PERIPH_REG_S     0x0000U
 #define SYSCTL_PERIPH_BIT_M     0x1F00U
 #define SYSCTL_PERIPH_BIT_S     0x0008U
 
+
+//
 // LPM defines for LPMCR.LPM
+//
 #define SYSCTL_LPM_IDLE         0x0000U
 #define SYSCTL_LPM_STANDBY      0x0001U
 #define SYSCTL_LPM_HALT         0x0002U
 #define SYSCTL_LPM_HIB          0x0003U
 
-//! Bit shift for DAC to configure the CPUSEL register
+//
+// Bit shift for DAC to configure the CPUSEL register
+//
 #define SYSCTL_CPUSEL_DAC_S     0x10U
 
+//
 // Default internal oscillator frequency, 10 MHz
+//
 #define SYSCTL_DEFAULT_OSC_FREQ     10000000U
 
+//
 // Mask for SYNCSELECT.SYNCIN
+//
 #define SYSCTL_SYNCSELECT_SYNCIN_M  SYSCTL_SYNCSELECT_EPWM4SYNCIN_M
 
+//
 // Boot ROM Booting and Reset Status
+//
 #if defined(CPU2)
 #define SYSCTL_BOOT_ROM_STATUS    0x0002U
 #else
@@ -125,6 +143,7 @@ extern "C"
 //
 #define SYSCTL_SYSDIV_M     0x00001F80U // Mask for SYSDIV value in config
 #define SYSCTL_SYSDIV_S     7U          // Shift for SYSDIV value in config
+
 //! Macro to format system clock divider value. x must be 1 or even values up
 //! to 126.
 #define SYSCTL_SYSDIV(x)    ((((x) / 2U) << SYSCTL_SYSDIV_S) & SYSCTL_SYSDIV_M)
@@ -195,11 +214,11 @@ extern "C"
 //
 // Fractional multiplier (FMULT)
 //
-#define SYSCTL_AUXPLL_FMULT_NONE   0x00000000U //!< No fractional multiplier
-#define SYSCTL_AUXPLL_FMULT_0      0x00000000U //!< No fractional multiplier
-#define SYSCTL_AUXPLL_FMULT_1_4    0x00002000U //!< Fractional multiplier of 0.25
-#define SYSCTL_AUXPLL_FMULT_1_2    0x00004000U //!< Fractional multiplier of 0.50
-#define SYSCTL_AUXPLL_FMULT_3_4    0x00006000U //!< Fractional multiplier of 0.75
+#define SYSCTL_AUXPLL_FMULT_NONE  0x00000000U //!< No fractional multiplier
+#define SYSCTL_AUXPLL_FMULT_0     0x00000000U //!< No fractional multiplier
+#define SYSCTL_AUXPLL_FMULT_1_4   0x00002000U //!< Fractional multiplier - 0.25
+#define SYSCTL_AUXPLL_FMULT_1_2   0x00004000U //!< Fractional multiplier - 0.50
+#define SYSCTL_AUXPLL_FMULT_3_4   0x00006000U //!< Fractional multiplier - 0.75
 
 //
 // Oscillator source
@@ -241,6 +260,7 @@ extern "C"
 #define SYSCTL_NMI_RAMUNCERR        0x0004U //!< Uncorrectable RAM error
 #define SYSCTL_NMI_FLUNCERR         0x0008U //!< Uncorrectable Flash error
 #define SYSCTL_NMI_PIEVECTERR       0x0040U //!< PIE Vector Fetch Error
+#define SYSCTL_NMI_CLBNMI           0x0100U //!< CLB NMI Flag
 #define SYSCTL_NMI_CPU2WDRSN        0x0200U //!< CPU2 WDRSn Reset
 #define SYSCTL_NMI_CPU2NMIWDRSN     0x0400U //!< CPU2 NMIWDRSn Reset
 
@@ -250,19 +270,20 @@ extern "C"
 // API as rstCauses or returned by the SysCtl_getResetCause() API.
 //
 //*****************************************************************************
-#define SYSCTL_CAUSE_POR            0x0001U //!< Power-on reset
-#define SYSCTL_CAUSE_XRS            0x0002U //!< External reset pin
-#define SYSCTL_CAUSE_WDRS           0x0004U //!< Watchdog reset
-#define SYSCTL_CAUSE_NMIWDRS        0x0008U //!< NMI watchdog reset
-#define SYSCTL_CAUSE_SCCRESET       0x0100U //!< SCCRESETn reset from DCSM
-
+#define SYSCTL_CAUSE_POR                 0x00000001U //!< Power-on reset
+#define SYSCTL_CAUSE_XRS                 0x00000002U //!< External reset pin
+#define SYSCTL_CAUSE_WDRS                0x00000004U //!< Watchdog reset
+#define SYSCTL_CAUSE_NMIWDRS             0x00000008U //!< NMI watchdog reset
+#define SYSCTL_CAUSE_SCCRESET            0x00000100U //!< SCCRESETn by DCSM
 //*****************************************************************************
 //
 // The following values define the adcsocSrc parameter for
 // SysCtl_enableExtADCSOCSource() and SysCtl_disableExtADCSOCSource().
 //
 //*****************************************************************************
+//
 // ADCSOCAO
+//
 #define SYSCTL_ADCSOC_SRC_PWM1SOCA    0x00000001U //!< ePWM1 SOCA for ADCSOCAO
 #define SYSCTL_ADCSOC_SRC_PWM2SOCA    0x00000002U //!< ePWM2 SOCA for ADCSOCAO
 #define SYSCTL_ADCSOC_SRC_PWM3SOCA    0x00000004U //!< ePWM3 SOCA for ADCSOCAO
@@ -276,7 +297,9 @@ extern "C"
 #define SYSCTL_ADCSOC_SRC_PWM11SOCA   0x00000400U //!< ePWM11 SOCA for ADCSOCAO
 #define SYSCTL_ADCSOC_SRC_PWM12SOCA   0x00000800U //!< ePWM12 SOCA for ADCSOCAO
 
+//
 // ADCSOCBO
+//
 #define SYSCTL_ADCSOC_SRC_PWM1SOCB    0x00010000U //!< ePWM1 SOCB for ADCSOCBO
 #define SYSCTL_ADCSOC_SRC_PWM2SOCB    0x00020000U //!< ePWM2 SOCB for ADCSOCBO
 #define SYSCTL_ADCSOC_SRC_PWM3SOCB    0x00040000U //!< ePWM3 SOCB for ADCSOCBO
@@ -299,7 +322,9 @@ extern "C"
 //*****************************************************************************
 typedef enum
 {
+    //
     // PCLKCR0
+    //
     SYSCTL_PERIPH_CLK_CLA1       = 0x0000,  //!< CLA1 clock
     SYSCTL_PERIPH_CLK_DMA        = 0x0200,  //!< DMA clock
     SYSCTL_PERIPH_CLK_TIMER0     = 0x0300,  //!< CPUTIMER0 clock
@@ -309,11 +334,15 @@ typedef enum
     SYSCTL_PERIPH_CLK_TBCLKSYNC  = 0x1200,  //!< ePWM time base clock sync
     SYSCTL_PERIPH_CLK_GTBCLKSYNC = 0x1300,  //!< ePWM global time base sync
 
+    //
     // PCLKCR1
+    //
     SYSCTL_PERIPH_CLK_EMIF1      = 0x0001,  //!< EMIF1 clock
     SYSCTL_PERIPH_CLK_EMIF2      = 0x0101,  //!< EMIF2 clock
 
+    //
     // PCLKCR2
+    //
     SYSCTL_PERIPH_CLK_EPWM1      = 0x0002,  //!< ePWM1 clock
     SYSCTL_PERIPH_CLK_EPWM2      = 0x0102,  //!< ePWM2 clock
     SYSCTL_PERIPH_CLK_EPWM3      = 0x0202,  //!< ePWM3 clock
@@ -327,7 +356,9 @@ typedef enum
     SYSCTL_PERIPH_CLK_EPWM11     = 0x0A02,  //!< ePWM11 clock
     SYSCTL_PERIPH_CLK_EPWM12     = 0x0B02,  //!< ePWM12 clock
 
+    //
     // PCLKCR3
+    //
     SYSCTL_PERIPH_CLK_ECAP1      = 0x0003,  //!< eCAP1 clock
     SYSCTL_PERIPH_CLK_ECAP2      = 0x0103,  //!< eCAP2 clock
     SYSCTL_PERIPH_CLK_ECAP3      = 0x0203,  //!< eCAP3 clock
@@ -335,52 +366,75 @@ typedef enum
     SYSCTL_PERIPH_CLK_ECAP5      = 0x0403,  //!< eCAP5 clock
     SYSCTL_PERIPH_CLK_ECAP6      = 0x0503,  //!< eCAP6 clock
 
+    //
     // PCLKCR4
+    //
     SYSCTL_PERIPH_CLK_EQEP1      = 0x0004,  //!< eQEP1 clock
     SYSCTL_PERIPH_CLK_EQEP2      = 0x0104,  //!< eQEP2 clock
     SYSCTL_PERIPH_CLK_EQEP3      = 0x0204,  //!< eQEP3 clock
 
+    //
     // PCLKCR5
+    //
     // Reserved
+    //
 
+    //
     // PCLKCR6
+    //
     SYSCTL_PERIPH_CLK_SD1        = 0x0006,  //!< SDFM1 clock
     SYSCTL_PERIPH_CLK_SD2        = 0x0106,  //!< SDFM2 clock
 
+    //
     // PCLKCR7
+    //
     SYSCTL_PERIPH_CLK_SCIA       = 0x0007,  //!< SCIA clock
     SYSCTL_PERIPH_CLK_SCIB       = 0x0107,  //!< SCIB clock
     SYSCTL_PERIPH_CLK_SCIC       = 0x0207,  //!< SCIC clock
     SYSCTL_PERIPH_CLK_SCID       = 0x0307,  //!< SCID clock
 
+    //
     // PCLKCR8
+    //
     SYSCTL_PERIPH_CLK_SPIA       = 0x0008,  //!< SPIA clock
     SYSCTL_PERIPH_CLK_SPIB       = 0x0108,  //!< SPIB clock
     SYSCTL_PERIPH_CLK_SPIC       = 0x0208,  //!< SPIC clock
 
+    //
     // PCLKCR9
+    //
     SYSCTL_PERIPH_CLK_I2CA       = 0x0009,  //!< I2CA clock
     SYSCTL_PERIPH_CLK_I2CB       = 0x0109,  //!< I2CB clock
 
+    //
     // PCLKCR10
+    //
     SYSCTL_PERIPH_CLK_CANA       = 0x000A,  //!< CANA clock
     SYSCTL_PERIPH_CLK_CANB       = 0x010A,  //!< CANB clock
 
+    //
     // PCLKCR11
+    //
     SYSCTL_PERIPH_CLK_MCBSPA     = 0x000B,  //!< McBSPA clock
     SYSCTL_PERIPH_CLK_MCBSPB     = 0x010B,  //!< McBSPB clock
     SYSCTL_PERIPH_CLK_USBA       = 0x100B,  //!< USBA clock
 
+    //
     // PCLKCR12
+    //
     SYSCTL_PERIPH_CLK_UPPA       = 0x000C,  //!< uPPA clock
 
+    //
     // PCLKCR13
+    //
     SYSCTL_PERIPH_CLK_ADCA       = 0x000D,  //!< ADCA clock
     SYSCTL_PERIPH_CLK_ADCB       = 0x010D,  //!< ADCB clock
     SYSCTL_PERIPH_CLK_ADCC       = 0x020D,  //!< ADCC clock
     SYSCTL_PERIPH_CLK_ADCD       = 0x030D,  //!< ADCD clock
 
+    //
     // PCLKCR14
+    //
     SYSCTL_PERIPH_CLK_CMPSS1     = 0x000E,  //!< CMPSS1 clock
     SYSCTL_PERIPH_CLK_CMPSS2     = 0x010E,  //!< CMPSS2 clock
     SYSCTL_PERIPH_CLK_CMPSS3     = 0x020E,  //!< CMPSS3 clock
@@ -390,15 +444,19 @@ typedef enum
     SYSCTL_PERIPH_CLK_CMPSS7     = 0x060E,  //!< CMPSS7 clock
     SYSCTL_PERIPH_CLK_CMPSS8     = 0x070E,  //!< CMPSS8 clock
 
+    //
     // PCLKCR15
+    //
     // Reserved
+    //
 
+    //
     // PCLKCR16
+    //
     SYSCTL_PERIPH_CLK_DACA       = 0x1010,  //!< DACA clock
     SYSCTL_PERIPH_CLK_DACB       = 0x1110,  //!< DACB clock
-    SYSCTL_PERIPH_CLK_DACC       = 0x1210,  //!< DACC clock
+    SYSCTL_PERIPH_CLK_DACC       = 0x1210   //!< DACC clock
 } SysCtl_PeripheralPCLOCKCR;
-
 //*****************************************************************************
 //
 //! The following are values that can be passed to SysCtl_resetPeripheral() as
@@ -407,15 +465,21 @@ typedef enum
 //*****************************************************************************
 typedef enum
 {
+    //
     // SOFTPRES0
+    //
     SYSCTL_PERIPH_RES_CPU1_CLA1  = 0x0000,  //!< Reset CPU1 CLA1
     SYSCTL_PERIPH_RES_CPU2_CLA1  = 0x0200,  //!< Reset CPU2 CLA1
 
+    //
     // SOFTPRES1
+    //
     SYSCTL_PERIPH_RES_EMIF1      = 0x0001,  //!< Reset EMIF1
     SYSCTL_PERIPH_RES_EMIF2      = 0x0101,  //!< Reset EMIF2
 
+    //
     // SOFTPRES2
+    //
     SYSCTL_PERIPH_RES_EPWM1      = 0x0002,  //!< Reset ePWM1
     SYSCTL_PERIPH_RES_EPWM2      = 0x0102,  //!< Reset ePWM2
     SYSCTL_PERIPH_RES_EPWM3      = 0x0202,  //!< Reset ePWM3
@@ -429,7 +493,9 @@ typedef enum
     SYSCTL_PERIPH_RES_EPWM11     = 0x0A02,  //!< Reset ePWM11
     SYSCTL_PERIPH_RES_EPWM12     = 0x0B02,  //!< Reset ePWM12
 
+    //
     // SOFTPRES3
+    //
     SYSCTL_PERIPH_RES_ECAP1      = 0x0003,  //!< Reset eCAP1
     SYSCTL_PERIPH_RES_ECAP2      = 0x0103,  //!< Reset eCAP2
     SYSCTL_PERIPH_RES_ECAP3      = 0x0203,  //!< Reset eCAP3
@@ -437,51 +503,72 @@ typedef enum
     SYSCTL_PERIPH_RES_ECAP5      = 0x0403,  //!< Reset eCAP5
     SYSCTL_PERIPH_RES_ECAP6      = 0x0503,  //!< Reset eCAP6
 
+    //
     // SOFTPRES4
+    //
     SYSCTL_PERIPH_RES_EQEP1      = 0x0004,  //!< Reset eQEP1
     SYSCTL_PERIPH_RES_EQEP2      = 0x0104,  //!< Reset eQEP2
     SYSCTL_PERIPH_RES_EQEP3      = 0x0204,  //!< Reset eQEP3
 
+    //
     // SOFTPRES5
     // Reserved
+    //
 
+    //
     // SOFTPRES6
+    //
     SYSCTL_PERIPH_RES_SD1        = 0x0006,  //!< Reset SDFM1
     SYSCTL_PERIPH_RES_SD2        = 0x0106,  //!< Reset SDFM2
 
+    //
     // SOFTPRES7
+    //
     SYSCTL_PERIPH_RES_SCIA       = 0x0007,  //!< Reset SCIA
     SYSCTL_PERIPH_RES_SCIB       = 0x0107,  //!< Reset SCIB
     SYSCTL_PERIPH_RES_SCIC       = 0x0207,  //!< Reset SCIC
     SYSCTL_PERIPH_RES_SCID       = 0x0307,  //!< Reset SCID
 
+    //
     // SOFTPRES8
+    //
     SYSCTL_PERIPH_RES_SPIA       = 0x0008,  //!< Reset SPIA
     SYSCTL_PERIPH_RES_SPIB       = 0x0108,  //!< Reset SPIB
     SYSCTL_PERIPH_RES_SPIC       = 0x0208,  //!< Reset SPIC
 
+    //
     // SOFTPRES9
+    //
     SYSCTL_PERIPH_RES_I2CA       = 0x0009,  //!< Reset I2CA
     SYSCTL_PERIPH_RES_I2CB       = 0x0109,  //!< Reset I2CB
 
+    //
     // SOFTPRES10
-    // Reserved
+    //
 
+    //
     // SOFTPRES11
+    //
     SYSCTL_PERIPH_RES_MCBSPA     = 0x000B,  //!< Reset McBSPA
     SYSCTL_PERIPH_RES_MCBSPB     = 0x010B,  //!< Reset McBSPB
     SYSCTL_PERIPH_RES_USBA       = 0x100B,  //!< Reset USBA
 
+    //
     // SOFTPRES12
     // Reserved
+    //
 
+    //
     // SOFTPRES13
+    //
     SYSCTL_PERIPH_RES_ADCA       = 0x000D,  //!< Reset ADCA
     SYSCTL_PERIPH_RES_ADCB       = 0x010D,  //!< Reset ADCB
     SYSCTL_PERIPH_RES_ADCC       = 0x020D,  //!< Reset ADCC
     SYSCTL_PERIPH_RES_ADCD       = 0x030D,  //!< Reset ADCD
 
+    //
     // SOFTPRES14
+    //
     SYSCTL_PERIPH_RES_CMPSS1     = 0x000E,  //!< Reset CMPSS1
     SYSCTL_PERIPH_RES_CMPSS2     = 0x010E,  //!< Reset CMPSS2
     SYSCTL_PERIPH_RES_CMPSS3     = 0x020E,  //!< Reset CMPSS3
@@ -491,19 +578,26 @@ typedef enum
     SYSCTL_PERIPH_RES_CMPSS7     = 0x060E,  //!< Reset CMPSS7
     SYSCTL_PERIPH_RES_CMPSS8     = 0x070E,  //!< Reset CMPSS8
 
+    //
     // SOFTPRES15
     // Reserved
+    //
 
+    //
     // SOFTPRES16
+    //
     SYSCTL_PERIPH_RES_DACA       = 0x1010,  //!< Reset DACA
     SYSCTL_PERIPH_RES_DACB       = 0x1110,  //!< Reset DACB
-    SYSCTL_PERIPH_RES_DACC       = 0x1210   //!< Reset DACC
+    SYSCTL_PERIPH_RES_DACC       = 0x1210,  //!< Reset DACC
+
+
 } SysCtl_PeripheralSOFTPRES;
 
 //*****************************************************************************
 //
 //! The following are values that can be passed to
-//! SysCtl_selectCPUForPeripheral() as the \e peripheral parameter.
+//! SysCtl_selectCPUForPeripheral() & SysCtl_lockCPUSelectRegs()
+//! as the \e peripheral parameter.
 //
 //*****************************************************************************
 typedef enum
@@ -641,12 +735,12 @@ typedef enum
 //*****************************************************************************
 typedef enum
 {
-    SYSCTL_CLOCKOUT_PLLSYS  = 0U,   //!< PLL System Clock
-    SYSCTL_CLOCKOUT_PLLRAW  = 1U,   //!< PLL Raw Clock
-    SYSCTL_CLOCKOUT_SYSCLK  = 2U,   //!< CPU System Clock
-    SYSCTL_CLOCKOUT_INTOSC1 = 5U,   //!< Internal Oscillator 1
-    SYSCTL_CLOCKOUT_INTOSC2 = 6U,   //!< Internal Oscillator 2
-    SYSCTL_CLOCKOUT_XTALOSC = 7U    //!< External Oscillator
+    SYSCTL_CLOCKOUT_PLLSYS     = 0U,   //!< PLL System Clock post SYSCLKDIV
+    SYSCTL_CLOCKOUT_PLLRAW     = 1U,   //!< PLL Raw Clock
+    SYSCTL_CLOCKOUT_SYSCLK     = 2U,   //!< CPU System Clock
+    SYSCTL_CLOCKOUT_INTOSC1    = 5U,   //!< Internal Oscillator 1
+    SYSCTL_CLOCKOUT_INTOSC2    = 6U,   //!< Internal Oscillator 2
+    SYSCTL_CLOCKOUT_XTALOSC    = 7U,   //!< External Oscillator
 } SysCtl_ClockOut;
 
 //*****************************************************************************
@@ -687,7 +781,7 @@ typedef enum
     //! EXTSYNCIN1--Valid for all values of syncInput
     SYSCTL_SYNC_IN_SRC_EXTSYNCIN1       = 5,
     //! EXTSYNCIN2--Valid for all values of syncInput
-    SYSCTL_SYNC_IN_SRC_EXTSYNCIN2       = 6
+    SYSCTL_SYNC_IN_SRC_EXTSYNCIN2       = 6,
 } SysCtl_SyncInputSource;
 
 //*****************************************************************************
@@ -702,6 +796,7 @@ typedef enum
     SYSCTL_SYNC_OUT_SRC_EPWM4SYNCOUT,   //!< EPWM4SYNCOUT --> EXTSYNCOUT
     SYSCTL_SYNC_OUT_SRC_EPWM7SYNCOUT,   //!< EPWM7SYNCOUT --> EXTSYNCOUT
     SYSCTL_SYNC_OUT_SRC_EPWM10SYNCOUT   //!< EPWM10SYNCOUT --> EXTSYNCOUT
+
 } SysCtl_SyncOutputSource;
 
 //*****************************************************************************
@@ -712,15 +807,16 @@ typedef enum
 //*****************************************************************************
 typedef enum
 {
-    SYSCTL_DEVICE_QUAL,      //!< Device Qualification Status
-    SYSCTL_DEVICE_PINCOUNT,  //!< Device Pin Count
-    SYSCTL_DEVICE_INSTASPIN, //!< Device InstaSPIN Feature Set
-    SYSCTL_DEVICE_FLASH,     //!< Device Flash size (KB)
-    SYSCTL_DEVICE_PARTID,    //!< Device Part ID Format Revision
-    SYSCTL_DEVICE_FAMILY,    //!< Device Family
-    SYSCTL_DEVICE_PARTNO,    //!< Device Part Number
-    SYSCTL_DEVICE_CLASSID    //!< Device Class ID
+    SYSCTL_DEVICE_QUAL,       //!< Device Qualification Status
+    SYSCTL_DEVICE_PINCOUNT,   //!< Device Pin Count
+    SYSCTL_DEVICE_INSTASPIN,  //!< Device InstaSPIN Feature Set
+    SYSCTL_DEVICE_FLASH,      //!< Device Flash size (KB)
+    SYSCTL_DEVICE_PARTID,     //!< Device Part ID Format Revision
+    SYSCTL_DEVICE_FAMILY,     //!< Device Family
+    SYSCTL_DEVICE_PARTNO,     //!< Device Part Number
+    SYSCTL_DEVICE_CLASSID     //!< Device Class ID
 } SysCtl_DeviceParametric;
+
 
 //*****************************************************************************
 //
@@ -736,7 +832,9 @@ typedef enum
 //! This function uses the SOFTPRESx registers to reset a specified peripheral.
 //! Module registers will be returned to their reset states.
 //!
-//! \note This includes registers containing trim values.
+//! \note This includes registers containing trim values.The peripheral
+//! software reset needed by CPU2 can be communicated to CPU1 via
+//! IPC for all shared peripherals.
 //!
 //! \return None.
 //
@@ -859,10 +957,14 @@ SysCtl_resetDevice(void)
     //
     EALLOW;
 
+    //
     // Enable the watchdog
+    //
     HWREGH(WD_BASE + SYSCTL_O_WDCR) = SYSCTL_WD_CHKBITS;
 
+    //
     // Write a bad check value
+    //
     HWREGH(WD_BASE + SYSCTL_O_WDCR) = 0U;
 
     EDIS;
@@ -908,7 +1010,8 @@ SysCtl_getResetCause(void)
                   ((uint32_t)SYSCTL_RESC_POR | (uint32_t)SYSCTL_RESC_XRSN |
                    (uint32_t)SYSCTL_RESC_WDRSN |
                    (uint32_t)SYSCTL_RESC_NMIWDRSN |
-                   (uint32_t)SYSCTL_RESC_SCCRESETN);
+                   (uint32_t)SYSCTL_RESC_SCCRESETN
+                   );
 
     //
     // Set POR and XRS Causes from boot ROM Status
@@ -936,7 +1039,8 @@ SysCtl_getResetCause(void)
 //!
 //! \param rstCauses are the reset causes to be cleared; must be a logical
 //! OR of \b SYSCTL_CAUSE_POR, \b SYSCTL_CAUSE_XRS, \b SYSCTL_CAUSE_WDRS,
-//! \b SYSCTL_CAUSE_NMIWDRS, and/or \b SYSCTL_CAUSE_SCCRESET.
+//! \b SYSCTL_CAUSE_NMIWDRS,
+//! and/or \b SYSCTL_CAUSE_SCCRESET.
 //!
 //! This function clears the specified sticky reset reasons.  Once cleared,
 //! another reset for the same reason can be detected, and a reset for a
@@ -1129,8 +1233,8 @@ SysCtl_selectClockOutSource(SysCtl_ClockOut source)
 //!
 //! This function returns the X1 clock counter value. When the return value
 //! reaches 0x3FF, it freezes. Before switching from INTOSC2 to an external
-//! oscillator (XTAL), an application should call this function to make sure the
-//! counter is saturated.
+//! oscillator (XTAL), an application should call this function to make sure
+//! the counter is saturated.
 //!
 //! \return Returns the value of the 10-bit X1 clock counter.
 //
@@ -1167,19 +1271,26 @@ SysCtl_turnOnOsc(uint32_t oscSource)
     switch(oscSource)
     {
         case SYSCTL_OSCSRC_OSC2:
+            //
             // Turn on INTOSC2
+            //
             HWREGH(CLKCFG_BASE + SYSCTL_O_CLKSRCCTL1) &=
                 ~SYSCTL_CLKSRCCTL1_INTOSC2OFF;
             break;
 
         case SYSCTL_OSCSRC_XTAL:
+            //
             // Turn on XTALOSC
+            //
             HWREGH(CLKCFG_BASE + SYSCTL_O_CLKSRCCTL1) &=
                 ~SYSCTL_CLKSRCCTL1_XTALOFF;
+
             break;
 
         default:
+            //
             // Do nothing. Not a valid oscSource value.
+            //
             break;
     }
 
@@ -1212,19 +1323,25 @@ SysCtl_turnOffOsc(uint32_t oscSource)
     switch(oscSource)
     {
         case SYSCTL_OSCSRC_OSC2:
+            //
             // Turn off INTOSC2
+            //
             HWREGH(CLKCFG_BASE + SYSCTL_O_CLKSRCCTL1) |=
                 SYSCTL_CLKSRCCTL1_INTOSC2OFF;
             break;
 
         case SYSCTL_OSCSRC_XTAL:
+            //
             // Turn off XTALOSC
+            //
             HWREGH(CLKCFG_BASE + SYSCTL_O_CLKSRCCTL1) |=
                 SYSCTL_CLKSRCCTL1_XTALOFF;
             break;
 
         default:
+            //
             // Do nothing. Not a valid oscSource value.
+            //
             break;
     }
 
@@ -1251,12 +1368,16 @@ SysCtl_enterIdleMode(void)
     // Configure the device to go into IDLE mode when IDLE is executed.
     //
     HWREG(CPUSYS_BASE + SYSCTL_O_LPMCR) =
-        (HWREG(CPUSYS_BASE + SYSCTL_O_LPMCR) & ~SYSCTL_LPMCR_LPM_M) |
-        SYSCTL_LPM_IDLE;
+                (HWREG(CPUSYS_BASE + SYSCTL_O_LPMCR) & ~SYSCTL_LPMCR_LPM_M) |
+                SYSCTL_LPM_IDLE;
 
     EDIS;
 
+#ifndef _DUAL_HEADERS
     IDLE;
+#else
+    IDLE_ASM;
+#endif
 }
 
 //*****************************************************************************
@@ -1285,14 +1406,17 @@ SysCtl_enterStandbyMode(void)
     // Configure the device to go into STANDBY mode when IDLE is executed.
     //
     HWREG(CPUSYS_BASE + SYSCTL_O_LPMCR) =
-        (HWREG(CPUSYS_BASE + SYSCTL_O_LPMCR) & ~SYSCTL_LPMCR_LPM_M) |
-        SYSCTL_LPM_STANDBY;
+                (HWREG(CPUSYS_BASE + SYSCTL_O_LPMCR) & ~SYSCTL_LPMCR_LPM_M) |
+                SYSCTL_LPM_STANDBY;
 
     EDIS;
 
+#ifndef _DUAL_HEADERS
     IDLE;
+#else
+    IDLE_ASM;
+#endif
 }
-
 //*****************************************************************************
 //
 //! Enters HALT mode.
@@ -1320,8 +1444,8 @@ SysCtl_enterHaltMode(void)
         // Configure the device to go into IDLE mode when IDLE is executed.
         //
         HWREG(CPUSYS_BASE + SYSCTL_O_LPMCR) =
-            (HWREG(CPUSYS_BASE + SYSCTL_O_LPMCR) & ~SYSCTL_LPMCR_LPM_M) |
-            SYSCTL_LPM_IDLE;
+                (HWREG(CPUSYS_BASE + SYSCTL_O_LPMCR) & ~SYSCTL_LPMCR_LPM_M) |
+                SYSCTL_LPM_IDLE;
 
         EDIS;
         asm(" IDLE");
@@ -1332,16 +1456,21 @@ SysCtl_enterHaltMode(void)
         // Configure the device to go into HALT mode when IDLE is executed.
         //
         HWREG(CPUSYS_BASE + SYSCTL_O_LPMCR) =
-            (HWREG(CPUSYS_BASE + SYSCTL_O_LPMCR) & ~SYSCTL_LPMCR_LPM_M) |
-            SYSCTL_LPM_HALT;
+                (HWREG(CPUSYS_BASE + SYSCTL_O_LPMCR) & ~SYSCTL_LPMCR_LPM_M) |
+                SYSCTL_LPM_HALT;
 
-        HWREGH(CLKCFG_BASE + SYSCTL_O_SYSPLLCTL1) &= ~(SYSCTL_SYSPLLCTL1_PLLCLKEN |
-               SYSCTL_SYSPLLCTL1_PLLEN);
+        HWREGH(CLKCFG_BASE +  SYSCTL_O_SYSPLLCTL1) &=
+                ~(SYSCTL_SYSPLLCTL1_PLLCLKEN | SYSCTL_SYSPLLCTL1_PLLEN);
 
         EDIS;
 
+#ifndef _DUAL_HEADERS
         IDLE;
+#else
+        IDLE_ASM;
+#endif
     #endif
+
 }
 
 //*****************************************************************************
@@ -1375,8 +1504,8 @@ SysCtl_enterHibernateMode(void)
         // Configure the device to go into STANDBY mode when IDLE is executed.
         //
         HWREG(CPUSYS_BASE + SYSCTL_O_LPMCR) =
-            (HWREG(CPUSYS_BASE + SYSCTL_O_LPMCR) & ~SYSCTL_LPMCR_LPM_M) |
-            SYSCTL_LPM_STANDBY;
+                (HWREG(CPUSYS_BASE + SYSCTL_O_LPMCR) & ~SYSCTL_LPMCR_LPM_M) |
+                SYSCTL_LPM_STANDBY;
 
         EDIS;
         asm(" IDLE");
@@ -1387,20 +1516,23 @@ SysCtl_enterHibernateMode(void)
         // Configure the device to go into Hibernate mode when IDLE is executed
         //
         HWREG(CPUSYS_BASE + SYSCTL_O_LPMCR) =
-            (HWREG(CPUSYS_BASE + SYSCTL_O_LPMCR) & ~SYSCTL_LPMCR_LPM_M) |
-            SYSCTL_LPM_HIB;
+                (HWREG(CPUSYS_BASE + SYSCTL_O_LPMCR) & ~SYSCTL_LPMCR_LPM_M) |
+                SYSCTL_LPM_HIB;
 
-        HWREGH(CLKCFG_BASE + SYSCTL_O_SYSPLLCTL1) &= ~(SYSCTL_SYSPLLCTL1_PLLCLKEN |
-                                                       SYSCTL_SYSPLLCTL1_PLLEN);
+        HWREGH(CLKCFG_BASE + SYSCTL_O_SYSPLLCTL1) &=
+                ~(SYSCTL_SYSPLLCTL1_PLLCLKEN | SYSCTL_SYSPLLCTL1_PLLEN);
 
         EDIS;
 
+#ifndef _DUAL_HEADERS
         IDLE;
+#else
+        IDLE_ASM;
+#endif
     #endif
 }
 
 //*****************************************************************************
-//
 //! Enables a pin to wake up the device from STANDBY or HALT.
 //!
 //! \param pin is the identifying number of the pin.
@@ -1442,7 +1574,6 @@ SysCtl_enableLPMWakeupPin(uint32_t pin)
 }
 
 //*****************************************************************************
-//
 //! Disables a pin to wake up the device from STANDBY or HALT.
 //!
 //! \param pin is the identifying number of the pin.
@@ -1506,9 +1637,9 @@ SysCtl_setStandbyQualificationPeriod(uint16_t cycles)
     EALLOW;
 
     HWREGH(CPUSYS_BASE + SYSCTL_O_LPMCR) =
-        (HWREGH(CPUSYS_BASE + SYSCTL_O_LPMCR) &
-         ~(uint16_t)SYSCTL_LPMCR_QUALSTDBY_M) |
-        ((cycles - (uint16_t)2U) << SYSCTL_LPMCR_QUALSTDBY_S);
+                (HWREGH(CPUSYS_BASE + SYSCTL_O_LPMCR) &
+                 ~(uint16_t)SYSCTL_LPMCR_QUALSTDBY_M) |
+                ((cycles - (uint16_t)2U) << SYSCTL_LPMCR_QUALSTDBY_S);
 
     EDIS;
 }
@@ -1642,9 +1773,9 @@ SysCtl_setWatchdogMode(SysCtl_WDMode mode)
     //
     if(mode == SYSCTL_WD_MODE_INTERRUPT)
     {
-        HWREGH(WD_BASE + SYSCTL_O_SCSR) = (HWREGH(WD_BASE + SYSCTL_O_SCSR) &
-                                           ~SYSCTL_SCSR_WDOVERRIDE) |
-                                          SYSCTL_SCSR_WDENINT;
+        HWREGH(WD_BASE + SYSCTL_O_SCSR) =
+                (HWREGH(WD_BASE + SYSCTL_O_SCSR) & ~SYSCTL_SCSR_WDOVERRIDE) |
+                SYSCTL_SCSR_WDENINT;
     }
     else
     {
@@ -1875,6 +2006,26 @@ SysCtl_setWatchdogWindowValue(uint16_t value)
 
 //*****************************************************************************
 //
+//! Enable the NMI Global interrupt bit
+//!
+//! \b Note: This bit should be set after the device security related
+//! initialization is complete.
+//!
+//! \return None.
+//
+//*****************************************************************************
+static inline void
+SysCtl_enableNMIGlobalInterrupt(void)
+{
+    EALLOW;
+
+    HWREGH(NMI_BASE + NMI_O_CFG) |= NMI_CFG_NMIE;
+
+    EDIS;
+}
+
+//*****************************************************************************
+//
 //! Read NMI interrupts.
 //!
 //! Read the current state of NMI interrupt.
@@ -1905,11 +2056,13 @@ SysCtl_getNMIStatus(void)
 //! - \b SYSCTL_NMI_RAMUNCERR - Uncorrectable RAM error
 //! - \b SYSCTL_NMI_FLUNCERR - Uncorrectable Flash error
 //! - \b SYSCTL_NMI_PIEVECTERR - PIE Vector Fetch Error
+//! - \b SYSCTL_NMI_CLBNMI - Configurable Logic Block NMI Flag
 //! - \b SYSCTL_NMI_CPU2WDRSN - CPU2 WDRSn Reset
 //! - \b SYSCTL_NMI_CPU2NMIWDRSN - CPU2 NMIWDRSn Reset
+
 //
 //*****************************************************************************
-static inline uint32_t
+static inline uint16_t
 SysCtl_getNMIFlagStatus(void)
 {
     //
@@ -1929,7 +2082,8 @@ SysCtl_getNMIFlagStatus(void)
 //! - \b SYSCTL_NMI_CLOCKFAIL - Clock Failure
 //! - \b SYSCTL_NMI_RAMUNCERR - Uncorrectable RAM error
 //! - \b SYSCTL_NMI_FLUNCERR - Uncorrectable Flash error
-//! - \b SYSCTL_NMI_PIEVECTERR - PIE Vector Fetch Error
+//! - \b SYSCTL_NMI_PIEVECTERR - PIE vector Fetch error
+//! - \b SYSCTL_NMI_CLBNMI - Configurable Logic Block NMI Flag
 //! - \b SYSCTL_NMI_CPU2WDRSN - CPU2 WDRSn Reset
 //! - \b SYSCTL_NMI_CPU2NMIWDRSN - CPU2 NMIWDRSn Reset
 //!
@@ -1951,6 +2105,7 @@ SysCtl_isNMIFlagSet(uint32_t nmiFlags)
     ASSERT((nmiFlags & ~(SYSCTL_NMI_NMIINT | SYSCTL_NMI_CLOCKFAIL |
                          SYSCTL_NMI_RAMUNCERR | SYSCTL_NMI_FLUNCERR |
                          SYSCTL_NMI_PIEVECTERR | SYSCTL_NMI_CPU2WDRSN |
+                         SYSCTL_NMI_CLBNMI |
                          SYSCTL_NMI_CPU2NMIWDRSN)) == 0);
 
     //
@@ -1970,6 +2125,7 @@ SysCtl_isNMIFlagSet(uint32_t nmiFlags)
 //! - \b SYSCTL_NMI_RAMUNCERR
 //! - \b SYSCTL_NMI_FLUNCERR
 //! - \b SYSCTL_NMI_PIEVECTERR
+//! - \b SYSCTL_NMI_CLBNMI
 //! - \b SYSCTL_NMI_CPU2WDRSN
 //! - \b SYSCTL_NMI_CPU2NMIWDRSN
 //!
@@ -1991,6 +2147,7 @@ SysCtl_clearNMIStatus(uint32_t nmiFlags)
     ASSERT((nmiFlags & ~(SYSCTL_NMI_NMIINT | SYSCTL_NMI_CLOCKFAIL |
                          SYSCTL_NMI_RAMUNCERR | SYSCTL_NMI_FLUNCERR |
                          SYSCTL_NMI_PIEVECTERR | SYSCTL_NMI_CPU2WDRSN |
+                         SYSCTL_NMI_CLBNMI |
                          SYSCTL_NMI_CPU2NMIWDRSN)) == 0);
 
     EALLOW;
@@ -2014,7 +2171,7 @@ SysCtl_clearNMIStatus(uint32_t nmiFlags)
 static inline void
 SysCtl_clearAllNMIFlags(void)
 {
-    uint32_t nmiFlags;
+    uint16_t nmiFlags;
 
     //
     // Read the flag status register and then write to the clear register,
@@ -2040,6 +2197,7 @@ SysCtl_clearAllNMIFlags(void)
 //! - \b SYSCTL_NMI_RAMUNCERR
 //! - \b SYSCTL_NMI_FLUNCERR
 //! - \b SYSCTL_NMI_PIEVECTERR
+//! - \b SYSCTL_NMI_CLBNMI
 //! - \b SYSCTL_NMI_CPU2WDRSN
 //! - \b SYSCTL_NMI_CPU2NMIWDRSN
 //!
@@ -2056,6 +2214,7 @@ SysCtl_forceNMIFlags(uint32_t nmiFlags)
     ASSERT((nmiFlags & ~(SYSCTL_NMI_NMIINT | SYSCTL_NMI_CLOCKFAIL |
                          SYSCTL_NMI_RAMUNCERR | SYSCTL_NMI_FLUNCERR |
                          SYSCTL_NMI_PIEVECTERR | SYSCTL_NMI_CPU2WDRSN |
+                         SYSCTL_NMI_CLBNMI |
                          SYSCTL_NMI_CPU2NMIWDRSN)) == 0);
 
     EALLOW;
@@ -2145,6 +2304,7 @@ SysCtl_getNMIWatchdogPeriod(void)
 //! - \b SYSCTL_NMI_RAMUNCERR - Uncorrectable RAM error
 //! - \b SYSCTL_NMI_FLUNCERR - Uncorrectable Flash error
 //! - \b SYSCTL_NMI_PIEVECTERR - PIE Vector Fetch Error
+//! - \b SYSCTL_NMI_CLBNMI - Configurable Logic Block NMI Flag
 //! - \b SYSCTL_NMI_CPU2WDRSN - CPU2 WDRSn Reset
 //! - \b SYSCTL_NMI_CPU2NMIWDRSN - CPU2 NMIWDRSn Reset
 //
@@ -2170,6 +2330,7 @@ SysCtl_getNMIShadowFlagStatus(void)
 //! - \b SYSCTL_NMI_RAMUNCERR
 //! - \b SYSCTL_NMI_FLUNCERR
 //! - \b SYSCTL_NMI_PIEVECTERR
+//! - \b SYSCTL_NMI_CLBNMI
 //! - \b SYSCTL_NMI_CPU2WDRSN
 //! - \b SYSCTL_NMI_CPU2NMIWDRSN
 //!
@@ -2191,6 +2352,7 @@ SysCtl_isNMIShadowFlagSet(uint32_t nmiFlags)
     ASSERT((nmiFlags & ~(SYSCTL_NMI_NMIINT | SYSCTL_NMI_CLOCKFAIL |
                          SYSCTL_NMI_RAMUNCERR | SYSCTL_NMI_FLUNCERR |
                          SYSCTL_NMI_PIEVECTERR | SYSCTL_NMI_CPU2WDRSN |
+                         SYSCTL_NMI_CLBNMI |
                          SYSCTL_NMI_CPU2NMIWDRSN)) == 0);
 
     //
@@ -2346,9 +2508,9 @@ SysCtl_setSyncInputConfig(SysCtl_SyncInput syncInput,
     HWREG(SYNCSOC_BASE + SYSCTL_O_SYNCSELECT) =
         (HWREG(SYNCSOC_BASE + SYSCTL_O_SYNCSELECT) & ~clearMask) |
         ((uint32_t)syncSrc << (uint32_t)syncInput);
+
     EDIS;
 }
-
 //*****************************************************************************
 //
 //! Configures the sync output source.
@@ -2374,8 +2536,8 @@ SysCtl_setSyncOutputConfig(SysCtl_SyncOutputSource syncSrc)
          ~((uint32_t)SYSCTL_SYNCSELECT_SYNCOUT_M)) |
         ((uint32_t)syncSrc << SYSCTL_SYNCSELECT_SYNCOUT_S);
     EDIS;
-}
 
+}
 //*****************************************************************************
 //
 //! Enables ePWM SOC signals to drive an external (off-chip) ADCSOC signal.
@@ -2446,7 +2608,55 @@ SysCtl_lockExtADCSOCSelect(void)
         SYSCTL_SYNCSOCLOCK_ADCSOCOUTSELECT;
     EDIS;
 }
+//*****************************************************************************
+//
+//! Configures whether the dual ported bridge is connected with DMA or
+//! CLA as the secondary master.
+//!
+//! \param periFrame1Config indicates whether CLA or DMA is configured as
+//!                         secondary master on peripheral frame 1.
+//! \param periFrame2Config indicates whether CLA or DMA is configured as
+//!                         secondary master on peripheral frame 2.
+//!
+//!  One of the following values can be passed as parameter.
+//!       \b SYSCTL_SEC_MASTER_CLA
+//!       \b SYSCTL_SEC_MASTER_DMA
+//!
+//! \return None.
+//
+//*****************************************************************************
+static inline void
+SysCtl_selectSecMaster(uint16_t periFrame1Config, uint16_t periFrame2Config)
+{
+    EALLOW;
 
+    HWREG(CPUSYS_BASE + SYSCTL_O_SECMSEL) =
+            (((periFrame1Config << SYSCTL_SECMSEL_PF1SEL_S) &
+               SYSCTL_SECMSEL_PF1SEL_M) |
+             ((periFrame2Config << SYSCTL_SECMSEL_PF2SEL_S) &
+                SYSCTL_SECMSEL_PF2SEL_M));
+
+    EDIS;
+}
+//*****************************************************************************
+//
+//! Locks the Sync Select of the Trig X-BAR.
+//!
+//! This function locks Sync Input and Output Select of the Trig X-BAR.
+//!
+//! \return None.
+//
+//*****************************************************************************
+static inline void
+SysCtl_lockSyncSelect(void)
+{
+    //
+    // Lock the SYNCSELECT register.
+    //
+    EALLOW;
+    HWREG(SYNCSOC_BASE + SYSCTL_O_SYNCSOCLOCK) = SYSCTL_SYNCSOCLOCK_SYNCSELECT;
+    EDIS;
+}
 //*****************************************************************************
 //
 //! Configures whether a peripheral is connected to CPU1 or CPU2.
@@ -2459,16 +2669,18 @@ SysCtl_lockExtADCSOCSelect(void)
 //! The \e peripheral parameter can have one enumerated value from
 //! SysCtl_CPUSelPeripheral
 //!
-//! The \e peripheralInst parameter is the instance number for e.g.
-//! 1 for EPWM1, 2 for EPWM2 etc...For instances which are named with alphabets
+//! The \e peripheralInst parameter is the instance number for example
+//! 1 for EPWM1, 2 for EPWM2 so on.For instances which are named with alphabets
 //! (instead of numbers) the following convention needs to be followed.
-//! 1 for A (SPI_A), 2 for B (SPI_B), 3 for C (SPI_C) etc...
+//! 1 for A (SPI_A), 2 for B (SPI_B), 3 for C (SPI_C) so on...
 //!
 //! The \e cpuInst parameter can have one the following values:
 //! - \b SYSCTL_CPUSEL_CPU1 - to connect to CPU1
 //! - \b SYSCTL_CPUSEL_CPU2 - to connect to CPU2
 //!
-//! \return Returns the low-speed peripheral clock frequency.
+//! \note This API is applicable only for the CPU1 subsystem.
+//!
+//! \return None.
 //
 //*****************************************************************************
 static inline void
@@ -2496,61 +2708,13 @@ SysCtl_selectCPUForPeripheral(SysCtl_CPUSelPeripheral peripheral,
         tempValue | ((uint32_t)cpuInst << shift);
     EDIS;
 }
-
-//*****************************************************************************
-//
-//! Configures whether whether the dual ported bridge is connected with DMA or
-//! CLA as the secondary master.
-//!
-//! \param periFrame1Config indicates whether CLA or DMA is configured as
-//!                         secondary master on peripheral frame 1.
-//! \param periFrame2Config indicates whether CLA or DMA is configured as
-//!                         secondary master on peripheral frame 2.
-//!
-//!  One of the following values can be passed as parameter.
-//!       \b SYSCTL_SEC_MASTER_CLA
-//!       \b SYSCTL_SEC_MASTER_DMA
-//!
-//! \return None.
-//
-//*****************************************************************************
-static inline void
-SysCtl_selectSecMaster(uint16_t periFrame1Config, uint16_t periFrame2Config)
-{
-    EALLOW;
-    HWREG(CPUSYS_BASE + SYSCTL_O_SECMSEL) =
-            (((periFrame1Config << SYSCTL_SECMSEL_PF1SEL_S) &
-               SYSCTL_SECMSEL_PF1SEL_M) |
-             ((periFrame2Config << SYSCTL_SECMSEL_PF2SEL_S) &
-                SYSCTL_SECMSEL_PF2SEL_M));
-    EDIS;
-}
-
-//*****************************************************************************
-//
-//! Locks the Sync Select of the Trig X-BAR.
-//!
-//! This function locks Sync Input and Output Select of the Trig X-BAR.
-//!
-//! \return None.
-//
-//*****************************************************************************
-static inline void
-SysCtl_lockSyncSelect(void)
-{
-    //
-    // Lock the ADCSOCOUTSELECT bit of the SYNCSOCLOCK register.
-    //
-    EALLOW;
-    HWREG(SYNCSOC_BASE + SYSCTL_O_SYNCSOCLOCK) = SYSCTL_SYNCSOCLOCK_SYNCSELECT;
-    EDIS;
-}
-
 //*****************************************************************************
 //
 //! Get the Device Silicon Revision ID
 //!
 //! This function returns the silicon revision ID for the device.
+//!
+//! \note This API is applicable only for the CPU1 subsystem.
 //!
 //! \return Returns the silicon revision ID value.
 //
@@ -2605,7 +2769,8 @@ SysCtl_getClock(uint32_t clockInHz);
 //
 //! Calculates the system auxiliary clock frequency (AUXPLLCLK).
 //!
-//! \param clockInHz is the frequency of the oscillator clock source (AUXOSCCLK).
+//! \param clockInHz is the frequency of the oscillator clock source
+//!  (AUXOSCCLK).
 //!
 //! This function determines the frequency of the auxiliary clock based on the
 //! frequency of the oscillator clock source (from \e clockInHz) and the AUXPLL
@@ -2719,6 +2884,8 @@ SysCtl_getLowSpeedClock(uint32_t clockInHz);
 //! - \b SYSCTL_DEVICE_PARTNO    - Device Part Number
 //! - \b SYSCTL_DEVICE_CLASSID   - Device Class ID
 //!
+//! \note This API is applicable only for the CPU1 subsystem.
+//!
 //! \return Returns the specified parametric value.
 //
 //*****************************************************************************
@@ -2749,19 +2916,16 @@ SysCtl_getDeviceParametric(SysCtl_DeviceParametric parametric);
 //! - The integer multiplier is chosen with \b SYSCTL_AUXPLL_IMULT(x) where x
 //!   is a value from 1 to 127.
 //!
-//! - The fractional multiplier is chosen with either \b SYSCTL_AUXPLL_FMULT_0,
-//!     \b SYSCTL_AUXPLL_FMULT_1_4, \b SYSCTL_AUXPLL_FMULT_1_2, or
-//!     \b SYSCTL_AUXPLL_FMULT_3_4.
-//!
 //! - The oscillator source chosen with one of
 //!     \b SYSCTL_AUXPLL_OSCSRC_OSC2,
 //!     \b SYSCTL_AUXPLL_OSCSRC_XTAL,
-//!     \b SYSCTL_AUXPLL_OSCSRC_AUXCLKIN
+//!     \b SYSCTL_AUXPLL_OSCSRC_AUXCLKIN,
 //!
 //! \note This function uses CPU Timer 2 to monitor a successful lock of the
 //! AUXPLL. For this function to properly detect the PLL startup
 //! SYSCLK >= 2*AUXPLLCLK after the AUXPLL is selected as the clocking source.
 //! User configuration of CPU Timer 2 will be backed up and restored.
+//! \note See your device errata for more details about locking the PLL.
 //!
 //! \return None.
 //

@@ -5,10 +5,10 @@
 // TITLE:  CLA Driver Implementation File
 //
 //###########################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -57,6 +57,7 @@ extern "C"
 //*****************************************************************************
 //
 //! \addtogroup cla_api CLA
+//! \brief This module is used for configurating CLA.
 //! @{
 //
 //*****************************************************************************
@@ -98,10 +99,10 @@ extern "C"
 
 //*****************************************************************************
 //
-// Values that can be passed to CLA_getPendingTaskFlag(),
-// CLA_getTaskOverflowFlag(), CLA_getTaskRunStatus(), CLA_setTriggerSource(),
-// CLA_registerEndOfTaskInterrupt(), and CLA_unregisterEndOfTaskInterrupt()
-// as the taskNumber parameter.
+//! Values that can be passed to CLA_getPendingTaskFlag(),
+//! CLA_getTaskOverflowFlag(), CLA_getTaskRunStatus(), CLA_setTriggerSource(),
+//! CLA_registerEndOfTaskInterrupt(), and CLA_unregisterEndOfTaskInterrupt()
+//! as the taskNumber parameter.
 //
 //*****************************************************************************
 typedef enum
@@ -184,6 +185,7 @@ typedef enum
     CLA_TRIGGER_EPWM11INT   = 46U,  //!< CLA Task Trigger Source is EPWM11INT
     CLA_TRIGGER_EPWM12INT   = 47U,  //!< CLA Task Trigger Source is EPWM12INT
 
+
     CLA_TRIGGER_TINT0       = 68U,  //!< CLA Task Trigger Source is TINT0
     CLA_TRIGGER_TINT1       = 69U,  //!< CLA Task Trigger Source is TINT1
     CLA_TRIGGER_TINT2       = 70U,  //!< CLA Task Trigger Source is TINT2
@@ -204,8 +206,11 @@ typedef enum
     CLA_TRIGGER_EQEP2INT    = 84U,  //!< CLA Task Trigger Source is EQEP2INT
     CLA_TRIGGER_EQEP3INT    = 85U,  //!< CLA Task Trigger Source is EQEP3INT
 
+
     CLA_TRIGGER_SDFM1INT    = 95U,  //!< CLA Task Trigger Source is SDFM1INT
     CLA_TRIGGER_SDFM2INT    = 96U,  //!< CLA Task Trigger Source is SDFM2INT
+
+
 
     CLA_TRIGGER_UPP1INT     = 107U, //!< CLA Task Trigger Source is UPP1INT
 
@@ -215,6 +220,15 @@ typedef enum
     CLA_TRIGGER_SPIRXBINT   = 112U, //!< CLA Task Trigger Source is SPIRXBINT
     CLA_TRIGGER_SPITXCINT   = 113U, //!< CLA Task Trigger Source is SPITXCINT
     CLA_TRIGGER_SPIRXCINT   = 114U, //!< CLA Task Trigger Source is SPIRXCINT
+
+
+
+
+
+    CLA_TRIGGER_CLB1INT      = 127, //!< CLA Task Trigger Source is CLB1INT
+    CLA_TRIGGER_CLB2INT      = 128, //!< CLA Task Trigger Source is CLB2INT
+    CLA_TRIGGER_CLB3INT      = 129, //!< CLA Task Trigger Source is CLB3INT
+    CLA_TRIGGER_CLB4INT      = 130, //!< CLA Task Trigger Source is CLB4INT
 
 } CLA_Trigger;
 
@@ -321,6 +335,13 @@ CLA_performHardReset(uint32_t base)
     HWREGH(base + CLA_O_MCTL) |= CLA_MCTL_HARDRESET;
 
     EDIS;
+
+    //
+    // Wait for few cycles till the reset is complete
+    //
+    NOP;
+    NOP;
+    NOP;
 }
 
 //*****************************************************************************
@@ -354,6 +375,13 @@ CLA_performSoftReset(uint32_t base)
     HWREGH(base + CLA_O_MCTL) |= CLA_MCTL_SOFTRESET;
 
     EDIS;
+
+    //
+    // Wait for few cycles till the reset is complete
+    //
+    NOP;
+    NOP;
+    NOP;
 }
 
 //*****************************************************************************

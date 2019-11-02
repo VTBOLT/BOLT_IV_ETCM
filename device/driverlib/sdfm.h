@@ -5,10 +5,10 @@
 // TITLE:   C28x SDFM Driver
 //
 //###########################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -69,7 +69,11 @@ extern "C"
 #include "cpu.h"
 #include "debug.h"
 
-
+//*****************************************************************************
+//
+// Defines for the API.
+//
+//*****************************************************************************
 //! Macro to get the low threshold
 //!
 #define SDFM_GET_LOW_THRESHOLD(C)    ((uint16_t)(C))
@@ -77,6 +81,7 @@ extern "C"
 //! Macro to get the high threshold
 //!
 #define SDFM_GET_HIGH_THRESHOLD(C)   ((uint16_t)((uint32_t)(C) >> 16U))
+
 
 //! Macro to convert comparator over sampling ratio to acceptable bit location
 //!
@@ -87,7 +92,7 @@ extern "C"
 
 //! Macro to combine high threshold and low threshold values
 //!
-#define SDFM_THRESHOLD(H,L)     ((((uint32_t)(H)) << 16U) | (L))
+#define SDFM_THRESHOLD(H, L)     ((((uint32_t)(H)) << 16U) | (L))
 
 //! Macro to set the FIFO level to acceptable bit location
 //!
@@ -291,7 +296,10 @@ static inline void SDFM_enableExternalReset(uint32_t base,
                                             SDFM_FilterNumber filterNumber)
 {
     ASSERT(SDFM_isBaseValid(base));
-    // Set the FILRESEN bit
+
+    //
+    // Set the SDSYNCEN bit
+    //
     EALLOW;
     HWREGH(base + SDFM_O_SDDFPARM1 + ((uint32_t)filterNumber * 16U)) |=
         SDFM_SDDFPARM1_SDSYNCEN;
@@ -314,7 +322,10 @@ static inline void SDFM_disableExternalReset(uint32_t base,
                                              SDFM_FilterNumber filterNumber)
 {
     ASSERT(SDFM_isBaseValid(base));
-    // Clear the FILRESEN bit
+
+    //
+    // Clear the SDSYNCEN bit
+    //
     EALLOW;
     HWREGH(base + SDFM_O_SDDFPARM1 + ((uint32_t)filterNumber * 16U)) &=
         ~SDFM_SDDFPARM1_SDSYNCEN;
@@ -337,7 +348,10 @@ static inline void SDFM_enableFilter(uint32_t base,
                                      SDFM_FilterNumber filterNumber)
 {
     ASSERT(SDFM_isBaseValid(base));
+
+    //
     // Set the FEN bit
+    //
     EALLOW;
     HWREGH(base + SDFM_O_SDDFPARM1 + ((uint32_t)filterNumber * 16U)) |=
         SDFM_SDDFPARM1_FEN;
@@ -360,7 +374,10 @@ static inline void SDFM_disableFilter(uint32_t base,
                                       SDFM_FilterNumber filterNumber)
 {
     ASSERT(SDFM_isBaseValid(base));
+
+    //
     // Clear the FEN bit
+    //
     EALLOW;
     HWREGH(base + SDFM_O_SDDFPARM1 + ((uint32_t)filterNumber * 16U)) &=
         ~SDFM_SDDFPARM1_FEN;
@@ -390,7 +407,9 @@ static inline void SDFM_setFilterType(uint32_t base,
 
     address = base + SDFM_O_SDDFPARM1 + ((uint32_t)filterNumber * 16U);
 
-    // write to SST bits
+    //
+    // Write to SST bits
+    //
     EALLOW;
     HWREGH(address) = (HWREGH(address) & (~SDFM_SDDFPARM1_SST_M)) |
                       ((uint16_t)filterType << 6U);
@@ -423,7 +442,9 @@ static inline void SDFM_setFilterOverSamplingRatio(uint32_t base,
 
     address = base + SDFM_O_SDDFPARM1 + ((uint32_t)filterNumber * 16U);
 
-    // write to DOSR bits
+    //
+    // Write to DOSR bits
+    //
     EALLOW;
     HWREGH(address) = (HWREGH(address) & (~SDFM_SDDFPARM1_DOSR_M)) |
                       overSamplingRatio;
@@ -453,7 +474,9 @@ static inline void SDFM_setupModulatorClock(uint32_t base,
 
     address = base + SDFM_O_SDCTLPARM1 + ((uint32_t)filterNumber * 16U);
 
-    // write to MOD bits
+    //
+    // Write to MOD bits
+    //
     EALLOW;
     HWREGH(address) = (HWREGH(address) & (~SDFM_SDCTLPARM1_MOD_M)) |
                       (uint16_t)clockMode;
@@ -484,7 +507,9 @@ static inline void SDFM_setOutputDataFormat(uint32_t base,
 
     address = base + SDFM_O_SDDPARM1 + ((uint32_t)filterNumber * 16U);
 
-    // write to DR bit
+    //
+    // Write to DR bit
+    //
     EALLOW;
     HWREGH(address) = (HWREGH(address) & (~SDFM_SDDPARM1_DR)) |
                       ((uint16_t)dataFormat << 10U);
@@ -518,7 +543,9 @@ static inline void SDFM_setDataShiftValue(uint32_t base,
 
     address = base + SDFM_O_SDDPARM1 + ((uint32_t)filterNumber * 16U);
 
-    // write to SH bit
+    //
+    // Write to SH bit
+    //
     EALLOW;
     HWREGH(address) = (HWREGH(address) & (~SDFM_SDDPARM1_SH_M)) |
                       (shiftValue << SDFM_SDDPARM1_SH_S);
@@ -552,7 +579,9 @@ static inline void SDFM_setCompFilterHighThreshold(uint32_t base,
 
     address = base + SDFM_O_SDCMPH1 + ((uint32_t)filterNumber * 16U);
 
-    // write to HLT bit
+    //
+    // Write to HLT bit
+    //
     EALLOW;
     HWREGH(address) = (HWREGH(address) & ~SDFM_SDCMPH1_HLT_M) | highThreshold;
     EDIS;
@@ -585,7 +614,9 @@ static inline void SDFM_setCompFilterLowThreshold(uint32_t base,
 
     address = base + SDFM_O_SDCMPL1 + ((uint32_t)filterNumber * 16U);
 
-    // write to LLT bit
+    //
+    // Write to LLT bit
+    //
     EALLOW;
     HWREGH(address) = (HWREGH(address) & ~SDFM_SDCMPL1_LLT_M) | lowThreshold;
     EDIS;
@@ -620,19 +651,26 @@ static inline void SDFM_enableInterrupt(uint32_t base,
     offset = (uint16_t)filterNumber * 16U;
 
     EALLOW;
+
+    //
     // Low, high threshold, Modulator failure
+    //
     if((intFlags & (SDFM_MODULATOR_FAILURE_INTERRUPT |
                     SDFM_LOW_LEVEL_THRESHOLD_INTERRUPT |
                     SDFM_HIGH_LEVEL_THRESHOLD_INTERRUPT)) != 0U)
     {
+        //
         // Set IEL or IEH or MFIE bit of SDFM_O_SDCPARMx
+        //
         HWREGH(base + SDFM_O_SDCPARM1 + offset) |=
                 (intFlags & (SDFM_MODULATOR_FAILURE_INTERRUPT |
                              SDFM_LOW_LEVEL_THRESHOLD_INTERRUPT |
                              SDFM_HIGH_LEVEL_THRESHOLD_INTERRUPT));
     }
 
+    //
     // Data filter acknowledge interrupt
+    //
     if((intFlags & SDFM_DATA_FILTER_ACKNOWLEDGE_INTERRUPT) != 0U)
     {
         HWREGH(base + SDFM_O_SDDFPARM1 + offset) |= SDFM_SDDFPARM1_AE;
@@ -669,19 +707,26 @@ static inline void SDFM_disableInterrupt(uint32_t base,
     offset = (uint16_t)filterNumber * 16U;
 
     EALLOW;
+
+    //
     // Low, high threshold, modulator failure interrupts
+    //
     if((intFlags & (SDFM_MODULATOR_FAILURE_INTERRUPT |
                     SDFM_LOW_LEVEL_THRESHOLD_INTERRUPT |
                     SDFM_HIGH_LEVEL_THRESHOLD_INTERRUPT)) != 0U)
     {
+        //
         // Set IEL or IEH or MFIE bit of SDFM_O_SDCPARMx
+        //
         HWREGH(base + SDFM_O_SDCPARM1 + offset) &=
             ~(intFlags & (SDFM_MODULATOR_FAILURE_INTERRUPT |
                           SDFM_LOW_LEVEL_THRESHOLD_INTERRUPT |
                           SDFM_HIGH_LEVEL_THRESHOLD_INTERRUPT));
     }
 
+    //
     // Data filter acknowledge interrupt
+    //
     if((intFlags & SDFM_DATA_FILTER_ACKNOWLEDGE_INTERRUPT) != 0U)
     {
         HWREGH(base + SDFM_O_SDDFPARM1 + offset) &= ~SDFM_SDDFPARM1_AE;
@@ -712,7 +757,10 @@ static inline void SDFM_setComparatorFilterType(uint32_t base,
     ASSERT(SDFM_isBaseValid(base));
 
     address = base + SDFM_O_SDCPARM1 + ((uint32_t)filterNumber * 16U);
-    // write to CS1_CS0 bits
+
+    //
+    // Write to CS1_CS0 bits
+    //
     EALLOW;
     HWREGH(address) = (HWREGH(address) & (~SDFM_SDCPARM1_CS1_CS0_M)) |
                       ((uint16_t)filterType << 3U);
@@ -745,7 +793,9 @@ static inline void SDFM_setCompFilterOverSamplingRatio(uint32_t base,
 
     address = base + SDFM_O_SDCPARM1 + ((uint32_t)filterNumber * 16U);
 
-    // write to COSR bits
+    //
+    // Write to COSR bits
+    //
     EALLOW;
     HWREGH(address) = (HWREGH(address) & (~SDFM_SDCPARM1_COSR_M)) |
                       overSamplingRatio;
@@ -770,7 +820,9 @@ static inline uint32_t SDFM_getFilterData(uint32_t base,
 {
     ASSERT(SDFM_isBaseValid(base));
 
+    //
     // Read SDDATA bits
+    //
     return(HWREG(base + SDFM_O_SDDATA1 + ((uint32_t)filterNumber * 16U)));
 }
 
@@ -798,9 +850,11 @@ static inline SDFM_OutputThresholdStatus SDFM_getThresholdStatus(uint32_t base,
 {
     ASSERT(SDFM_isBaseValid(base));
 
-    // Read SDIFLG IFH1, IFL1, IFH2, IFL2, etc ... bits
+    //
+    // Read SDIFLG high/low threshold bits
+    //
     return((SDFM_OutputThresholdStatus)((HWREG(base + SDFM_O_SDIFLG) >>
-                                        (2U* (uint16_t)filterNumber)) & 0x3U));
+                                        (2U * (uint16_t)filterNumber)) & 0x3U));
 }
 
 //*****************************************************************************
@@ -821,7 +875,9 @@ static inline bool SDFM_getModulatorStatus(uint32_t base,
 {
     ASSERT(SDFM_isBaseValid(base));
 
+    //
     // Read SDIFLG MF1, MF2, MF3 OR MF4 bits
+    //
     return(((HWREG(base + SDFM_O_SDIFLG) >> ((uint16_t)filterNumber + 8U)) &
             0x1U) != 0x1U);
 }
@@ -844,7 +900,9 @@ static inline bool SDFM_getNewFilterDataStatus(uint32_t base,
 {
     ASSERT(SDFM_isBaseValid(base));
 
+    //
     // Read SDIFLG AF1, AF2, AF3 OR AF4 bits
+    //
     return(((HWREG(base + SDFM_O_SDIFLG) >> ((uint16_t)filterNumber + 12U)) &
             0x1U) == 0x1U);
 }
@@ -865,7 +923,9 @@ static inline bool SDFM_getIsrStatus(uint32_t base)
 {
     ASSERT(SDFM_isBaseValid(base));
 
+    //
     // Read SDIFLG MIF
+    //
     return((HWREG(base + SDFM_O_SDIFLG) >> 31U) == 0x1U);
 }
 
@@ -895,8 +955,11 @@ static inline bool SDFM_getIsrStatus(uint32_t base)
 static inline void SDFM_clearInterruptFlag(uint32_t base, uint32_t flag)
 {
     ASSERT(SDFM_isBaseValid(base));
-    ASSERT((flag & 0x8000FFFFU) != 0U);
+    ASSERT((flag & 0x8000FFFFU) == flag);
+
+    //
     // Write to  SDIFLGCLR register
+    //
     HWREG(base + SDFM_O_SDIFLGCLR) |= flag;
 }
 
@@ -915,7 +978,9 @@ static inline void SDFM_enableMasterInterrupt(uint32_t base)
 {
     ASSERT(SDFM_isBaseValid(base));
 
+    //
     // Set SDCTL MIE bit
+    //
     EALLOW;
     HWREGH(base + SDFM_O_SDCTL) |= SDFM_SDCTL_MIE;
     EDIS;
@@ -936,7 +1001,9 @@ static inline void SDFM_disableMasterInterrupt(uint32_t base)
 {
     ASSERT(SDFM_isBaseValid(base));
 
+    //
     // Clear SDCTL MIE bit
+    //
     EALLOW;
     HWREGH(base + SDFM_O_SDCTL) &= ~SDFM_SDCTL_MIE;
     EDIS;
@@ -944,7 +1011,7 @@ static inline void SDFM_disableMasterInterrupt(uint32_t base)
 
 //*****************************************************************************
 //
-//! Enable master interrupt.
+//! Enable master filter.
 //!
 //! \param base is the base address of the SDFM module
 //!
@@ -957,7 +1024,9 @@ static inline void SDFM_enableMasterFilter(uint32_t base)
 {
     ASSERT(SDFM_isBaseValid(base));
 
+    //
     // Set SDMFILEN MFE bit
+    //
     EALLOW;
     HWREGH(base + SDFM_O_SDMFILEN) |= SDFM_SDMFILEN_MFE;
     EDIS;
@@ -978,7 +1047,9 @@ static inline void SDFM_disableMasterFilter(uint32_t base)
 {
     ASSERT(SDFM_isBaseValid(base));
 
-    // clear SDMFILEN MFE bit
+    //
+    // Clear SDMFILEN MFE bit
+    //
     EALLOW;
     HWREGH(base + SDFM_O_SDMFILEN) &= ~SDFM_SDMFILEN_MFE;
     EDIS;
@@ -991,14 +1062,14 @@ static inline void SDFM_disableMasterFilter(uint32_t base)
 //*****************************************************************************
 //*****************************************************************************
 //
-//! Configure SDFM comparator high and low thresholds
+//! Configures SDFM comparator for filter config & threshold values
 //!
 //! \param base is the base address of the SDFM module
 //! \param config1 is the filter number, filter type and over sampling ratio.
 //! \param config2 is high-level and low-level threshold values.
 //!
-//! This function configures the comparator filter threshold values based on
-//! configurations config1 and config2.
+//! This function configures the comparator filter for filter config and
+//! threshold values based on provided inputs.
 //!
 //! The config1 parameter is the logical OR of the filter number, filter type
 //! and oversampling ratio.

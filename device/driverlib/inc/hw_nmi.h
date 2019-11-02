@@ -5,10 +5,10 @@
 // TITLE:   Definitions for the NMI registers.
 //
 //###########################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -78,6 +78,7 @@
 #define NMI_FLG_CPU1HWBISTERR     0x10U        // HW BIST Error NMI Flag
 #define NMI_FLG_CPU2HWBISTERR     0x20U        // HW BIST Error NMI Flag
 #define NMI_FLG_PIEVECTERR        0x40U        // PIE Vector Fetch Error Flag
+#define NMI_FLG_CLBNMI            0x100U       // Configurable Logic Block NMI
 #define NMI_FLG_CPU2WDRSN         0x200U       // CPU2 WDRSn Reset Indication
                                                // Flag
 #define NMI_FLG_CPU2NMIWDRSN      0x400U       // CPU2 NMIWDRSn Reset
@@ -95,6 +96,7 @@
 #define NMI_FLGCLR_CPU1HWBISTERR  0x10U        // CPU1HWBISTERR Flag Clear
 #define NMI_FLGCLR_CPU2HWBISTERR  0x20U        // CPU2HWBISTERR Flag Clear
 #define NMI_FLGCLR_PIEVECTERR     0x40U        // PIEVECTERR Flag Clear
+#define NMI_FLGCLR_CLBNMI         0x100U       // CLBNMI Flag Clear
 #define NMI_FLGCLR_CPU2WDRSN      0x200U       // CPU2WDRSn Flag Clear
 #define NMI_FLGCLR_CPU2NMIWDRSN   0x400U       // CPU2NMIWDRSn Flag Clear
 #define NMI_FLGCLR_OVF            0x800U       // OVF Flag Clear
@@ -110,6 +112,7 @@
 #define NMI_FLGFRC_CPU1HWBISTERR  0x10U        // CPU1HWBISTERR Flag Force
 #define NMI_FLGFRC_CPU2HWBISTERR  0x20U        // CPU2HWBISTERR Flag Force
 #define NMI_FLGFRC_PIEVECTERR     0x40U        // PIEVECTERR Flag Force
+#define NMI_FLGFRC_CLBNMI         0x100U       // CLBNMI Flag Force
 #define NMI_FLGFRC_CPU2WDRSN      0x200U       // CPU2WDRSn Flag Force
 #define NMI_FLGFRC_CPU2NMIWDRSN   0x400U       // CPU2NMIWDRSn Flag Force
 #define NMI_FLGFRC_OVF            0x800U       // OVF Flag Force
@@ -125,6 +128,7 @@
 #define NMI_SHDFLG_CPU1HWBISTERR  0x10U        // Shadow CPU1HWBISTERR Flag
 #define NMI_SHDFLG_CPU2HWBISTERR  0x20U        // Shadow CPU2HWBISTERR Flag
 #define NMI_SHDFLG_PIEVECTERR     0x40U        // Shadow PIEVECTERR Flag
+#define NMI_SHDFLG_CLBNMI         0x100U       // Shadow CLBNMI flag
 #define NMI_SHDFLG_CPU2WDRSN      0x200U       // Shadow CPU2WDRSn Flag
 #define NMI_SHDFLG_CPU2NMIWDRSN   0x400U       // Shadow CPU2NMIWDRSn Flag
 #define NMI_SHDFLG_OVF            0x800U       // Shadow OVF Flag

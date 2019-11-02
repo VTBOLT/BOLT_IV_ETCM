@@ -5,10 +5,10 @@
 // TITLE:   Definitions for the EPWM registers.
 //
 //###########################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -69,12 +69,13 @@
                                                // Register
 #define EPWM_O_VCNTCFG            0x19U        // Valley Counter Config
                                                // Register
+#define EPWM_O_TRREM              0x2EU        // Translator High Resolution
+                                               // Remainder Register
 #define EPWM_O_GLDCTL             0x34U        // Global PWM Load Control
                                                // Register
 #define EPWM_O_GLDCFG             0x35U        // Global PWM Load Config
                                                // Register
 #define EPWM_O_XLINK              0x38U        // EPWMx Link Register
-#define EPWM_O_REV                0x3EU        // EPWM Revision Register
 #define EPWM_O_AQCTLA             0x40U        // Action Qualifier Control
                                                // Register For Output A
 #define EPWM_O_AQCTLA2            0x41U        // Additional Action Qualifier
@@ -357,6 +358,14 @@
 
 //*****************************************************************************
 //
+// The following are defines for the bit fields in the TRREM register
+//
+//*****************************************************************************
+#define EPWM_TRREM_TRREM_S        0U
+#define EPWM_TRREM_TRREM_M        0x7FFU       // Translator Remainder Bits
+
+//*****************************************************************************
+//
 // The following are defines for the bit fields in the GLDCTL register
 //
 //*****************************************************************************
@@ -368,10 +377,10 @@
 #define EPWM_GLDCTL_OSHTMODE      0x20U        // One Shot Load mode control
                                                // bit
 #define EPWM_GLDCTL_GLDPRD_S      7U
-#define EPWM_GLDCTL_GLDPRD_M      0x380U       // Global Reload Strobe Period
+#define EPWM_GLDCTL_GLDPRD_M      0x380U       // Global Load Strobe Period
                                                // Select Register
 #define EPWM_GLDCTL_GLDCNT_S      10U
-#define EPWM_GLDCTL_GLDCNT_M      0x1C00U      // Global Reload Strobe Counter
+#define EPWM_GLDCTL_GLDCNT_M      0x1C00U      // Global Load Strobe Counter
                                                // Register
 
 //*****************************************************************************
@@ -419,16 +428,6 @@
 #define EPWM_XLINK_CMPDLINK_M     0xF0000U     // CMPD Link
 #define EPWM_XLINK_GLDCTL2LINK_S  28U
 #define EPWM_XLINK_GLDCTL2LINK_M  0xF0000000U  // GLDCTL2 Link
-
-//*****************************************************************************
-//
-// The following are defines for the bit fields in the EPWMREV register
-//
-//*****************************************************************************
-#define EPWM_REV_REV_S            0U
-#define EPWM_REV_REV_M            0xFFU        // EPWM Silicon Revision bits
-#define EPWM_REV_TYPE_S           8U
-#define EPWM_REV_TYPE_M           0xFF00U      // EPWM Type Bits
 
 //*****************************************************************************
 //

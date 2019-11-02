@@ -5,10 +5,10 @@
 // TITLE: C28x ECAP driver
 //
 //###########################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -51,7 +51,10 @@ void ECAP_setEmulationMode(uint32_t base, ECAP_EmulationMode mode)
 {
     ASSERT(ECAP_isBaseValid(base));
 
-    // write to FREE/SOFT bit
+
+    //
+    // Write to FREE/SOFT bit
+    //
     HWREGH(base + ECAP_O_ECCTL1) =
             ((HWREGH(base + ECAP_O_ECCTL1) & (~ECAP_ECCTL1_FREE_SOFT_M)) |
              ((uint16_t)mode << ECAP_ECCTL1_FREE_SOFT_S));

@@ -5,10 +5,10 @@
 // TITLE:  C28x Interrupt (PIE) driver.
 //
 //###########################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -106,7 +106,9 @@ static void Interrupt_clearIFR(uint16_t group)
             IFR &= ~(uint16_t)0x8000U;
             break;
         default:
+            //
             // Invalid group mask.
+            //
             ASSERT(false);
             break;
     }
@@ -163,6 +165,7 @@ Interrupt_initModule(void)
     // Enable vector fetching from PIE block
     //
     HWREGH(PIECTRL_BASE + PIE_O_CTRL) |= PIE_CTRL_ENPIE;
+
 }
 
 //*****************************************************************************
@@ -176,6 +179,7 @@ Interrupt_initVectorTable(void)
     uint16_t i;
 
     EALLOW;
+
     //
     // We skip the first three locations because they are initialized by Boot
     // ROM with boot variables.
@@ -228,9 +232,12 @@ Interrupt_enable(uint32_t interruptNumber)
         HWREGH(PIECTRL_BASE + PIE_O_IER1 + (intGroup * 2U)) |=
             1U << ((uint16_t)(interruptNumber & 0xFFU) - 1U);
 
+        //
         // Enable PIE Group Interrupt
+        //
         IER |= groupMask;
     }
+
     //
     // INT13, INT14, DLOGINT, & RTOSINT
     //
@@ -240,7 +247,9 @@ Interrupt_enable(uint32_t interruptNumber)
     }
     else
     {
+        //
         // Other interrupts
+        //
     }
 
     //
@@ -277,11 +286,15 @@ Interrupt_disable(uint32_t interruptNumber)
         intGroup = ((uint16_t)(interruptNumber & 0xFF00U) >> 8U) - 1U;
         groupMask = 1U << intGroup;
 
+        //
         // Disable individual PIE interrupt
+        //
         HWREGH(PIECTRL_BASE + PIE_O_IER1 + (intGroup * 2U)) &=
             ~(1U << ((uint16_t)(interruptNumber & 0xFFU) - 1U));
 
+        //
         // Wait for any pending interrupts to get to the CPU
+        //
         NOP;
         NOP;
         NOP;
@@ -290,9 +303,12 @@ Interrupt_disable(uint32_t interruptNumber)
 
         Interrupt_clearIFR(groupMask);
 
+        //
         // Acknowledge any interrupts
+        //
         HWREGH(PIECTRL_BASE + PIE_O_ACK) = groupMask;
     }
+
     //
     // INT13, INT14, DLOGINT, & RTOSINT
     //
@@ -300,7 +316,9 @@ Interrupt_disable(uint32_t interruptNumber)
     {
         IER &= ~(1U << (vectID - 1U));
 
+        //
         // Wait for any pending interrupts to get to the CPU
+        //
         NOP;
         NOP;
         NOP;
@@ -311,7 +329,9 @@ Interrupt_disable(uint32_t interruptNumber)
     }
     else
     {
+        //
         // Other interrupts
+        //
     }
 
     //

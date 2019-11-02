@@ -5,10 +5,10 @@
 // TITLE:   C28x EPWM Driver
 //
 //#############################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -43,7 +43,6 @@
 #ifndef EPWM_H
 #define EPWM_H
 
-
 //*****************************************************************************
 //
 // If building with a C++ compiler, make all of the definitions in this header
@@ -62,10 +61,6 @@ extern "C"
 //
 //*****************************************************************************
 
-//*****************************************************************************
-// the includes
-//*****************************************************************************
-
 #include <stdbool.h>
 #include <stdint.h>
 #include "inc/hw_memmap.h"
@@ -74,7 +69,9 @@ extern "C"
 #include "cpu.h"
 #include "debug.h"
 
+//
 // Time Base Module
+//
 //*****************************************************************************
 //
 //! Values that can be passed to EPWM_setEmulationMode() as the
@@ -89,7 +86,7 @@ typedef enum
    EPWM_EMULATION_STOP_AFTER_FULL_CYCLE = 1,
    //! Free run
    EPWM_EMULATION_FREE_RUN = 2
-}EPWM_EmulationMode;
+} EPWM_EmulationMode;
 
 //*****************************************************************************
 //
@@ -101,7 +98,7 @@ typedef enum
 {
    EPWM_COUNT_MODE_DOWN_AFTER_SYNC = 0, //!< Count down after sync event
    EPWM_COUNT_MODE_UP_AFTER_SYNC = 1    //!< Count up after sync event
-}EPWM_SyncCountMode;
+} EPWM_SyncCountMode;
 
 //*****************************************************************************
 //
@@ -119,7 +116,7 @@ typedef enum
     EPWM_CLOCK_DIVIDER_32 = 5,    //!< Divide clock by 32
     EPWM_CLOCK_DIVIDER_64 = 6,    //!< Divide clock by 64
     EPWM_CLOCK_DIVIDER_128 = 7    //!< Divide clock by 128
-}EPWM_ClockDivider;
+} EPWM_ClockDivider;
 
 //*****************************************************************************
 //
@@ -137,7 +134,7 @@ typedef enum
     EPWM_HSCLOCK_DIVIDER_10 = 5,    //!< Divide clock by 10
     EPWM_HSCLOCK_DIVIDER_12 = 6,    //!< Divide clock by 12
     EPWM_HSCLOCK_DIVIDER_14 = 7     //!< Divide clock by 14
-}EPWM_HSClockDivider;
+} EPWM_HSClockDivider;
 
 //*****************************************************************************
 //
@@ -161,7 +158,7 @@ typedef enum
     EPWM_SYNC_OUT_PULSE_ON_COUNTER_COMPARE_C = 5,
     //! sync pulse is disabled.
     EPWM_SYNC_OUT_PULSE_ON_COUNTER_COMPARE_D = 6
-}EPWM_SyncOutPulseMode;
+} EPWM_SyncOutPulseMode;
 
 //*****************************************************************************
 //
@@ -175,7 +172,7 @@ typedef enum
     EPWM_PERIOD_SHADOW_LOAD = 0,
     //! PWM Period register access is directly
     EPWM_PERIOD_DIRECT_LOAD = 1
-}EPWM_PeriodLoadMode;
+} EPWM_PeriodLoadMode;
 
 //*****************************************************************************
 //
@@ -189,7 +186,7 @@ typedef enum
     EPWM_COUNTER_MODE_DOWN = 1,       //!< Down - count mode.
     EPWM_COUNTER_MODE_UP_DOWN = 2,    //!< Up - down - count mode.
     EPWM_COUNTER_MODE_STOP_FREEZE = 3 //!< Stop - Freeze counter.
-}EPWM_TimeBaseCountMode;
+} EPWM_TimeBaseCountMode;
 
 //*****************************************************************************
 //
@@ -206,7 +203,7 @@ typedef enum
     EPWM_SHADOW_LOAD_MODE_COUNTER_SYNC = 1,
     //! shadow to active load occurs only when a SYNC occurs
     EPWM_SHADOW_LOAD_MODE_SYNC         = 2
-}EPWM_PeriodShadowLoadMode;
+} EPWM_PeriodShadowLoadMode;
 
 //*****************************************************************************
 //
@@ -240,7 +237,8 @@ typedef enum
     EPWM_LINK_WITH_EPWM_10 = 9,  //!< link current ePWM with ePWM10
     EPWM_LINK_WITH_EPWM_11 = 10, //!< link current ePWM with ePWM11
     EPWM_LINK_WITH_EPWM_12 = 11  //!< link current ePWM with ePWM12
-}EPWM_CurrentLink;
+
+} EPWM_CurrentLink;
 
 //*****************************************************************************
 //
@@ -256,9 +254,11 @@ typedef enum
     EPWM_LINK_COMP_C  = 12, //!< link COMPC registers
     EPWM_LINK_COMP_D  = 16, //!< link COMPD registers
     EPWM_LINK_GLDCTL2 = 28  //!< link GLDCTL2 registers
-}EPWM_LinkComponent;
+} EPWM_LinkComponent;
 
+//
 // Counter Compare Module
+//
 //*****************************************************************************
 //
 //! Values that can be passed to the EPWM_getCounterCompareShadowStatus(),
@@ -273,7 +273,7 @@ typedef enum
     EPWM_COUNTER_COMPARE_B = 2, //!< counter compare B
     EPWM_COUNTER_COMPARE_C = 5, //!< counter compare C
     EPWM_COUNTER_COMPARE_D = 7  //!< counter compare D
-}EPWM_CounterCompareModule;
+} EPWM_CounterCompareModule;
 
 //*****************************************************************************
 //
@@ -299,9 +299,11 @@ typedef enum
     EPWM_COMP_LOAD_ON_SYNC_CNTR_ZERO_PERIOD = 6,
     //! load on sync only
     EPWM_COMP_LOAD_ON_SYNC_ONLY = 8
-}EPWM_CounterCompareLoadMode;
+} EPWM_CounterCompareLoadMode;
 
+//
 // Action Qualifier Module
+//
 //*****************************************************************************
 //
 //! Values that can be passed to EPWM_setActionQualifierShadowLoadMode() and
@@ -312,7 +314,7 @@ typedef enum
 {
     EPWM_ACTION_QUALIFIER_A = 0, //!< Action Qualifier A
     EPWM_ACTION_QUALIFIER_B = 2  //!< Action Qualifier B
-}EPWM_ActionQualifierModule;
+} EPWM_ActionQualifierModule;
 
 //*****************************************************************************
 //
@@ -338,7 +340,7 @@ typedef enum
     EPWM_AQ_LOAD_ON_SYNC_CNTR_ZERO_PERIOD = 6,
     //! load on sync only
     EPWM_AQ_LOAD_ON_SYNC_ONLY = 8
-}EPWM_ActionQualifierLoadMode;
+} EPWM_ActionQualifierLoadMode;
 
 //*****************************************************************************
 //
@@ -356,7 +358,7 @@ typedef enum
     EPWM_AQ_TRIGGER_EVENT_TRIG_TZ_2  = 5,      //!< Trip zone 2
     EPWM_AQ_TRIGGER_EVENT_TRIG_TZ_3  = 6,      //!< Trip zone 3
     EPWM_AQ_TRIGGER_EVENT_TRIG_EPWM_SYNCIN = 7 //!< ePWM sync
-}EPWM_ActionQualifierTriggerSource;
+} EPWM_ActionQualifierTriggerSource;
 
 //*****************************************************************************
 //
@@ -386,7 +388,7 @@ typedef enum
     EPWM_AQ_OUTPUT_ON_T2_COUNT_UP         = 5,
     //! T2 event on count down
     EPWM_AQ_OUTPUT_ON_T2_COUNT_DOWN       = 7
-}EPWM_ActionQualifierOutputEvent;
+} EPWM_ActionQualifierOutputEvent;
 
 //*****************************************************************************
 //
@@ -400,7 +402,7 @@ typedef enum
     EPWM_AQ_OUTPUT_LOW       = 1,  //!< Set output pins to low
     EPWM_AQ_OUTPUT_HIGH      = 2,  //!< Set output pins to High
     EPWM_AQ_OUTPUT_TOGGLE    = 3   //!< Toggle the output pins
-}EPWM_ActionQualifierOutput;
+} EPWM_ActionQualifierOutput;
 
 //*****************************************************************************
 //
@@ -413,7 +415,7 @@ typedef enum
     EPWM_AQ_SW_DISABLED         = 0,  //!< Software forcing disabled
     EPWM_AQ_SW_OUTPUT_LOW       = 1,  //!< Set output pins to low
     EPWM_AQ_SW_OUTPUT_HIGH      = 2   //!< Set output pins to High
-}EPWM_ActionQualifierSWOutput;
+} EPWM_ActionQualifierSWOutput;
 
 //*****************************************************************************
 //
@@ -527,7 +529,7 @@ typedef enum
 {
     EPWM_AQ_OUTPUT_A = 0, //!< ePWMxA output
     EPWM_AQ_OUTPUT_B = 2  //!< ePWMxB output
-}EPWM_ActionQualifierOutputModule;
+} EPWM_ActionQualifierOutputModule;
 
 //*****************************************************************************
 //
@@ -545,7 +547,7 @@ typedef enum
     EPWM_AQ_SW_SH_LOAD_ON_CNTR_ZERO_PERIOD = 2,
     //! No shadow load mode. Immediate mode only.
     EPWM_AQ_SW_IMMEDIATE_LOAD   = 3
-}EPWM_ActionQualifierContForce;
+} EPWM_ActionQualifierContForce;
 
 //*****************************************************************************
 //
@@ -557,7 +559,7 @@ typedef enum
 {
     EPWM_DB_OUTPUT_A = 0, //!< DB output is ePWMA
     EPWM_DB_OUTPUT_B = 1  //!< DB output is ePWMB
-}EPWM_DeadBandOutput;
+} EPWM_DeadBandOutput;
 
 //*****************************************************************************
 //
@@ -569,7 +571,7 @@ typedef enum
 {
     EPWM_DB_RED = 1, //!< DB RED (Rising Edge Delay) mode
     EPWM_DB_FED = 0  //!< DB FED (Falling Edge Delay) mode
-}EPWM_DeadBandDelayMode;
+} EPWM_DeadBandDelayMode;
 
 //*****************************************************************************
 //
@@ -581,7 +583,7 @@ typedef enum
 {
     EPWM_DB_POLARITY_ACTIVE_HIGH = 0, //!< DB polarity is not inverted
     EPWM_DB_POLARITY_ACTIVE_LOW  = 1  //!< DB polarity is inverted
-}EPWM_DeadBandPolarity;
+} EPWM_DeadBandPolarity;
 
 //*****************************************************************************
 //
@@ -592,7 +594,7 @@ typedef enum
 //! Input signal is ePWMA
 //!
 #define EPWM_DB_INPUT_EPWMA       0U
-//! Input signal is ePWMA
+//! Input signal is ePWMB
 //!
 #define EPWM_DB_INPUT_EPWMB       1U
 //! Input signal is the output of Rising Edge delay
@@ -615,7 +617,7 @@ typedef enum
     EPWM_DB_LOAD_ON_CNTR_ZERO_PERIOD = 2,
     //! Freeze shadow to active load
     EPWM_DB_LOAD_FREEZE = 3
-}EPWM_DeadBandControlLoadMode;
+} EPWM_DeadBandControlLoadMode;
 
 //*****************************************************************************
 //
@@ -633,7 +635,7 @@ typedef enum
     EPWM_RED_LOAD_ON_CNTR_ZERO_PERIOD = 2,
     //! Freeze shadow to active load
     EPWM_RED_LOAD_FREEZE = 3
-}EPWM_RisingEdgeDelayLoadMode;
+} EPWM_RisingEdgeDelayLoadMode;
 
 //*****************************************************************************
 //
@@ -651,7 +653,7 @@ typedef enum
     EPWM_FED_LOAD_ON_CNTR_ZERO_PERIOD = 2,
     //! Freeze shadow to active load
     EPWM_FED_LOAD_FREEZE = 3
-}EPWM_FallingEdgeDelayLoadMode;
+} EPWM_FallingEdgeDelayLoadMode;
 
 //*****************************************************************************
 //
@@ -665,9 +667,11 @@ typedef enum
     EPWM_DB_COUNTER_CLOCK_FULL_CYCLE = 0,
     //! Dead band counter runs at 2*TBCLK rate
     EPWM_DB_COUNTER_CLOCK_HALF_CYCLE = 1
-}EPWM_DeadBandClockMode;
+} EPWM_DeadBandClockMode;
 
+//
 // Trip Zone
+//
 //*****************************************************************************
 //
 // Values that can be passed to EPWM_enableTripZoneSignals() and
@@ -735,7 +739,7 @@ typedef enum
     EPWM_TZ_DC_OUTPUT_A2 = 3, //!< Digital Compare output 2 A
     EPWM_TZ_DC_OUTPUT_B1 = 6, //!< Digital Compare output 1 B
     EPWM_TZ_DC_OUTPUT_B2 = 9  //!< Digital Compare output 2 B
-}EPWM_TripZoneDigitalCompareOutput;
+} EPWM_TripZoneDigitalCompareOutput;
 
 //*****************************************************************************
 //
@@ -751,7 +755,7 @@ typedef enum
     EPWM_TZ_EVENT_DCXL_LOW    = 3,       //!< Event when DCxL low
     EPWM_TZ_EVENT_DCXL_HIGH   = 4,       //!< Event when DCxL high
     EPWM_TZ_EVENT_DCXL_HIGH_DCXH_LOW = 5 //!< Event when DCxL high DCxH low
-}EPWM_TripZoneDigitalCompareOutputEvent;
+} EPWM_TripZoneDigitalCompareOutputEvent;
 
 //*****************************************************************************
 //
@@ -767,7 +771,7 @@ typedef enum
     EPWM_TZ_ACTION_EVENT_DCAEVT2 = 6, //!< DCAEVT2 (Digital Compare A event 2)
     EPWM_TZ_ACTION_EVENT_DCBEVT1 = 8, //!< DCBEVT1 (Digital Compare B event 1)
     EPWM_TZ_ACTION_EVENT_DCBEVT2 = 10 //!< DCBEVT2 (Digital Compare B event 2)
-}EPWM_TripZoneEvent;
+} EPWM_TripZoneEvent;
 
 //*****************************************************************************
 //
@@ -781,7 +785,7 @@ typedef enum
     EPWM_TZ_ACTION_HIGH    = 1, //!< high voltage state
     EPWM_TZ_ACTION_LOW     = 2, //!< low voltage state
     EPWM_TZ_ACTION_DISABLE = 3  //!< disable action
-}EPWM_TripZoneAction;
+} EPWM_TripZoneAction;
 
 //*****************************************************************************
 //
@@ -799,7 +803,7 @@ typedef enum
     EPWM_TZ_ADV_ACTION_EVENT_TZA_D = 3,
     //! TZ1 - TZ6, DCAEVT2, DCAEVT1 while counting up
     EPWM_TZ_ADV_ACTION_EVENT_TZA_U = 0
-}EPWM_TripZoneAdvancedEvent;
+} EPWM_TripZoneAdvancedEvent;
 
 //*****************************************************************************
 //
@@ -815,7 +819,7 @@ typedef enum
     EPWM_TZ_ADV_ACTION_LOW     = 2, //!< low voltage state
     EPWM_TZ_ADV_ACTION_TOGGLE  = 3, //!< toggle the output
     EPWM_TZ_ADV_ACTION_DISABLE = 7  //!< disable action
-}EPWM_TripZoneAdvancedAction;
+} EPWM_TripZoneAdvancedAction;
 
 //*****************************************************************************
 //
@@ -834,7 +838,7 @@ typedef enum
     EPWM_TZ_ADV_ACTION_EVENT_DCxEVT2_U = 6,
     //! Digital Compare event A/B 2 while counting down
     EPWM_TZ_ADV_ACTION_EVENT_DCxEVT2_D =  9
-}EPWM_TripZoneAdvDigitalCompareEvent;
+} EPWM_TripZoneAdvDigitalCompareEvent;
 
 //*****************************************************************************
 //
@@ -893,7 +897,7 @@ typedef enum
 //*****************************************************************************
 //! Trip Zone interrupt
 //!
-#define EPWM_TZ_INTERRUPT                              0x1U
+#define EPWM_TZ_INTERRUPT     0x1U
 
 //*****************************************************************************
 //
@@ -973,7 +977,7 @@ typedef enum
     EPWM_TZ_CBC_PULSE_CLR_CNTR_PERIOD = 1,
     //! Clear CBC pulse when counter equals zero or period
     EPWM_TZ_CBC_PULSE_CLR_CNTR_ZERO_PERIOD = 2
-}EPWM_CycleByCycleTripZoneClearMode;
+} EPWM_CycleByCycleTripZoneClearMode;
 
 //*****************************************************************************
 //
@@ -1055,7 +1059,7 @@ typedef enum
 {
     EPWM_SOC_A = 0,  //!< SOC A
     EPWM_SOC_B = 1   //!< SOC B
-}EPWM_ADCStartOfConversionType;
+} EPWM_ADCStartOfConversionType;
 
 //*****************************************************************************
 //
@@ -1089,9 +1093,11 @@ typedef enum
     EPWM_SOC_TBCTR_D_CMPB = 7,
     //! time-base counter equal to CMPD when the timer is decrementing
     EPWM_SOC_TBCTR_D_CMPD = 14
-}EPWM_ADCStartOfConversionSource;
+} EPWM_ADCStartOfConversionSource;
 
+//
 // Digital Compare Module
+//
 //*****************************************************************************
 //
 //! Values that can be passed to EPWM_selectDigitalCompareTripInput(),
@@ -1106,7 +1112,7 @@ typedef enum
     EPWM_DC_TYPE_DCAL = 1,  //!< Digital Compare A Low
     EPWM_DC_TYPE_DCBH = 2,  //!< Digital Compare B High
     EPWM_DC_TYPE_DCBL = 3   //!< Digital Compare B Low
-}EPWM_DigitalCompareType;
+} EPWM_DigitalCompareType;
 
 //*****************************************************************************
 //
@@ -1131,12 +1137,11 @@ typedef enum
     EPWM_DC_TRIP_TRIPIN14 = 13, //!< Trip 14
     EPWM_DC_TRIP_TRIPIN15 = 14, //!< Trip 15
     EPWM_DC_TRIP_COMBINATION = 15 //!< All Trips (Trip1 - Trip 15) are selected
-}EPWM_DigitalCompareTripInput;
+} EPWM_DigitalCompareTripInput;
 
 //*****************************************************************************
 //
-// Values that can be passed to
-// EPWM_enableDigitalCompareTripCombinationInput(),
+// Values that can be passed to EPWM_enableDigitalCompareTripCombinationInput(),
 // EPWM_disableDigitalCompareTripCombinationInput() as the tripInput
 // parameter.
 //
@@ -1198,7 +1203,7 @@ typedef enum
     EPWM_DC_WINDOW_START_TBCTR_ZERO   = 1,
     //! Time base counter equals zero
     EPWM_DC_WINDOW_START_TBCTR_ZERO_PERIOD  = 2
-}EPWM_DigitalCompareBlankingPulse;
+} EPWM_DigitalCompareBlankingPulse;
 
 //*****************************************************************************
 //
@@ -1212,7 +1217,7 @@ typedef enum
     EPWM_DC_WINDOW_SOURCE_DCAEVT2 = 1, //!< DC filter signal source is DCAEVT2
     EPWM_DC_WINDOW_SOURCE_DCBEVT1 = 2, //!< DC filter signal source is DCBEVT1
     EPWM_DC_WINDOW_SOURCE_DCBEVT2 = 3  //!< DC filter signal source is DCBEVT2
-}EPWM_DigitalCompareFilterInput;
+} EPWM_DigitalCompareFilterInput;
 
 //*****************************************************************************
 //
@@ -1226,7 +1231,7 @@ typedef enum
 {
     EPWM_DC_MODULE_A = 0, //!< Digital Compare Module A
     EPWM_DC_MODULE_B = 1  //!< Digital Compare Module B
-}EPWM_DigitalCompareModule;
+} EPWM_DigitalCompareModule;
 
 //*****************************************************************************
 //
@@ -1238,7 +1243,7 @@ typedef enum
 {
     EPWM_DC_EVENT_1 = 0, //!< Digital Compare Event number 1
     EPWM_DC_EVENT_2 = 1  //!< Digital Compare Event number 2
-}EPWM_DigitalCompareEvent;
+} EPWM_DigitalCompareEvent;
 
 //*****************************************************************************
 //
@@ -1252,7 +1257,7 @@ typedef enum
     EPWM_DC_EVENT_SOURCE_ORIG_SIGNAL = 0,
     //! signal source is filtered (DCEVTFILT)
     EPWM_DC_EVENT_SOURCE_FILT_SIGNAL = 1
-}EPWM_DigitalCompareEventSource;
+} EPWM_DigitalCompareEventSource;
 
 //*****************************************************************************
 //
@@ -1266,7 +1271,7 @@ typedef enum
     EPWM_DC_EVENT_INPUT_SYNCED = 0,
     //! DC input signal is not synced with TBCLK
     EPWM_DC_EVENT_INPUT_NOT_SYNCED = 1
-}EPWM_DigitalCompareSyncMode;
+} EPWM_DigitalCompareSyncMode;
 
 //*****************************************************************************
 //
@@ -1292,7 +1297,7 @@ typedef enum
     EPWM_GL_LOAD_PULSE_SYNC_CNTR_ZERO_PERIOD = 0x6,
     //! load on global force
     EPWM_GL_LOAD_PULSE_GLOBAL_FORCE = 0xF
-}EPWM_GlobalLoadTrigger;
+} EPWM_GlobalLoadTrigger;
 
 //*****************************************************************************
 //
@@ -1358,7 +1363,7 @@ typedef enum
     EPWM_VALLEY_TRIGGER_EVENT_DCBEVT1 = 6U,
     //! Valley capture trigged by DCBEVT2 (Digital Compare B event 2)
     EPWM_VALLEY_TRIGGER_EVENT_DCBEVT2 = 7U
-}EPWM_ValleyTriggerSource;
+} EPWM_ValleyTriggerSource;
 
 //*****************************************************************************
 //
@@ -1370,7 +1375,7 @@ typedef enum
 {
     EPWM_VALLEY_COUNT_START_EDGE = 0, //!< Valley count start edge
     EPWM_VALLEY_COUNT_STOP_EDGE  = 1  //!< Valley count stop edge
-}EPWM_ValleyCounterEdge;
+} EPWM_ValleyCounterEdge;
 
 //*****************************************************************************
 //
@@ -1394,9 +1399,11 @@ typedef enum
     //! Delay value equals the the Hardware counter shifted by
     //! (4 + the offset value defines by software)
     EPWM_VALLEY_DELAY_MODE_VCNT_DELAY_SHIFT_4_SW_DELAY = 4U
-}EPWM_ValleyDelayMode;
+} EPWM_ValleyDelayMode;
 
+//
 // DC Edge Filter
+//
 //*****************************************************************************
 //
 //! Values that can be passed to EPWM_setDigitalCompareEdgeFilterMode()
@@ -1451,7 +1458,7 @@ typedef enum
     EPWM_REGISTER_GROUP_TRIP_ZONE = 0x4,       //!< Trip zone register group
     EPWM_REGISTER_GROUP_TRIP_ZONE_CLEAR = 0x8, //!< Trip zone clear group
     EPWM_REGISTER_GROUP_DIGITAL_COMPARE = 0x10 //!< Digital compare group
-}EPWM_LockRegisterGroup;
+} EPWM_LockRegisterGroup;
 
 //*****************************************************************************
 //
@@ -1475,17 +1482,18 @@ typedef enum
 #ifdef DEBUG
 static inline bool EPWM_isBaseValid(uint32_t base)
 {
-    return((base == EPWM1_BASE) || (base == EPWM2_BASE)||
-           (base == EPWM3_BASE) || (base == EPWM4_BASE)||
-           (base == EPWM5_BASE) || (base == EPWM6_BASE)||
-           (base == EPWM7_BASE) || (base == EPWM8_BASE)||
-           (base == EPWM9_BASE) || (base == EPWM10_BASE)||
+    return((base == EPWM1_BASE)  || (base == EPWM2_BASE)  ||
+           (base == EPWM3_BASE)  || (base == EPWM4_BASE)  ||
+           (base == EPWM5_BASE)  || (base == EPWM6_BASE)  ||
+           (base == EPWM7_BASE)  || (base == EPWM8_BASE)  ||
+           (base == EPWM9_BASE)  || (base == EPWM10_BASE) ||
            (base == EPWM11_BASE) || (base == EPWM12_BASE));
 }
 #endif
 
-
-// Time Base Sub Module
+//
+// Time Base Sub Module related APIs
+//
 //*****************************************************************************
 //
 //! Set the time base count
@@ -1498,10 +1506,17 @@ static inline bool EPWM_isBaseValid(uint32_t base)
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setTimeBaseCounter(uint32_t base, uint16_t count)
+static inline void
+EPWM_setTimeBaseCounter(uint32_t base, uint16_t count)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
-    // write to TBCTR register
+
+    //
+    // Write to TBCTR register
+    //
     HWREGH(base + EPWM_O_TBCTR) = count;
 }
 
@@ -1521,19 +1536,26 @@ static inline void EPWM_setTimeBaseCounter(uint32_t base, uint16_t count)
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setCountModeAfterSync(uint32_t base,
-                                              EPWM_SyncCountMode mode)
+static inline void
+EPWM_setCountModeAfterSync(uint32_t base, EPWM_SyncCountMode mode)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
     if(mode == EPWM_COUNT_MODE_UP_AFTER_SYNC)
     {
-        // set PHSDIR bit
+        //
+        // Set PHSDIR bit
+        //
         HWREGH(base + EPWM_O_TBCTL) |= EPWM_TBCTL_PHSDIR;
     }
     else
     {
-        // clear PHSDIR bit
+        //
+        // Clear PHSDIR bit
+        //
         HWREGH(base + EPWM_O_TBCTL) &= ~EPWM_TBCTL_PHSDIR;
     }
 }
@@ -1561,16 +1583,21 @@ static inline void EPWM_setCountModeAfterSync(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setClockPrescaler(uint32_t base,
-                                          EPWM_ClockDivider prescaler,
-                                          EPWM_HSClockDivider highSpeedPrescaler)
+static inline void
+EPWM_setClockPrescaler(uint32_t base, EPWM_ClockDivider prescaler,
+                       EPWM_HSClockDivider highSpeedPrescaler)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
-    // write to CLKDIV and HSPCLKDIV bit
+    //
+    // Write to CLKDIV and HSPCLKDIV bit
+    //
     HWREGH(base + EPWM_O_TBCTL) =
                 ((HWREGH(base + EPWM_O_TBCTL)  &
-                ~(EPWM_TBCTL_CLKDIV_M | EPWM_TBCTL_HSPCLKDIV_M))|
+                ~(EPWM_TBCTL_CLKDIV_M | EPWM_TBCTL_HSPCLKDIV_M)) |
                 (((uint16_t)prescaler << EPWM_TBCTL_CLKDIV_S) |
                 ((uint16_t)highSpeedPrescaler << EPWM_TBCTL_HSPCLKDIV_S)));
 }
@@ -1588,11 +1615,17 @@ static inline void EPWM_setClockPrescaler(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_forceSyncPulse(uint32_t base)
+static inline void
+EPWM_forceSyncPulse(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
-    // set SWFSYNC bit
+    //
+    // Set SWFSYNC bit
+    //
     HWREGH(base + EPWM_O_TBCTL) |= EPWM_TBCTL_SWFSYNC;
 }
 
@@ -1625,32 +1658,45 @@ static inline void EPWM_forceSyncPulse(uint32_t base)
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setSyncOutPulseMode(uint32_t base,
-                                            EPWM_SyncOutPulseMode mode)
+static inline void
+EPWM_setSyncOutPulseMode(uint32_t base, EPWM_SyncOutPulseMode mode)
 {
-
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
+    //
     // No extended mode support
+    //
     if(mode < EPWM_SYNC_OUT_PULSE_DISABLED)
     {
-        // write to SYNCOSEL bits
+        //
+        // Write to SYNCOSEL bits
+        //
         HWREGH(base + EPWM_O_TBCTL) =
                 ((HWREGH(base + EPWM_O_TBCTL) & ~(EPWM_TBCTL_SYNCOSEL_M)) |
                  ((uint16_t)mode << EPWM_TBCTL_SYNCOSEL_S));
     }
-    else // Extended modes and sync out disable mode
+    //
+    // Extended modes and sync out disable mode
+    //
+    else
     {
+        //
         // Write 0x3 to SYNCOSEL to enable selection from SYNCOSELX
+        //
         HWREGH(base + EPWM_O_TBCTL) = HWREGH(base + EPWM_O_TBCTL) |
                                       EPWM_TBCTL_SYNCOSEL_M;
-        // write to SYNCOSELX bit
+
+        //
+        // Write to SYNCOSELX bit
+        //
         HWREGH(base + EPWM_O_TBCTL2) =
                ((HWREGH(base + EPWM_O_TBCTL2) & ~(EPWM_TBCTL2_SYNCOSELX_M)) |
                 (((uint16_t)mode & 0x3U) << EPWM_TBCTL2_SYNCOSELX_S));
     }
 }
-
 //*****************************************************************************
 //
 //! Set PWM period load mode.
@@ -1667,19 +1713,26 @@ static inline void EPWM_setSyncOutPulseMode(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setPeriodLoadMode(uint32_t base,
-                                          EPWM_PeriodLoadMode loadMode)
+static inline void
+EPWM_setPeriodLoadMode(uint32_t base, EPWM_PeriodLoadMode loadMode)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
     if(loadMode == EPWM_PERIOD_SHADOW_LOAD)
     {
-        // clear PRDLD
+        //
+        // Clear PRDLD
+        //
         HWREGH(base + EPWM_O_TBCTL) &= ~EPWM_TBCTL_PRDLD;
     }
     else
     {
-        // set PRDLD
+        //
+        // Set PRDLD
+        //
         HWREGH(base + EPWM_O_TBCTL) |= EPWM_TBCTL_PRDLD;
     }
 }
@@ -1696,10 +1749,17 @@ static inline void EPWM_setPeriodLoadMode(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_enablePhaseShiftLoad(uint32_t base)
+static inline void
+EPWM_enablePhaseShiftLoad(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
-    // set PHSEN bit
+
+    //
+    // Set PHSEN bit
+    //
     HWREGH(base + EPWM_O_TBCTL) |= EPWM_TBCTL_PHSEN;
 }
 
@@ -1710,15 +1770,21 @@ static inline void EPWM_enablePhaseShiftLoad(uint32_t base)
 //! \param base is the base address of the EPWM module.
 //!
 //! This function disables loading of phase shift.
-//! occurs.
 //!
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_disablePhaseShiftLoad(uint32_t base)
+static inline void
+EPWM_disablePhaseShiftLoad(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
-    // clear PHSEN bit
+
+    //
+    // Clear PHSEN bit
+    //
     HWREGH(base + EPWM_O_TBCTL) &= ~EPWM_TBCTL_PHSEN;
 }
 
@@ -1739,12 +1805,17 @@ static inline void EPWM_disablePhaseShiftLoad(uint32_t base)
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setTimeBaseCounterMode(uint32_t base,
-                                 EPWM_TimeBaseCountMode counterMode)
+static inline void
+EPWM_setTimeBaseCounterMode(uint32_t base, EPWM_TimeBaseCountMode counterMode)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
-    // write to CTRMODE bit
+    //
+    // Write to CTRMODE bit
+    //
     HWREGH(base + EPWM_O_TBCTL) =
             ((HWREGH(base + EPWM_O_TBCTL) & ~(EPWM_TBCTL_CTRMODE_M)) |
              ((uint16_t)counterMode));
@@ -1770,12 +1841,18 @@ static inline void EPWM_setTimeBaseCounterMode(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_selectPeriodLoadEvent(uint32_t base,
-                                  EPWM_PeriodShadowLoadMode shadowLoadMode)
+static inline void
+EPWM_selectPeriodLoadEvent(uint32_t base,
+                           EPWM_PeriodShadowLoadMode shadowLoadMode)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
-    // write to PRDLDSYNC bit
+    //
+    // Write to PRDLDSYNC bit
+    //
     HWREGH(base + EPWM_O_TBCTL2) =
                 ((HWREGH(base + EPWM_O_TBCTL2) & ~(EPWM_TBCTL2_PRDLDSYNC_M)) |
                  ((uint16_t)shadowLoadMode << EPWM_TBCTL2_PRDLDSYNC_S));
@@ -1791,10 +1868,17 @@ static inline void EPWM_selectPeriodLoadEvent(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_enableOneShotSync(uint32_t base)
+static inline void
+EPWM_enableOneShotSync(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
+
+    //
     // Set OSHTSYNCMODE bit
+    //
     HWREGH(base + EPWM_O_TBCTL2) |= EPWM_TBCTL2_OSHTSYNCMODE;
 }
 
@@ -1809,10 +1893,17 @@ static inline void EPWM_enableOneShotSync(uint32_t base)
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_disableOneShotSync(uint32_t base)
+static inline void
+EPWM_disableOneShotSync(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
+
+    //
     // Clear OSHTSYNCMODE bit
+    //
     HWREGH(base + EPWM_O_TBCTL2) &= ~EPWM_TBCTL2_OSHTSYNCMODE;
 }
 
@@ -1827,11 +1918,43 @@ static inline void EPWM_disableOneShotSync(uint32_t base)
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_startOneShotSync(uint32_t base)
+static inline void
+EPWM_startOneShotSync(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
-    // set OSHTSYNC bit
+
+    //
+    // Set OSHTSYNC bit
+    //
     HWREGH(base + EPWM_O_TBCTL2) |= EPWM_TBCTL2_OSHTSYNC;
+}
+
+//*****************************************************************************
+//
+//! Returns time base counter value.
+//!
+//! \param base is the base address of the EPWM module.
+//!
+//! This function returns the current value of the time base counter.
+//!
+//! \return returns time base counter value
+//
+//*****************************************************************************
+static inline uint16_t
+EPWM_getTimeBaseCounterValue(uint32_t base)
+{
+    //
+    // Check the arguments
+    //
+    ASSERT(EPWM_isBaseValid(base));
+
+    //
+    // Returns TBCTR value
+    //
+    return(HWREGH(base + EPWM_O_TBCTR));
 }
 
 //*****************************************************************************
@@ -1846,12 +1969,19 @@ static inline void EPWM_startOneShotSync(uint32_t base)
 //!         Returns false if the counter hasn't reached 0xFFFF.
 //
 //*****************************************************************************
-static inline bool EPWM_getTimeBaseCounterOverflowStatus(uint32_t base)
+static inline bool
+EPWM_getTimeBaseCounterOverflowStatus(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
+
+    //
     // Return true if CTRMAX bit is set, false otherwise
+    //
     return(((HWREGH(base + EPWM_O_TBSTS) & EPWM_TBSTS_CTRMAX) ==
-              EPWM_TBSTS_CTRMAX) ? true : false);
+            EPWM_TBSTS_CTRMAX) ? true : false);
 }
 
 //*****************************************************************************
@@ -1866,11 +1996,18 @@ static inline bool EPWM_getTimeBaseCounterOverflowStatus(uint32_t base)
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_clearTimeBaseCounterOverflowEvent(uint32_t base)
+static inline void
+EPWM_clearTimeBaseCounterOverflowEvent(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
-     // set CTRMAX bit
-     HWREGH(base + EPWM_O_TBSTS) |= EPWM_TBSTS_CTRMAX;
+
+    //
+    // Set CTRMAX bit
+    //
+    HWREGH(base + EPWM_O_TBSTS) |= EPWM_TBSTS_CTRMAX;
 }
 
 //*****************************************************************************
@@ -1885,12 +2022,19 @@ static inline void EPWM_clearTimeBaseCounterOverflowEvent(uint32_t base)
 //!         Returns false if there is no event.
 //
 //*****************************************************************************
-static inline bool EPWM_getSyncStatus(uint32_t base)
+static inline bool
+EPWM_getSyncStatus(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
+
+    //
     // Return true if SYNCI bit is set, false otherwise
+    //
     return(((HWREGH(base + EPWM_O_TBSTS) & EPWM_TBSTS_SYNCI) ==
-             EPWM_TBSTS_SYNCI) ? true : false);
+            EPWM_TBSTS_SYNCI) ? true : false);
 }
 
 //*****************************************************************************
@@ -1904,10 +2048,17 @@ static inline bool EPWM_getSyncStatus(uint32_t base)
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_clearSyncEvent(uint32_t base)
+static inline void
+EPWM_clearSyncEvent(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
+
+    //
     // Set SYNCI bit
+    //
     HWREGH(base + EPWM_O_TBSTS) |= EPWM_TBSTS_SYNCI;
 }
 
@@ -1924,10 +2075,17 @@ static inline void EPWM_clearSyncEvent(uint32_t base)
 //!                 counting down.
 //
 //*****************************************************************************
-static inline uint16_t EPWM_getTimeBaseCounterDirection(uint32_t base)
+static inline uint16_t
+EPWM_getTimeBaseCounterDirection(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
+
+    //
     // Return CTRDIR bit
+    //
     return(HWREGH(base + EPWM_O_TBSTS) & EPWM_TBSTS_CTRDIR);
 }
 
@@ -1946,10 +2104,17 @@ static inline uint16_t EPWM_getTimeBaseCounterDirection(uint32_t base)
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setPhaseShift(uint32_t base, uint16_t phaseCount)
+static inline void
+EPWM_setPhaseShift(uint32_t base, uint16_t phaseCount)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
-    // write to TBPHS bit
+
+    //
+    // Write to TBPHS bit
+    //
     HWREG(base + EPWM_O_TBPHS) =
                    ((HWREG(base + EPWM_O_TBPHS) &
                     ~((uint32_t)EPWM_TBPHS_TBPHS_M)) |
@@ -1973,10 +2138,17 @@ static inline void EPWM_setPhaseShift(uint32_t base, uint16_t phaseCount)
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setTimeBasePeriod(uint32_t base, uint16_t periodCount)
+static inline void
+EPWM_setTimeBasePeriod(uint32_t base, uint16_t periodCount)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
-    // write to TBPRD bit
+
+    //
+    // Write to TBPRD bit
+    //
     HWREGH(base + EPWM_O_TBPRD) = periodCount;
 }
 
@@ -1991,11 +2163,17 @@ static inline void EPWM_setTimeBasePeriod(uint32_t base, uint16_t periodCount)
 //! \return The period count value.
 //
 //*****************************************************************************
-static inline uint16_t EPWM_getTimeBasePeriod(uint32_t base)
+static inline uint16_t
+EPWM_getTimeBasePeriod(uint32_t base)
 {
-
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
-    // read from TBPRD bit
+
+    //
+    // Read from TBPRD bit
+    //
     return(HWREGH(base + EPWM_O_TBPRD));
 }
 
@@ -2040,12 +2218,18 @@ static inline uint16_t EPWM_getTimeBasePeriod(uint32_t base)
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setupEPWMLinks(uint32_t base, EPWM_CurrentLink epwmLink,
-                                        EPWM_LinkComponent linkComp)
+static inline void
+EPWM_setupEPWMLinks(uint32_t base, EPWM_CurrentLink epwmLink,
+                    EPWM_LinkComponent linkComp)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
+    //
     // Configure EPWM links
+    //
     HWREG(base + EPWM_O_XLINK) =
               ((HWREG(base + EPWM_O_XLINK) & ~((uint32_t)0xFU << linkComp)) |
                ((uint32_t)epwmLink << linkComp));
@@ -2070,26 +2254,30 @@ static inline void EPWM_setupEPWMLinks(uint32_t base, EPWM_CurrentLink epwmLink,
 //!      - EPWM_COMP_LOAD_ON_CNTR_ZERO - load when counter equals zero
 //!      - EPWM_COMP_LOAD_ON_CNTR_PERIOD - load when counter equals period
 //!      - EPWM_COMP_LOAD_ON_CNTR_ZERO_PERIOD - load when counter equals
-//!                                               zero or period
+//!                                             zero or period
 //!      - EPWM_COMP_LOAD_FREEZE  - Freeze shadow to active load
 //!      - EPWM_COMP_LOAD_ON_SYNC_CNTR_ZERO - load when counter equals zero
 //!      - EPWM_COMP_LOAD_ON_SYNC_CNTR_PERIOD -load when counter equals period
 //!      - EPWM_COMP_LOAD_ON_SYNC_CNTR_ZERO_PERIOD - load when counter equals
-//!                                                   zero or period
+//!                                                  zero or period
 //!      - EPWM_COMP_LOAD_ON_SYNC_ONLY - load on sync only
 //!
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setCounterCompareShadowLoadMode(uint32_t base,
-                                EPWM_CounterCompareModule compModule,
-                                EPWM_CounterCompareLoadMode loadMode)
+static inline void
+EPWM_setCounterCompareShadowLoadMode(uint32_t base,
+                                     EPWM_CounterCompareModule compModule,
+                                     EPWM_CounterCompareLoadMode loadMode)
 {
     uint16_t syncModeOffset;
     uint16_t loadModeOffset;
     uint16_t shadowModeOffset;
     uint32_t registerOffset;
 
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
     if((compModule == EPWM_COUNTER_COMPARE_A) ||
@@ -2105,20 +2293,23 @@ static inline void EPWM_setCounterCompareShadowLoadMode(uint32_t base,
         loadModeOffset = 2U;
         shadowModeOffset = 6U;
     }
+
+    //
     // Get the register offset.  EPWM_O_CMPCTL for A&B or
     // EPWM_O_CMPCTL2 for C&D
+    //
     registerOffset = base + EPWM_O_CMPCTL + ((uint32_t)compModule & 0x1U);
 
-
+    //
     // Set the appropriate sync and load mode bits and also enable shadow
     // load mode. Shadow to active load can also be frozen.
+    //
     HWREGH(registerOffset) = ((HWREGH(registerOffset) &
                          ~((0x3U << syncModeOffset) | // Clear sync mode
                            (0x3U << loadModeOffset) | // Clear load mode
                            (0x1U << shadowModeOffset))) | // shadow mode
                          ((((uint16_t)loadMode >> 2U) << syncModeOffset) |
                          (((uint16_t)loadMode & 0x3U) << loadModeOffset)));
-
 }
 
 //*****************************************************************************
@@ -2139,13 +2330,16 @@ static inline void EPWM_setCounterCompareShadowLoadMode(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_disableCounterCompareShadowLoadMode(uint32_t base,
-                                        EPWM_CounterCompareModule compModule)
+static inline void
+EPWM_disableCounterCompareShadowLoadMode(uint32_t base,
+                                         EPWM_CounterCompareModule compModule)
 {
-
     uint16_t shadowModeOffset;
     uint32_t registerOffset;
 
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
     if((compModule == EPWM_COUNTER_COMPARE_A) ||
@@ -2158,15 +2352,19 @@ static inline void EPWM_disableCounterCompareShadowLoadMode(uint32_t base,
         shadowModeOffset = 6U;
     }
 
+    //
     // Get the register offset.  EPWM_O_CMPCTL for A&B or
     // EPWM_O_CMPCTL2 for C&D
+    //
     registerOffset = base + EPWM_O_CMPCTL + ((uint32_t)compModule & 0x1U);
 
+    //
     // Disable shadow load mode.
+    //
     HWREGH(registerOffset) = (HWREGH(registerOffset) |
-                                  (0x1U << shadowModeOffset));
-
+                             (0x1U << shadowModeOffset));
 }
+
 //*****************************************************************************
 //
 //! Set counter compare values.
@@ -2186,26 +2384,38 @@ static inline void EPWM_disableCounterCompareShadowLoadMode(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setCounterCompareValue(uint32_t base,
-                                 EPWM_CounterCompareModule compModule,
-                                 uint16_t compCount)
+static inline void
+EPWM_setCounterCompareValue(uint32_t base, EPWM_CounterCompareModule compModule,
+                            uint16_t compCount)
 {
     uint32_t registerOffset;
 
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
+    //
     // Get the register offset for the Counter compare
+    //
     registerOffset = EPWM_O_CMPA + (uint16_t)compModule;
+
+    //
     // Write to the counter compare registers.
+    //
     if((compModule == EPWM_COUNTER_COMPARE_A) ||
         (compModule == EPWM_COUNTER_COMPARE_B))
     {
-        // write to COMPA or COMPB bits
+        //
+        // Write to COMPA or COMPB bits
+        //
         HWREGH(base + registerOffset + 0x1U) = compCount;
     }
     else
     {
-        // write to COMPC or COMPD bits
+        //
+        // Write to COMPC or COMPD bits
+        //
         HWREGH(base + registerOffset) = compCount;
     }
 }
@@ -2227,30 +2437,41 @@ static inline void EPWM_setCounterCompareValue(uint32_t base,
 //! \return The counter compare count value.
 //
 //*****************************************************************************
-static inline uint16_t EPWM_getCounterCompareValue(uint32_t base,
-                                 EPWM_CounterCompareModule compModule)
+static inline uint16_t
+EPWM_getCounterCompareValue(uint32_t base, EPWM_CounterCompareModule compModule)
 {
     uint32_t registerOffset;
     uint16_t compCount;
 
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
+    //
     // Get the register offset for the Counter compare
+    //
     registerOffset = EPWM_O_CMPA + (uint16_t)compModule;
+
+    //
     // Read from the counter compare registers.
+    //
     if((compModule == EPWM_COUNTER_COMPARE_A) ||
         (compModule == EPWM_COUNTER_COMPARE_B))
     {
-        // read COMPA or COMPB bits
+        //
+        // Read COMPA or COMPB bits
+        //
         compCount = (uint16_t)((HWREG(base + registerOffset) &
                      (uint32_t)0xFFFF0000U) >> 16U);
     }
     else
     {
-        // read COMPC or COMPD bits
+        //
+        // Read COMPC or COMPD bits
+        //
         compCount = HWREGH(base + registerOffset);
     }
-
     return(compCount);
 }
 
@@ -2270,18 +2491,26 @@ static inline uint16_t EPWM_getCounterCompareValue(uint32_t base,
 //!         Returns false if the shadow register is not full.
 //
 //*****************************************************************************
-static inline bool EPWM_getCounterCompareShadowStatus(uint32_t base,
-                                         EPWM_CounterCompareModule compModule)
+static inline bool
+EPWM_getCounterCompareShadowStatus(uint32_t base,
+                                   EPWM_CounterCompareModule compModule)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
+    //
     // Read the value of SHDWAFULL or SHDWBFULL bit
+    //
     return((((HWREG(base + EPWM_O_CMPCTL) >>
               ((((uint16_t)compModule >> 1U) & 0x1U) + 8U)) &
               0x1U) == 0x1U) ? true:false);
 }
 
-// Action Qualifier functions
+//
+// Action Qualifier module related APIs
+//
 //*****************************************************************************
 //
 //! Sets the Action Qualifier shadow load mode
@@ -2312,25 +2541,33 @@ static inline bool EPWM_getCounterCompareShadowStatus(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setActionQualifierShadowLoadMode(uint32_t base,
-                                        EPWM_ActionQualifierModule aqModule,
-                                        EPWM_ActionQualifierLoadMode loadMode)
+static inline void
+EPWM_setActionQualifierShadowLoadMode(uint32_t base,
+                                      EPWM_ActionQualifierModule aqModule,
+                                      EPWM_ActionQualifierLoadMode loadMode)
 {
     uint16_t syncModeOffset;
     uint16_t shadowModeOffset;
 
+    //
+    // Check the arguments
+    //
+    ASSERT(EPWM_isBaseValid(base));
+
     syncModeOffset = 8U + (uint16_t)aqModule;
     shadowModeOffset = 4U + (uint16_t)aqModule;
 
+    //
     // Set the appropriate sync and load mode bits and also enable shadow
     // load mode. Shadow to active load can also be frozen.
+    //
     HWREGH(base + EPWM_O_AQCTL) = ((HWREGH(base + EPWM_O_AQCTL) &
-          (~((0x3U << (uint16_t)aqModule) | // Clear AQ mode selection
-            (0x3U << (uint16_t)syncModeOffset))) | // Clear Sync mode
-            (0x1U << shadowModeOffset)) | // Enable Shadow mode
-             ((((uint16_t)loadMode >> 2U) << syncModeOffset) | // sync mode
-             (((uint16_t)loadMode & 0x3U) << (uint16_t)aqModule))); // AQ mode
-
+                                   (~((0x3U << (uint16_t)aqModule) |
+                                   (0x3U << (uint16_t)syncModeOffset))) |
+                                   (0x1U << shadowModeOffset)) |
+                                   ((((uint16_t)loadMode >> 2U) <<
+                                     syncModeOffset) | (((uint16_t)loadMode &
+                                    0x3U) << (uint16_t)aqModule)));
 }
 
 //*****************************************************************************
@@ -2349,20 +2586,24 @@ static inline void EPWM_setActionQualifierShadowLoadMode(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_disableActionQualifierShadowLoadMode(uint32_t base,
-                                        EPWM_ActionQualifierModule aqModule)
+static inline void
+EPWM_disableActionQualifierShadowLoadMode(uint32_t base,
+                                          EPWM_ActionQualifierModule aqModule)
 {
-
     uint16_t shadowModeOffset;
 
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
     shadowModeOffset = 4U + (uint16_t)aqModule;
 
+    //
     // Disable shadow load mode. Action qualifier is loaded on
     // immediate mode only.
+    //
     HWREGH(base + EPWM_O_AQCTL) &= ~(1U << shadowModeOffset);
-
 }
 
 //*****************************************************************************
@@ -2386,12 +2627,18 @@ static inline void EPWM_disableActionQualifierShadowLoadMode(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setActionQualifierT1TriggerSource(uint32_t base,
-                                    EPWM_ActionQualifierTriggerSource trigger)
+static inline void
+EPWM_setActionQualifierT1TriggerSource(uint32_t base,
+                                     EPWM_ActionQualifierTriggerSource trigger)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
-    // Set T1 trigger source
 
+    //
+    // Set T1 trigger source
+    //
     HWREGH(base + EPWM_O_AQTSRCSEL) =
          ((HWREGH(base + EPWM_O_AQTSRCSEL) & (~EPWM_AQTSRCSEL_T1SEL_M)) |
           ((uint16_t)trigger));
@@ -2418,11 +2665,18 @@ static inline void EPWM_setActionQualifierT1TriggerSource(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setActionQualifierT2TriggerSource(uint32_t base,
-                                    EPWM_ActionQualifierTriggerSource trigger)
+static inline void
+EPWM_setActionQualifierT2TriggerSource(uint32_t base,
+                                      EPWM_ActionQualifierTriggerSource trigger)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
+
+    //
     // Set T2 trigger source
+    //
     HWREGH(base + EPWM_O_AQTSRCSEL) =
           ((HWREGH(base + EPWM_O_AQTSRCSEL) & (~EPWM_AQTSRCSEL_T2SEL_M)) |
            ((uint16_t)trigger << EPWM_AQTSRCSEL_T2SEL_S));
@@ -2470,31 +2724,43 @@ static inline void EPWM_setActionQualifierT2TriggerSource(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setActionQualifierAction(uint32_t base,
-                                   EPWM_ActionQualifierOutputModule epwmOutput,
-                                   EPWM_ActionQualifierOutput output,
-                                   EPWM_ActionQualifierOutputEvent event)
+static inline void
+EPWM_setActionQualifierAction(uint32_t base,
+                              EPWM_ActionQualifierOutputModule epwmOutput,
+                              EPWM_ActionQualifierOutput output,
+                              EPWM_ActionQualifierOutputEvent event)
 {
     uint32_t registerOffset;
     uint32_t registerTOffset;
 
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
+    //
     // Get the register offset
+    //
     registerOffset = EPWM_O_AQCTLA + (uint16_t)epwmOutput;
     registerTOffset = EPWM_O_AQCTLA2 + (uint16_t)epwmOutput;
 
+    //
     // If the event occurs on T1 or T2 events
+    //
     if(((uint16_t)event & 0x1U) == 1U)
     {
+        //
         // Write to T1U,T1D,T2U or T2D of AQCTLA2 register
+        //
         HWREGH(base + registerTOffset) =
          ((HWREGH(base + registerTOffset) & ~(3U << ((uint16_t)event - 1U))) |
           ((uint16_t)output << ((uint16_t)event - 1U)));
     }
     else
     {
+        //
         // Write to ZRO,PRD,CAU,CAD,CBU or CBD bits of AQCTLA register
+        //
         HWREGH(base + registerOffset) =
                 ((HWREGH(base + registerOffset) & ~(3U << (uint16_t)event)) |
                  ((uint16_t)output << (uint16_t)event));
@@ -2510,80 +2776,101 @@ static inline void EPWM_setActionQualifierAction(uint32_t base,
 //! \param action is the desired action when the specified event occurs
 //!
 //! This function sets up the Action Qualifier output on ePWMA or ePWMB,
-//! depending on the value of epwmOutput, to a value specified by action
+//! depending on the value of epwmOutput, to a value specified by action.
+//! Valid action param values from different time base counter scenarios
+//! should be OR'd together to configure complete action for a pwm output.
 //! The following are valid values for the parameters.
 //!   - epwmOutput
 //!       - EPWM_AQ_OUTPUT_A          - ePWMxA output
 //!       - EPWM_AQ_OUTPUT_B          - ePWMxB output
+//!
 //!   - action
-//!       - EPWM_AQ_OUTPUT_NO_CHANGE_ZERO     - Time base counter equals zero
+//!       - When time base counter equals zero
+//!         - EPWM_AQ_OUTPUT_NO_CHANGE_ZERO   - Time base counter equals zero
 //!                                             and no change in output pins
-//!       - EPWM_AQ_OUTPUT_LOW_ZERO           - Time base counter equals zero
+//!         - EPWM_AQ_OUTPUT_LOW_ZERO         - Time base counter equals zero
 //!                                             and set output pins to low
-//!       - EPWM_AQ_OUTPUT_HIGH_ZERO          - Time base counter equals zero
+//!         - EPWM_AQ_OUTPUT_HIGH_ZERO        - Time base counter equals zero
 //!                                             and set output pins to high
-//!       - EPWM_AQ_OUTPUT_TOGGLE_ZERO        - Time base counter equals zero
+//!         - EPWM_AQ_OUTPUT_TOGGLE_ZERO      - Time base counter equals zero
 //!                                             and toggle the output pins
-//!       - EPWM_AQ_OUTPUT_NO_CHANGE_PERIOD   - Time base counter equals period
+//!       - When time base counter equals period
+//!         - EPWM_AQ_OUTPUT_NO_CHANGE_PERIOD - Time base counter equals period
 //!                                             and no change in output pins
-//!       - EPWM_AQ_OUTPUT_LOW_PERIOD         - Time base counter equals period
+//!         - EPWM_AQ_OUTPUT_LOW_PERIOD       - Time base counter equals period
 //!                                             and set output pins to low
-//!       - EPWM_AQ_OUTPUT_HIGH_PERIOD        - Time base counter equals period
+//!         - EPWM_AQ_OUTPUT_HIGH_PERIOD      - Time base counter equals period
 //!                                             and set output pins to high
-//!       - EPWM_AQ_OUTPUT_TOGGLE_PERIOD      - Time base counter equals period
+//!         - EPWM_AQ_OUTPUT_TOGGLE_PERIOD    - Time base counter equals period
 //!                                             and toggle the output pins
-//!       - EPWM_AQ_OUTPUT_NO_CHANGE_UP_CMPA  - Time base counter up equals
-//!                                             COMPA and no change in the
-//!                                             output pins
-//!       - EPWM_AQ_OUTPUT_LOW_UP_CMPA        - Time base counter up equals
-//!                                             COMPA and set output pins low
-//!       - EPWM_AQ_OUTPUT_HIGH_UP_CMPA       - Time base counter up equals
-//!                                             COMPA and set output pins high
-//!       - EPWM_AQ_OUTPUT_TOGGLE_UP_CMPA     - Time base counter up equals
-//!                                             COMPA and toggle output pins
-//!       - EPWM_AQ_OUTPUT_NO_CHANGE_DOWN_CMPA- Time base counter down equals
-//!                                             COMPA and no change in the
-//!                                             output pins
-//!       - EPWM_AQ_OUTPUT_LOW_DOWN_CMPA      - Time base counter down equals
-//!                                             COMPA and set output pins low
-//!       - EPWM_AQ_OUTPUT_HIGH_DOWN_CMPA     - Time base counter down equals
-//!                                             COMPA and set output pins high
-//!       - EPWM_AQ_OUTPUT_TOGGLE_DOWN_CMPA   - Time base counter down equals
-//!                                             COMPA and toggle output pins
-//!       - EPWM_AQ_OUTPUT_NO_CHANGE_UP_CMPB  - Time base counter up equals
-//!                                             COMPB and no change in the
-//!                                             output pins
-//!       - EPWM_AQ_OUTPUT_LOW_UP_CMPB        - Time base counter up equals
-//!                                             COMPB and set output pins low
-//!       - EPWM_AQ_OUTPUT_HIGH_UP_CMPB       - Time base counter up equals
-//!                                             COMPB and set output pins high
-//!       - EPWM_AQ_OUTPUT_TOGGLE_UP_CMPB     - Time base counter up equals
-//!                                             COMPB and toggle output pins
-//!       - EPWM_AQ_OUTPUT_NO_CHANGE_DOWN_CMPB- Time base counter down equals
-//!                                             COMPB and no change in the
-//!                                             output pins
-//!       - EPWM_AQ_OUTPUT_LOW_DOWN_CMPB      - Time base counter down equals
-//!                                             COMPB and set output pins low
-//!       - EPWM_AQ_OUTPUT_HIGH_DOWN_CMPB     - Time base counter down equals
-//!                                             COMPB and set output pins high
-//!       - EPWM_AQ_OUTPUT_TOGGLE_DOWN_CMPB   - Time base counter down equals
-//!                                             COMPB and toggle output pins
+//!       - When time base counter equals CMPA during up-count
+//!         - EPWM_AQ_OUTPUT_NO_CHANGE_UP_CMPA  - Time base counter up equals
+//!                                               COMPA and no change in the
+//!                                               output pins
+//!         - EPWM_AQ_OUTPUT_LOW_UP_CMPA        - Time base counter up equals
+//!                                               COMPA and set output pins low
+//!         - EPWM_AQ_OUTPUT_HIGH_UP_CMPA       - Time base counter up equals
+//!                                               COMPA and set output pins high
+//!         - EPWM_AQ_OUTPUT_TOGGLE_UP_CMPA     - Time base counter up equals
+//!                                               COMPA and toggle output pins
+//!       - When time base counter equals CMPA during down-count
+//!         - EPWM_AQ_OUTPUT_NO_CHANGE_DOWN_CMPA - Time base counter down equals
+//!                                                COMPA and no change in the
+//!                                                output pins
+//!         - EPWM_AQ_OUTPUT_LOW_DOWN_CMPA      - Time base counter down equals
+//!                                               COMPA and set output pins low
+//!         - EPWM_AQ_OUTPUT_HIGH_DOWN_CMPA     - Time base counter down equals
+//!                                               COMPA and set output pins high
+//!         - EPWM_AQ_OUTPUT_TOGGLE_DOWN_CMPA   - Time base counter down equals
+//!                                               COMPA and toggle output pins
+//!       - When time base counter equals CMPB during up-count
+//!         - EPWM_AQ_OUTPUT_NO_CHANGE_UP_CMPB  - Time base counter up equals
+//!                                               COMPB and no change in the
+//!                                               output pins
+//!         - EPWM_AQ_OUTPUT_LOW_UP_CMPB        - Time base counter up equals
+//!                                               COMPB and set output pins low
+//!         - EPWM_AQ_OUTPUT_HIGH_UP_CMPB       - Time base counter up equals
+//!                                               COMPB and set output pins high
+//!         - EPWM_AQ_OUTPUT_TOGGLE_UP_CMPB     - Time base counter up equals
+//!                                               COMPB and toggle output pins
+//!       - When time base counter equals CMPB during down-count
+//!         - EPWM_AQ_OUTPUT_NO_CHANGE_DOWN_CMPB- Time base counter down equals
+//!                                               COMPB and no change in the
+//!                                               output pins
+//!         - EPWM_AQ_OUTPUT_LOW_DOWN_CMPB      - Time base counter down equals
+//!                                               COMPB and set output pins low
+//!         - EPWM_AQ_OUTPUT_HIGH_DOWN_CMPB     - Time base counter down equals
+//!                                               COMPB and set output pins high
+//!         - EPWM_AQ_OUTPUT_TOGGLE_DOWN_CMPB   - Time base counter down equals
+//!                                               COMPB and toggle output pins
+//!
+//! \b note:  A logical OR of the valid values should be passed as the action
+//!           parameter. Single action should be configured for each time base
+//!           counter scenario.
 //!
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setActionQualifierActionComplete(uint32_t base,
-                                  EPWM_ActionQualifierOutputModule epwmOutput,
-                                  EPWM_ActionQualifierEventAction action)
+static inline void
+EPWM_setActionQualifierActionComplete(uint32_t base,
+                                   EPWM_ActionQualifierOutputModule epwmOutput,
+                                   uint16_t action)
 {
     uint32_t registerOffset;
 
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
+    //
     // Get the register offset
+    //
     registerOffset = EPWM_O_AQCTLA + (uint16_t)epwmOutput;
 
+    //
     // Write to ZRO, PRD, CAU, CAD, CBU or CBD bits of AQCTLA register
+    //
     HWREGH(base + registerOffset) = (uint16_t)action;
 }
 
@@ -2596,61 +2883,78 @@ static inline void EPWM_setActionQualifierActionComplete(uint32_t base,
 //! \param action is the desired action when the specified event occurs
 //!
 //! This function sets up the Additional Action Qualifier output on ePWMA or
-//! ePWMB depending on the value of epwmOutput, to a value specified by action
+//! ePWMB depending on the value of epwmOutput, to a value specified by action.
+//! Valid action param values from different event scenarios should be OR'd
+//! together to configure complete action for a pwm output.
 //! The following are valid values for the parameters.
 //!   - epwmOutput
 //!       - EPWM_AQ_OUTPUT_A          - ePWMxA output
 //!       - EPWM_AQ_OUTPUT_B          - ePWMxB output
 //!   - action
-//!       - EPWM_AQ_OUTPUT_NO_CHANGE_UP_TI  - T1 event on count up
-//!                                           and no change in output pins
-//!       - EPWM_AQ_OUTPUT_LOW_UP_TI        - T1 event on count up
+//!       - When T1 event occurs during up-count
+//!         - EPWM_AQ_OUTPUT_NO_CHANGE_UP_T1  - T1 event on count up
+//!                                             and no change in output pins
+//!         - EPWM_AQ_OUTPUT_LOW_UP_T1        - T1 event on count up
 //!                                           and set output pins to low
-//!       - EPWM_AQ_OUTPUT_HIGH_UP_TI       - T1 event on count up
+//!         - EPWM_AQ_OUTPUT_HIGH_UP_T1       - T1 event on count up
 //!                                           and set output pins to high
-//!       - EPWM_AQ_OUTPUT_TOGGLE_UP_TI     - T1 event on count up
+//!         - EPWM_AQ_OUTPUT_TOGGLE_UP_T1     - T1 event on count up
 //!                                           and toggle the output pins
-//!       - EPWM_AQ_OUTPUT_NO_CHANGE_DOWN_TI- T1 event on count down
+//!       - When T1 event occurs during down-count
+//!         - EPWM_AQ_OUTPUT_NO_CHANGE_DOWN_T1- T1 event on count down
 //!                                           and no change in output pins
-//!       - EPWM_AQ_OUTPUT_LOW_DOWN_TI      - T1 event on count down
+//!         - EPWM_AQ_OUTPUT_LOW_DOWN_T1      - T1 event on count down
 //!                                           and set output pins to low
-//!       - EPWM_AQ_OUTPUT_HIGH_DOWN_TI     - T1 event on count down
+//!         - EPWM_AQ_OUTPUT_HIGH_DOWN_T1     - T1 event on count down
 //!                                           and set output pins to high
-//!       - EPWM_AQ_OUTPUT_TOGGLE_DOWN_TI   - T1 event on count down
+//!         - EPWM_AQ_OUTPUT_TOGGLE_DOWN_T1   - T1 event on count down
 //!                                           and toggle the output pins
-//!       - EPWM_AQ_OUTPUT_NO_CHANGE_UP_T2  - T2 event on count up
-//!                                           and no change in output pins
-//!       - EPWM_AQ_OUTPUT_LOW_UP_T2        - T2 event on count up
-//!                                           and set output pins to low
-//!       - EPWM_AQ_OUTPUT_HIGH_UP_T2       - T2 event on count up
-//!                                           and set output pins to high
-//!       - EPWM_AQ_OUTPUT_TOGGLE_UP_T2     - T2 event on count up
-//!                                           and toggle the output pins
-//!       - EPWM_AQ_OUTPUT_NO_CHANGE_DOWN_T2- T2 event on count down
-//!                                           and no change in output pins
-//!       - EPWM_AQ_OUTPUT_LOW_DOWN_T2      - T2 event on count down
-//!                                           and set output pins to low
-//!       - EPWM_AQ_OUTPUT_HIGH_DOWN_T2     - T2 event on count down
-//!                                           and set output pins to high
-//!       - EPWM_AQ_OUTPUT_TOGGLE_DOWN_T2   - T2 event on count down
-//!                                           and toggle the output pins
+//!       - When T2 event occurs during up-count
+//!         - EPWM_AQ_OUTPUT_NO_CHANGE_UP_T2  - T2 event on count up
+//!                                             and no change in output pins
+//!         - EPWM_AQ_OUTPUT_LOW_UP_T2        - T2 event on count up
+//!                                             and set output pins to low
+//!         - EPWM_AQ_OUTPUT_HIGH_UP_T2       - T2 event on count up
+//!                                             and set output pins to high
+//!         - EPWM_AQ_OUTPUT_TOGGLE_UP_T2     - T2 event on count up
+//!                                             and toggle the output pins
+//!       - When T2 event occurs during down-count
+//!         - EPWM_AQ_OUTPUT_NO_CHANGE_DOWN_T2 - T2 event on count down
+//!                                              and no change in output pins
+//!         - EPWM_AQ_OUTPUT_LOW_DOWN_T2       - T2 event on count down
+//!                                              and set output pins to low
+//!         - EPWM_AQ_OUTPUT_HIGH_DOWN_T2      - T2 event on count down
+//!                                              and set output pins to high
+//!         - EPWM_AQ_OUTPUT_TOGGLE_DOWN_T2    - T2 event on count down
+//!                                              and toggle the output pins
+//!
+//! \b note:  A logical OR of the valid values should be passed as the action
+//!           parameter. Single action should be configured for each event
+//!           scenario.
 //!
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setAdditionalActionQualifierActionComplete
-                        (uint32_t base,
-                        EPWM_ActionQualifierOutputModule epwmOutput,
-                        EPWM_AdditionalActionQualifierEventAction action)
+static inline void
+EPWM_setAdditionalActionQualifierActionComplete(uint32_t base,
+                               EPWM_ActionQualifierOutputModule epwmOutput,
+                               uint16_t action)
 {
     uint32_t registerTOffset;
 
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
+    //
     // Get the register offset
+    //
     registerTOffset = EPWM_O_AQCTLA2 + (uint16_t)epwmOutput;
 
+    //
     // Write to T1U, T1D, T2U or T2D of AQCTLA2 register
+    //
     HWREGH(base + registerTOffset) = (uint16_t)action;
 }
 
@@ -2676,13 +2980,19 @@ static inline void EPWM_setAdditionalActionQualifierActionComplete
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setActionQualifierContSWForceShadowMode(uint32_t base,
-                              EPWM_ActionQualifierContForce mode)
+static inline void
+EPWM_setActionQualifierContSWForceShadowMode(uint32_t base,
+                                             EPWM_ActionQualifierContForce mode)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
+    //
     // Set the Action qualifier software action reload mode.
-    // write to RLDCSF bit
+    // Write to RLDCSF bit
+    //
     HWREGH(base + EPWM_O_AQSFRC) =
             ((HWREGH(base + EPWM_O_AQSFRC) & ~EPWM_AQSFRC_RLDCSF_M) |
              ((uint16_t)mode << EPWM_AQSFRC_RLDCSF_S));
@@ -2710,13 +3020,19 @@ static inline void EPWM_setActionQualifierContSWForceShadowMode(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setActionQualifierContSWForceAction(uint32_t base,
-                                   EPWM_ActionQualifierOutputModule epwmOutput,
-                                   EPWM_ActionQualifierSWOutput output)
+static inline void
+EPWM_setActionQualifierContSWForceAction(uint32_t base,
+                                    EPWM_ActionQualifierOutputModule epwmOutput,
+                                    EPWM_ActionQualifierSWOutput output)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
-    // Initiate a Continuous software forced output
+    //
+    // Initiate a continuous software forced output
+    //
     if(epwmOutput == EPWM_AQ_OUTPUT_A)
     {
         HWREGH(base + EPWM_O_AQCSFRC) =
@@ -2755,13 +3071,19 @@ static inline void EPWM_setActionQualifierContSWForceAction(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setActionQualifierSWAction(uint32_t base,
-                                   EPWM_ActionQualifierOutputModule epwmOutput,
-                                   EPWM_ActionQualifierOutput output)
+static inline void
+EPWM_setActionQualifierSWAction(uint32_t base,
+                                EPWM_ActionQualifierOutputModule epwmOutput,
+                                EPWM_ActionQualifierOutput output)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
+    //
     // Set the one time software forced action
+    //
     if(epwmOutput == EPWM_AQ_OUTPUT_A)
     {
         HWREGH(base + EPWM_O_AQSFRC) =
@@ -2792,12 +3114,18 @@ static inline void EPWM_setActionQualifierSWAction(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_forceActionQualifierSWAction(uint32_t base,
+static inline void
+EPWM_forceActionQualifierSWAction(uint32_t base,
                                   EPWM_ActionQualifierOutputModule epwmOutput)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
+    //
     // Initiate a software forced event
+    //
     if(epwmOutput == EPWM_AQ_OUTPUT_A)
     {
         HWREGH(base + EPWM_O_AQSFRC) |= EPWM_AQSFRC_OTSFA;
@@ -2808,7 +3136,9 @@ static inline void EPWM_forceActionQualifierSWAction(uint32_t base,
     }
 }
 
-// Dead Band
+//
+// Dead Band Module related APIs
+//
 //*****************************************************************************
 //
 //! Sets Dead Band signal output swap mode.
@@ -2821,34 +3151,41 @@ static inline void EPWM_forceActionQualifierSWAction(uint32_t base,
 //! output variable is set to EPWM_DB_OUTPUT_A and enableSwapMode is true, then
 //! the ePWM A output gets its signal from the ePWM B signal path. Valid values
 //! for the input variables are:
-//!   output
-//!     - EPWM_DB_OUTPUT_A   - ePWM output A
-//!     - EPWM_DB_OUTPUT_B   - ePWM output B
-//!   enableSwapMode
-//!     - true     - the output is swapped
-//!     - false    - the output and the signal path are the same.
+//!  - output
+//!      - EPWM_DB_OUTPUT_A   - ePWM output A
+//!      - EPWM_DB_OUTPUT_B   - ePWM output B
+//!  - enableSwapMode
+//!      - true     - the output is swapped
+//!      - false    - the output and the signal path are the same.
 //!
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setDeadBandOutputSwapMode(uint32_t base,
-                                                  EPWM_DeadBandOutput output,
-                                                  bool enableSwapMode)
+static inline void
+EPWM_setDeadBandOutputSwapMode(uint32_t base, EPWM_DeadBandOutput output,
+                               bool enableSwapMode)
 {
     uint16_t mask;
 
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
     mask = (uint16_t)1U << ((uint16_t)output + EPWM_DBCTL_OUTSWAP_S);
 
     if(enableSwapMode)
     {
+        //
         // Set the appropriate outswap bit to swap output
+        //
         HWREGH(base + EPWM_O_DBCTL) = (HWREGH(base + EPWM_O_DBCTL) | mask);
     }
     else
     {
+        //
         // Clear the appropriate outswap bit to disable output swap
+        //
         HWREGH(base + EPWM_O_DBCTL) = (HWREGH(base + EPWM_O_DBCTL) & ~mask);
     }
 }
@@ -2865,34 +3202,41 @@ static inline void EPWM_setDeadBandOutputSwapMode(uint32_t base,
 //! determines if the applied delay is Rising Edge or Falling Edge. The
 //! enableDelayMode determines if a dead band delay should be applied.
 //! Valid values for the variables are:
-//!   delayMode
-//!     - EPWM_DB_RED   - Rising Edge delay
-//!     - EPWM_DB_FED   - Falling Edge delay
-//!   enableDelayMode
-//!     - true     - Falling edge or Rising edge delay is applied.
-//!     - false    - Dead Band delay is bypassed.
+//!  - delayMode
+//!      - EPWM_DB_RED   - Rising Edge delay
+//!      - EPWM_DB_FED   - Falling Edge delay
+//!  - enableDelayMode
+//!      - true     - Falling edge or Rising edge delay is applied.
+//!      - false    - Dead Band delay is bypassed.
 //!
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setDeadBandDelayMode(uint32_t base,
-                                             EPWM_DeadBandDelayMode delayMode,
-                                             bool enableDelayMode)
+static inline void
+EPWM_setDeadBandDelayMode(uint32_t base, EPWM_DeadBandDelayMode delayMode,
+                          bool enableDelayMode)
 {
     uint16_t mask;
 
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
     mask = 1U << ((uint16_t)(delayMode + EPWM_DBCTL_OUT_MODE_S));
 
     if(enableDelayMode)
     {
+         //
          // Set the appropriate outmode bit to enable Dead Band delay
+         //
          HWREGH(base + EPWM_O_DBCTL) = (HWREGH(base + EPWM_O_DBCTL) | mask);
     }
     else
     {
+        //
         // Clear the appropriate outswap bit to disable output swap
+        //
         HWREGH(base + EPWM_O_DBCTL) = (HWREGH(base + EPWM_O_DBCTL) & ~ mask);
     }
 }
@@ -2908,27 +3252,33 @@ static inline void EPWM_setDeadBandDelayMode(uint32_t base,
 //! This function sets up the polarity as determined by the variable polarity
 //! of the Falling Edge or Rising Edge delay depending on the value of
 //! delayMode. Valid values for the variables are:
-//!   delayMode
-//!     - EPWM_DB_RED   - Rising Edge delay
-//!     - EPWM_DB_FED   - Falling Edge delay
-//!   polarity
-//!     - EPWM_DB_POLARITY_ACTIVE_HIGH   - polarity is not inverted.
-//!     - EPWM_DB_POLARITY_ACTIVE_LOW    - polarity is inverted.
+//!   - delayMode
+//!       - EPWM_DB_RED   - Rising Edge delay
+//!       - EPWM_DB_FED   - Falling Edge delay
+//!   - polarity
+//!       - EPWM_DB_POLARITY_ACTIVE_HIGH   - polarity is not inverted.
+//!       - EPWM_DB_POLARITY_ACTIVE_LOW    - polarity is inverted.
 //!
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setDeadBandDelayPolarity(uint32_t base,
-                                   EPWM_DeadBandDelayMode delayMode,
-                                   EPWM_DeadBandPolarity polarity)
+static inline void
+EPWM_setDeadBandDelayPolarity(uint32_t base,
+                              EPWM_DeadBandDelayMode delayMode,
+                              EPWM_DeadBandPolarity polarity)
 {
     uint16_t shift;
 
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
     shift = (((uint16_t)delayMode ^ 0x1U) + EPWM_DBCTL_POLSEL_S);
 
+    //
     // Set the appropriate polsel bits for dead band polarity
+    //
     HWREGH(base + EPWM_O_DBCTL) =
                        ((HWREGH(base + EPWM_O_DBCTL) & ~ (1U << shift)) |
                         ((uint16_t)polarity << shift));
@@ -2945,20 +3295,25 @@ static inline void EPWM_setDeadBandDelayPolarity(uint32_t base,
 //! Valid values for input are:
 //!     - EPWM_DB_INPUT_EPWMA   - Input signal is ePWMA( Valid for both Falling
 //!                                  Edge and Rising Edge)
-//!     - EPWM_DB_INPUT_EPWMB   - Input signal is ePWMA( Valid for both Falling
+//!     - EPWM_DB_INPUT_EPWMB   - Input signal is ePWMB( Valid for both Falling
 //!                                  Edge and Rising Edge)
 //!
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setRisingEdgeDeadBandDelayInput(uint32_t base,
-                                                        uint16_t input)
+static inline void
+EPWM_setRisingEdgeDeadBandDelayInput(uint32_t base, uint16_t input)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
     ASSERT((input == EPWM_DB_INPUT_EPWMA) ||
            (input == EPWM_DB_INPUT_EPWMB));
 
+    //
     // Set the Rising Edge Delay input
+    //
     HWREGH(base + EPWM_O_DBCTL) =
             ((HWREGH(base + EPWM_O_DBCTL) & ~(1U << (EPWM_DBCTL_IN_MODE_S))) |
              (input << EPWM_DBCTL_IN_MODE_S));
@@ -2975,7 +3330,7 @@ static inline void EPWM_setRisingEdgeDeadBandDelayInput(uint32_t base,
 //! Valid values for input are:
 //!   - EPWM_DB_INPUT_EPWMA   - Input signal is ePWMA(Valid for both Falling
 //!                                Edge and Rising Edge)
-//!   - EPWM_DB_INPUT_EPWMB   - Input signal is ePWMA(Valid for both Falling
+//!   - EPWM_DB_INPUT_EPWMB   - Input signal is ePWMB(Valid for both Falling
 //!                                Edge and Rising Edge)
 //!   - EPWM_DB_INPUT_DB_RED  - Input signal is the output of Rising
 //!                                Edge delay.
@@ -2984,9 +3339,12 @@ static inline void EPWM_setRisingEdgeDeadBandDelayInput(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setFallingEdgeDeadBandDelayInput(uint32_t base,
-                                                         uint16_t input)
+static inline void
+EPWM_setFallingEdgeDeadBandDelayInput(uint32_t base, uint16_t input)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
     ASSERT((input == EPWM_DB_INPUT_EPWMA) ||
            (input == EPWM_DB_INPUT_EPWMB) ||
@@ -2994,14 +3352,21 @@ static inline void EPWM_setFallingEdgeDeadBandDelayInput(uint32_t base,
 
     if(input == EPWM_DB_INPUT_DB_RED)
     {
+        //
         // Set the Falling Edge Delay input
+        //
         HWREGH(base + EPWM_O_DBCTL) |= EPWM_DBCTL_DEDB_MODE;
     }
     else
     {
+        //
         // Set the Falling Edge Delay input
+        //
         HWREGH(base + EPWM_O_DBCTL) &= ~EPWM_DBCTL_DEDB_MODE;
+
+        //
         // Set the Rising Edge Delay input
+        //
         HWREGH(base + EPWM_O_DBCTL) =
         ((HWREGH(base + EPWM_O_DBCTL) & ~(1U << (EPWM_DBCTL_IN_MODE_S + 1U))) |
          (input << (EPWM_DBCTL_IN_MODE_S + 1U)));
@@ -3017,8 +3382,7 @@ static inline void EPWM_setFallingEdgeDeadBandDelayInput(uint32_t base,
 //!
 //! This function enables and sets the Dead Band control register shadow
 //! load mode.
-//! Valid values for the parameters are:
-//!   loadMode
+//! Valid values for the \e loadMode parameter are:
 //!     - EPWM_DB_LOAD_ON_CNTR_ZERO         - load when counter equals zero.
 //!     - EPWM_DB_LOAD_ON_CNTR_PERIOD       - load when counter equals period.
 //!     - EPWM_DB_LOAD_ON_CNTR_ZERO_PERIOD  - load when counter equals zero or
@@ -3028,14 +3392,18 @@ static inline void EPWM_setFallingEdgeDeadBandDelayInput(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setDeadBandControlShadowLoadMode(uint32_t base,
-                                       EPWM_DeadBandControlLoadMode loadMode)
+static inline void
+EPWM_setDeadBandControlShadowLoadMode(uint32_t base,
+                                      EPWM_DeadBandControlLoadMode loadMode)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
-    // Check if shadow mode is enabled
-
+    //
     // Enable the shadow mode and setup the load event
+    //
     HWREGH(base + EPWM_O_DBCTL2) =
           ((HWREGH(base + EPWM_O_DBCTL2) & ~EPWM_DBCTL2_LOADDBCTLMODE_M) |
            (EPWM_DBCTL2_SHDWDBCTLMODE | (uint16_t)loadMode));
@@ -3053,11 +3421,17 @@ static inline void EPWM_setDeadBandControlShadowLoadMode(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_disableDeadBandControlShadowLoadMode(uint32_t base)
+static inline void
+EPWM_disableDeadBandControlShadowLoadMode(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
+    //
     // Disable the shadow load mode. Only immediate load mode only.
+    //
     HWREGH(base + EPWM_O_DBCTL2) =
                  (HWREGH(base + EPWM_O_DBCTL2) & ~EPWM_DBCTL2_SHDWDBCTLMODE);
 }
@@ -3070,23 +3444,28 @@ static inline void EPWM_disableDeadBandControlShadowLoadMode(uint32_t base)
 //! \param loadMode is the shadow to active load event.
 //!
 //! This function sets the Rising Edge Delay register shadow load mode.
-//! Valid values for the parameters are:
-//!   loadMode
+//! Valid values for the \e loadMode parameter are:
 //!     - EPWM_RED_LOAD_ON_CNTR_ZERO        - load when counter equals zero.
 //!     - EPWM_RED_LOAD_ON_CNTR_PERIOD      - load when counter equals period.
 //!     - EPWM_RED_LOAD_ON_CNTR_ZERO_PERIOD - load when counter equals zero or
-//!                                            period.
+//!                                           period.
 //!     - EPWM_RED_LOAD_FREEZE               - Freeze shadow to active load.
 //!
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setRisingEdgeDelayCountShadowLoadMode(uint32_t base,
-                                        EPWM_RisingEdgeDelayLoadMode loadMode)
+static inline void
+EPWM_setRisingEdgeDelayCountShadowLoadMode(uint32_t base,
+                                         EPWM_RisingEdgeDelayLoadMode loadMode)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
+    //
     // Enable the shadow mode. Set-up the load mode
+    //
     HWREGH(base + EPWM_O_DBCTL) =
                ((HWREGH(base + EPWM_O_DBCTL) & ~EPWM_DBCTL_LOADREDMODE_M) |
                 ((uint16_t)EPWM_DBCTL_SHDWDBREDMODE |
@@ -3105,12 +3484,17 @@ static inline void EPWM_setRisingEdgeDelayCountShadowLoadMode(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_disableRisingEdgeDelayCountShadowLoadMode
-                                                           (uint32_t base)
+static inline void
+EPWM_disableRisingEdgeDelayCountShadowLoadMode(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
+    //
     // Disable the shadow mode.
+    //
     HWREGH(base + EPWM_O_DBCTL) =
                    (HWREGH(base + EPWM_O_DBCTL) & ~EPWM_DBCTL_SHDWDBREDMODE);
 
@@ -3124,8 +3508,7 @@ static inline void EPWM_disableRisingEdgeDelayCountShadowLoadMode
 //! \param loadMode is the shadow to active load event.
 //!
 //! This function enables and sets the Falling Edge Delay register shadow load
-//! mode. Valid values for the parameters are:
-//!   loadMode
+//! mode. Valid values for the \e loadMode parameters are:
 //!     - EPWM_FED_LOAD_ON_CNTR_ZERO        - load when counter equals zero.
 //!     - EPWM_FED_LOAD_ON_CNTR_PERIOD      - load when counter equals period.
 //!     - EPWM_FED_LOAD_ON_CNTR_ZERO_PERIOD - load when counter equals zero or
@@ -3135,12 +3518,18 @@ static inline void EPWM_disableRisingEdgeDelayCountShadowLoadMode
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setFallingEdgeDelayCountShadowLoadMode(uint32_t base,
+static inline void
+EPWM_setFallingEdgeDelayCountShadowLoadMode(uint32_t base,
                                         EPWM_FallingEdgeDelayLoadMode loadMode)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
-    // Enable the shadow mode. Setup the load mode
+    //
+    // Enable the shadow mode. Setup the load mode.
+    //
     HWREGH(base + EPWM_O_DBCTL) =
             ((HWREGH(base + EPWM_O_DBCTL) & ~EPWM_DBCTL_LOADFEDMODE_M) |
                 (EPWM_DBCTL_SHDWDBFEDMODE |
@@ -3160,15 +3549,19 @@ static inline void EPWM_setFallingEdgeDelayCountShadowLoadMode(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_disableFallingEdgeDelayCountShadowLoadMode
-                                                               (uint32_t base)
+static inline void
+EPWM_disableFallingEdgeDelayCountShadowLoadMode(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
+    //
     // Disable the shadow mode.
+    //
     HWREGH(base + EPWM_O_DBCTL) =
               (HWREGH(base + EPWM_O_DBCTL) & ~EPWM_DBCTL_SHDWDBFEDMODE);
-
 }
 
 //*****************************************************************************
@@ -3189,12 +3582,18 @@ static inline void EPWM_disableFallingEdgeDelayCountShadowLoadMode
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setDeadBandCounterClock(uint32_t base,
-                                    EPWM_DeadBandClockMode clockMode)
+static inline void
+EPWM_setDeadBandCounterClock(uint32_t base,
+                             EPWM_DeadBandClockMode clockMode)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
+    //
     // Set the DB clock mode
+    //
     HWREGH(base + EPWM_O_DBCTL) =
                 ((HWREGH(base + EPWM_O_DBCTL) & ~EPWM_DBCTL_HALFCYCLE) |
                  ((uint16_t)clockMode << 15U));
@@ -3213,12 +3612,18 @@ static inline void EPWM_setDeadBandCounterClock(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setRisingEdgeDelayCount(uint32_t base,
-                                                uint16_t redCount)
+static inline void
+EPWM_setRisingEdgeDelayCount(uint32_t base, uint16_t redCount)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
     ASSERT(redCount < 0x4000U);
+
+    //
     // Set the RED (Rising Edge Delay) count
+    //
     HWREGH(base + EPWM_O_DBRED) = redCount;
 }
 
@@ -3235,16 +3640,24 @@ static inline void EPWM_setRisingEdgeDelayCount(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setFallingEdgeDelayCount(uint32_t base,
-                                                 uint16_t fedCount)
+static inline void
+EPWM_setFallingEdgeDelayCount(uint32_t base, uint16_t fedCount)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
     ASSERT(fedCount < 0x4000U);
+
+    //
     // Set the RED (Rising Edge Delay) count
+    //
     HWREGH(base + EPWM_O_DBFED) = fedCount;
 }
 
-// Chopper
+//
+// Chopper module related APIs
+//
 //*****************************************************************************
 //
 //! Enable chopper mode
@@ -3256,10 +3669,17 @@ static inline void EPWM_setFallingEdgeDelayCount(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_enableChopper(uint32_t base)
+static inline void
+EPWM_enableChopper(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
+
+    //
     // Set CHPEN bit. Enable Chopper
+    //
     HWREGH(base + EPWM_O_PCCTL) |= EPWM_PCCTL_CHPEN;
 }
 
@@ -3274,10 +3694,17 @@ static inline void EPWM_enableChopper(uint32_t base)
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_disableChopper(uint32_t base)
+static inline void
+EPWM_disableChopper(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
+
+    //
     // Clear CHPEN bit. Disable Chopper
+    //
     HWREGH(base + EPWM_O_PCCTL) &= ~EPWM_PCCTL_CHPEN;
 }
 
@@ -3296,12 +3723,18 @@ static inline void EPWM_disableChopper(uint32_t base)
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setChopperDutyCycle(uint32_t base,
-                                            uint16_t dutyCycleCount)
+static inline void
+EPWM_setChopperDutyCycle(uint32_t base, uint16_t dutyCycleCount)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
     ASSERT(dutyCycleCount < 7U);
+
+    //
     // Set the chopper duty cycle
+    //
     HWREGH(base + EPWM_O_PCCTL) =
                ((HWREGH(base + EPWM_O_PCCTL) & ~EPWM_PCCTL_CHPDUTY_M) |
                 (dutyCycleCount << EPWM_PCCTL_CHPDUTY_S));
@@ -3322,11 +3755,18 @@ static inline void EPWM_setChopperDutyCycle(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setChopperFreq(uint32_t base, uint16_t freqDiv)
+static inline void
+EPWM_setChopperFreq(uint32_t base, uint16_t freqDiv)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
     ASSERT(freqDiv < 8U);
+
+    //
     // Set the chopper clock
+    //
     HWREGH(base + EPWM_O_PCCTL) =
                     ((HWREGH(base + EPWM_O_PCCTL) &
                       ~(uint16_t)EPWM_PCCTL_CHPFREQ_M) |
@@ -3348,19 +3788,27 @@ static inline void EPWM_setChopperFreq(uint32_t base, uint16_t freqDiv)
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setChopperFirstPulseWidth(uint32_t base,
-                                                  uint16_t firstPulseWidth)
+static inline void
+EPWM_setChopperFirstPulseWidth(uint32_t base, uint16_t firstPulseWidth)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
     ASSERT(firstPulseWidth < 16U);
+
+    //
     // Set the chopper clock
+    //
     HWREGH(base + EPWM_O_PCCTL) =
               ((HWREGH(base + EPWM_O_PCCTL) &
                ~(uint16_t)EPWM_PCCTL_OSHTWTH_M) |
                (firstPulseWidth << EPWM_PCCTL_OSHTWTH_S));
 }
 
-// Trip Zone functions
+//
+// Trip Zone module related APIs
+//
 //*****************************************************************************
 //
 //! Enables Trip Zone signal.
@@ -3394,14 +3842,19 @@ static inline void EPWM_setChopperFirstPulseWidth(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_enableTripZoneSignals(uint32_t base, uint16_t tzSignal)
+static inline void
+EPWM_enableTripZoneSignals(uint32_t base, uint16_t tzSignal)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
-    EALLOW;
+    //
     // Set the trip zone bits
+    //
+    EALLOW;
     HWREGH(base + EPWM_O_TZSEL) |= tzSignal;
-
     EDIS;
 }
 
@@ -3438,15 +3891,19 @@ static inline void EPWM_enableTripZoneSignals(uint32_t base, uint16_t tzSignal)
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_disableTripZoneSignals(uint32_t base,
-                                               uint16_t tzSignal)
+static inline void
+EPWM_disableTripZoneSignals(uint32_t base, uint16_t tzSignal)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
-    EALLOW;
+    //
     // Clear the trip zone bits
+    //
+    EALLOW;
     HWREGH(base + EPWM_O_TZSEL) &= ~tzSignal;
-
     EDIS;
 }
 
@@ -3462,13 +3919,13 @@ static inline void EPWM_disableTripZoneSignals(uint32_t base,
 //! The dcType variable specifies the event source to be whether Digital
 //! Compare output A or Digital Compare output B. The dcEvent parameter
 //! specifies the event that causes Trip Zone.
-//!  Valid values for the parameters are:
-//!    dcType
+//! Valid values for the parameters are:
+//!  - dcType
 //!      - EPWM_TZ_DC_OUTPUT_A1     - Digital Compare output 1 A
 //!      - EPWM_TZ_DC_OUTPUT_A2     - Digital Compare output 2 A
 //!      - EPWM_TZ_DC_OUTPUT_B1     - Digital Compare output 1 B
 //!      - EPWM_TZ_DC_OUTPUT_B2     - Digital Compare output 2 B
-//!    dcEvent
+//!  - dcEvent
 //!      - EPWM_TZ_EVENT_DC_DISABLED         - Event Trigger is disabled
 //!      - EPWM_TZ_EVENT_DCXH_LOW            - Trigger event when DCxH low
 //!      - EPWM_TZ_EVENT_DCXH_HIGH           - Trigger event when DCxH high
@@ -3482,19 +3939,23 @@ static inline void EPWM_disableTripZoneSignals(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setTripZoneDigitalCompareEventCondition(uint32_t base,
-                                  EPWM_TripZoneDigitalCompareOutput dcType,
-                            EPWM_TripZoneDigitalCompareOutputEvent dcEvent)
+static inline void
+EPWM_setTripZoneDigitalCompareEventCondition(uint32_t base,
+                                 EPWM_TripZoneDigitalCompareOutput dcType,
+                                 EPWM_TripZoneDigitalCompareOutputEvent dcEvent)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
-    EALLOW;
-
+    //
     // Set Digital Compare Events conditions that cause a Digital Compare trip
+    //
+    EALLOW;
     HWREGH(base + EPWM_O_TZDCSEL) =
            ((HWREGH(base + EPWM_O_TZDCSEL) & ~(0x7U << (uint16_t)dcType)) |
             ((uint16_t)dcEvent << (uint16_t)dcType));
-
     EDIS;
 }
 
@@ -3511,15 +3972,19 @@ static inline void EPWM_setTripZoneDigitalCompareEventCondition(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_enableTripZoneAdvAction(uint32_t base)
+static inline void
+EPWM_enableTripZoneAdvAction(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
-    EALLOW;
-
+    //
     // Enable Advanced feature. Set ETZE bit
+    //
+    EALLOW;
     HWREGH(base + EPWM_O_TZCTL2) |= EPWM_TZCTL2_ETZE;
-
     EDIS;
 }
 
@@ -3534,15 +3999,19 @@ static inline void EPWM_enableTripZoneAdvAction(uint32_t base)
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_disableTripZoneAdvAction(uint32_t base)
+static inline void
+EPWM_disableTripZoneAdvAction(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
-    EALLOW;
-
+    //
     // Disable Advanced feature. clear ETZE bit
+    //
+    EALLOW;
     HWREGH(base + EPWM_O_TZCTL2) &= ~EPWM_TZCTL2_ETZE;
-
     EDIS;
 }
 
@@ -3557,14 +4026,14 @@ static inline void EPWM_disableTripZoneAdvAction(uint32_t base)
 //! This function sets the Trip Zone Action to be taken when a Trip Zone event
 //! occurs.
 //! Valid values for the parameters are:
-//!    tzEvent
+//!  - tzEvent
 //!      - EPWM_TZ_ACTION_EVENT_DCBEVT2  - DCBEVT2 (Digital Compare B event 2)
 //!      - EPWM_TZ_ACTION_EVENT_DCBEVT1  - DCBEVT1 (Digital Compare B event 1)
 //!      - EPWM_TZ_ACTION_EVENT_DCAEVT2  - DCAEVT2 (Digital Compare A event 2)
 //!      - EPWM_TZ_ACTION_EVENT_DCAEVT1  - DCAEVT1 (Digital Compare A event 1)
 //!      - EPWM_TZ_ACTION_EVENT_TZB      - TZ1 - TZ6, DCBEVT2, DCBEVT1
 //!      - EPWM_TZ_ACTION_EVENT_TZA      - TZ1 - TZ6, DCAEVT2, DCAEVT1
-//!    tzAction
+//!  - tzAction
 //!      - EPWM_TZ_ACTION_HIGH_Z         - high impedance output
 //!      - EPWM_TZ_ACTION_HIGH           - high output
 //!      - EPWM_TZ_ACTION_LOW            - low low
@@ -3578,19 +4047,23 @@ static inline void EPWM_disableTripZoneAdvAction(uint32_t base)
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setTripZoneAction(uint32_t base,
-                                          EPWM_TripZoneEvent tzEvent,
-                                          EPWM_TripZoneAction tzAction)
+static inline void
+EPWM_setTripZoneAction(uint32_t base, EPWM_TripZoneEvent tzEvent,
+                       EPWM_TripZoneAction tzAction)
 {
-   ASSERT(EPWM_isBaseValid(base));
+    //
+    // Check the arguments
+    //
+    ASSERT(EPWM_isBaseValid(base));
 
-   EALLOW;
-   // Set the Action for Trip Zone events
-   HWREGH(base + EPWM_O_TZCTL) =
-        ((HWREGH(base + EPWM_O_TZCTL) & ~(0x3U << (uint16_t)tzEvent)) |
-         ((uint16_t)tzAction << (uint16_t)tzEvent)) ;
-
-   EDIS;
+    //
+    // Set the Action for Trip Zone events
+    //
+    EALLOW;
+    HWREGH(base + EPWM_O_TZCTL) =
+         ((HWREGH(base + EPWM_O_TZCTL) & ~(0x3U << (uint16_t)tzEvent)) |
+          ((uint16_t)tzAction << (uint16_t)tzEvent)) ;
+    EDIS;
 }
 
 //*****************************************************************************
@@ -3605,7 +4078,7 @@ static inline void EPWM_setTripZoneAction(uint32_t base,
 //! advanced Trip Zone event occurs.
 //!
 //! Valid values for the parameters are:
-//!    tzAdvEvent
+//!  - tzAdvEvent
 //!      - EPWM_TZ_ADV_ACTION_EVENT_TZB_D  - TZ1 - TZ6, DCBEVT2, DCBEVT1 while
 //!                                             counting down
 //!      - EPWM_TZ_ADV_ACTION_EVENT_TZB_U  - TZ1 - TZ6, DCBEVT2, DCBEVT1 while
@@ -3614,7 +4087,7 @@ static inline void EPWM_setTripZoneAction(uint32_t base,
 //!                                             counting down
 //!      - EPWM_TZ_ADV_ACTION_EVENT_TZA_U  - TZ1 - TZ6, DCAEVT2, DCAEVT1 while
 //!                                             counting up
-//!    tzAdvAction
+//!  - tzAdvAction
 //!      - EPWM_TZ_ADV_ACTION_HIGH_Z    - high impedance output
 //!      - EPWM_TZ_ADV_ACTION_HIGH      - high voltage state
 //!      - EPWM_TZ_ADV_ACTION_LOW       - low voltage state
@@ -3631,21 +4104,24 @@ static inline void EPWM_setTripZoneAction(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setTripZoneAdvAction(uint32_t base,
-                               EPWM_TripZoneAdvancedEvent tzAdvEvent,
-                               EPWM_TripZoneAdvancedAction tzAdvAction)
+static inline void
+EPWM_setTripZoneAdvAction(uint32_t base, EPWM_TripZoneAdvancedEvent tzAdvEvent,
+                          EPWM_TripZoneAdvancedAction tzAdvAction)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
-    EALLOW;
-
+    //
     // Set the Advanced Action for Trip Zone events
+    //
+    EALLOW;
     HWREGH(base + EPWM_O_TZCTL2) =
        ((HWREGH(base + EPWM_O_TZCTL2) & ~(0x7U << (uint16_t)tzAdvEvent)) |
         ((uint16_t)tzAdvAction << (uint16_t)tzAdvEvent));
 
     HWREGH(base + EPWM_O_TZCTL2) |= EPWM_TZCTL2_ETZE;
-
     EDIS;
 }
 
@@ -3660,7 +4136,7 @@ static inline void EPWM_setTripZoneAdvAction(uint32_t base,
 //! This function sets the Digital Compare (DC) Advanced Trip Zone Action to be
 //! taken on ePWMA when an advanced Digital Compare Trip Zone A event occurs.
 //! Valid values for the parameters are:
-//!    tzAdvDCEvent
+//!  - tzAdvDCEvent
 //!      - EPWM_TZ_ADV_ACTION_EVENT_DCxEVT2_D  - Digital Compare event A2 while
 //!                                                 counting down
 //!      - EPWM_TZ_ADV_ACTION_EVENT_DCxEVT2_U  - Digital Compare event A2 while
@@ -3669,7 +4145,7 @@ static inline void EPWM_setTripZoneAdvAction(uint32_t base,
 //!                                                 counting down
 //!      - EPWM_TZ_ADV_ACTION_EVENT_DCxEVT1_U  - Digital Compare event A1 while
 //!                                                 counting up
-//!    tzAdvDCAction
+//!  - tzAdvDCAction
 //!      - EPWM_TZ_ADV_ACTION_HIGH_Z    - high impedance output
 //!      - EPWM_TZ_ADV_ACTION_HIGH      - high voltage state
 //!      - EPWM_TZ_ADV_ACTION_LOW       - low voltage state
@@ -3684,20 +4160,25 @@ static inline void EPWM_setTripZoneAdvAction(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setTripZoneAdvDigitalCompareActionA(uint32_t base,
-                           EPWM_TripZoneAdvDigitalCompareEvent tzAdvDCEvent,
-                           EPWM_TripZoneAdvancedAction tzAdvDCAction)
+static inline void
+EPWM_setTripZoneAdvDigitalCompareActionA(uint32_t base,
+                              EPWM_TripZoneAdvDigitalCompareEvent tzAdvDCEvent,
+                              EPWM_TripZoneAdvancedAction tzAdvDCAction)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
-    EALLOW;
+    //
     // Set the Advanced Action for Trip Zone events
+    //
+    EALLOW;
     HWREGH(base + EPWM_O_TZCTLDCA) =
       ((HWREGH(base + EPWM_O_TZCTLDCA) & ~(0x7U << (uint16_t)tzAdvDCEvent)) |
        ((uint16_t)tzAdvDCAction << (uint16_t)tzAdvDCEvent));
 
     HWREGH(base + EPWM_O_TZCTL2) |= EPWM_TZCTL2_ETZE;
-
     EDIS;
 }
 
@@ -3712,7 +4193,7 @@ static inline void EPWM_setTripZoneAdvDigitalCompareActionA(uint32_t base,
 //! This function sets the Digital Compare (DC) Advanced Trip Zone Action to be
 //! taken on ePWMB when an advanced Digital Compare Trip Zone B event occurs.
 //! Valid values for the parameters are:
-//!    tzAdvDCEvent
+//!  - tzAdvDCEvent
 //!      - EPWM_TZ_ADV_ACTION_EVENT_DCxEVT2_D  - Digital Compare event B2 while
 //!                                                 counting down
 //!      - EPWM_TZ_ADV_ACTION_EVENT_DCxEVT2_U  - Digital Compare event B2 while
@@ -3721,7 +4202,7 @@ static inline void EPWM_setTripZoneAdvDigitalCompareActionA(uint32_t base,
 //!                                                 counting down
 //!      - EPWM_TZ_ADV_ACTION_EVENT_DCxEVT1_U  - Digital Compare event B1 while
 //!                                                 counting up
-//!    tzAdvDCAction
+//!  - tzAdvDCAction
 //!      - EPWM_TZ_ADV_ACTION_HIGH_Z    - high impedance output
 //!      - EPWM_TZ_ADV_ACTION_HIGH      - high voltage state
 //!      - EPWM_TZ_ADV_ACTION_LOW       - low voltage state
@@ -3740,11 +4221,15 @@ static inline void EPWM_setTripZoneAdvDigitalCompareActionB(uint32_t base,
                               EPWM_TripZoneAdvDigitalCompareEvent tzAdvDCEvent,
                               EPWM_TripZoneAdvancedAction tzAdvDCAction)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
-    EALLOW;
-
+    //
     // Set the Advanced Action for Trip Zone events
+    //
+    EALLOW;
     HWREGH(base + EPWM_O_TZCTLDCB) =
      ((HWREGH(base + EPWM_O_TZCTLDCB) & ~(0x7U << (uint16_t)tzAdvDCEvent)) |
       ((uint16_t)tzAdvDCAction << (uint16_t)tzAdvDCEvent));
@@ -3775,16 +4260,20 @@ static inline void EPWM_setTripZoneAdvDigitalCompareActionB(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_enableTripZoneInterrupt(uint32_t base,
-                                                uint16_t tzInterrupt)
+static inline void
+EPWM_enableTripZoneInterrupt(uint32_t base, uint16_t tzInterrupt)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
     ASSERT((tzInterrupt > 0U) && (tzInterrupt < 0x80U));
 
-    EALLOW;
+    //
     // Enable Trip zone interrupts
+    //
+    EALLOW;
     HWREGH(base + EPWM_O_TZEINT) |= tzInterrupt;
-
     EDIS;
 }
 
@@ -3810,16 +4299,20 @@ static inline void EPWM_enableTripZoneInterrupt(uint32_t base,
 //! \return None.
 //
 //***************************************************************************
-static inline void EPWM_disableTripZoneInterrupt(uint32_t base,
-                                                 uint16_t tzInterrupt)
+static inline void
+EPWM_disableTripZoneInterrupt(uint32_t base, uint16_t tzInterrupt)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
     ASSERT((tzInterrupt > 0U) && (tzInterrupt < 0x80U));
 
-    EALLOW;
+    //
     // Disable Trip zone interrupts
+    //
+    EALLOW;
     HWREGH(base + EPWM_O_TZEINT) &= ~tzInterrupt;
-
     EDIS;
 }
 
@@ -3833,8 +4326,8 @@ static inline void EPWM_disableTripZoneInterrupt(uint32_t base,
 //!
 //! \return The function returns the following or the bitwise OR value
 //!         of the following values.
-//!         - EPWM_TZ_INTERRUPT         - Trip Zone interrupt was generated
-//!                                          due to the following TZ events.
+//!         - EPWM_TZ_INTERRUPT    - Trip Zone interrupt was generated
+//!                                  due to the following TZ events.
 //!         - EPWM_TZ_FLAG_CBC     - Trip Zones Cycle By Cycle event status flag
 //!         - EPWM_TZ_FLAG_OST     - Trip Zones One Shot event status flag
 //!         - EPWM_TZ_FLAG_DCAEVT1 - Digital Compare A Event 1 status flag
@@ -3843,10 +4336,17 @@ static inline void EPWM_disableTripZoneInterrupt(uint32_t base,
 //!         - EPWM_TZ_FLAG_DCBEVT2 - Digital Compare B Event 2 status flag
 //
 //***************************************************************************
-static inline uint16_t EPWM_getTripZoneFlagStatus(uint32_t base)
+static inline uint16_t
+EPWM_getTripZoneFlagStatus(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
+
+    //
     // Return the Trip zone flag status
+    //
     return(HWREGH(base + EPWM_O_TZFLG) & 0x7FU);
 }
 
@@ -3872,10 +4372,17 @@ static inline uint16_t EPWM_getTripZoneFlagStatus(uint32_t base)
 //!                                                event B2
 //
 //***************************************************************************
-static inline uint16_t EPWM_getCycleByCycleTripZoneFlagStatus(uint32_t base)
+static inline uint16_t
+EPWM_getCycleByCycleTripZoneFlagStatus(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
+
+    //
     // Return the Cycle By Cycle Trip zone flag status
+    //
     return(HWREGH(base + EPWM_O_TZCBCFLG) & 0xFFU);
 }
 
@@ -3900,10 +4407,17 @@ static inline uint16_t EPWM_getCycleByCycleTripZoneFlagStatus(uint32_t base)
 //!                                                 compare event B1
 //
 //***************************************************************************
-static inline uint16_t EPWM_getOneShotTripZoneFlagStatus(uint32_t base)
+static inline uint16_t
+EPWM_getOneShotTripZoneFlagStatus(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
+
+    //
     // Return the One Shot Trip zone flag status
+    //
     return(HWREGH(base + EPWM_O_TZOSTFLG) & 0xFFU);
 }
 
@@ -3927,13 +4441,19 @@ static inline uint16_t EPWM_getOneShotTripZoneFlagStatus(uint32_t base)
 //!  \return None.
 //
 //**************************************************************************
-static inline void EPWM_selectCycleByCycleTripZoneClearEvent(uint32_t base,
+static inline void
+EPWM_selectCycleByCycleTripZoneClearEvent(uint32_t base,
                                  EPWM_CycleByCycleTripZoneClearMode clearEvent)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
-    EALLOW;
+    //
     // Set the Cycle by Cycle Trip Latch mode
+    //
+    EALLOW;
     HWREGH(base + EPWM_O_TZCLR) =
                  ((HWREGH(base + EPWM_O_TZCLR) & ~EPWM_TZCLR_CBCPULSE_M) |
                   ((uint16_t)clearEvent << EPWM_TZCLR_CBCPULSE_S));
@@ -3960,18 +4480,22 @@ static inline void EPWM_selectCycleByCycleTripZoneClearEvent(uint32_t base,
 //! \b note: A bitwise OR of the valid values can be passed as the tzFlags
 //! parameter.
 //!
-//!
 //! \return None.
 //
 //***************************************************************************
-static inline void EPWM_clearTripZoneFlag(uint32_t base,
-                                                   uint16_t tzFlags)
+static inline void
+EPWM_clearTripZoneFlag(uint32_t base, uint16_t tzFlags)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
     ASSERT((tzFlags < 0x80U) && (tzFlags > 0x1U));
 
-    EALLOW;
+    //
     // Clear Trip zone event flag
+    //
+    EALLOW;
     HWREGH(base + EPWM_O_TZCLR) |= tzFlags;
     EDIS;
 }
@@ -3999,17 +4523,20 @@ static inline void EPWM_clearTripZoneFlag(uint32_t base,
 //! \return None.
 //
 //***************************************************************************
-static inline void EPWM_clearCycleByCycleTripZoneFlag(uint32_t base,
-                                                 uint16_t tzCBCFlags)
+static inline void
+EPWM_clearCycleByCycleTripZoneFlag(uint32_t base, uint16_t tzCBCFlags)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
     ASSERT(tzCBCFlags < 0x800U);
 
-
-    EALLOW;
+    //
     // Clear the Cycle By Cycle Trip zone flag
+    //
+    EALLOW;
     HWREGH(base + EPWM_O_TZCBCCLR) |= tzCBCFlags;
-
     EDIS;
 }
 
@@ -4034,16 +4561,20 @@ static inline void EPWM_clearCycleByCycleTripZoneFlag(uint32_t base,
 //! \return None.
 //
 //***************************************************************************
-static inline void EPWM_clearOneShotTripZoneFlag(uint32_t base,
-                                                 uint16_t tzOSTFlags)
+static inline void
+EPWM_clearOneShotTripZoneFlag(uint32_t base, uint16_t tzOSTFlags)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
     ASSERT(tzOSTFlags < 0x800U);
 
-    EALLOW;
+    //
     // Clear the Cycle By Cycle Trip zone flag
+    //
+    EALLOW;
     HWREGH(base + EPWM_O_TZOSTCLR) |= tzOSTFlags;
-
     EDIS;
 }
 
@@ -4066,20 +4597,26 @@ static inline void EPWM_clearOneShotTripZoneFlag(uint32_t base,
 //! \return None.
 //
 //***************************************************************************
-static inline void EPWM_forceTripZoneEvent(uint32_t base,
-                                     uint16_t tzForceEvent)
+static inline void
+EPWM_forceTripZoneEvent(uint32_t base, uint16_t tzForceEvent)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
     ASSERT((tzForceEvent & 0xFF81U)== 0U);
 
-    EALLOW;
+    //
     // Force a Trip Zone event
+    //
+    EALLOW;
     HWREGH(base + EPWM_O_TZFRC) |= tzForceEvent;
-
     EDIS;
 }
 
-// Event Trigger
+//
+// Event Trigger related APIs
+//
 //*****************************************************************************
 //
 //! Enable ePWM interrupt.
@@ -4091,10 +4628,17 @@ static inline void EPWM_forceTripZoneEvent(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_enableInterrupt(uint32_t base)
+static inline void
+EPWM_enableInterrupt(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
-    // enable ePWM interrupt
+
+    //
+    // Enable ePWM interrupt
+    //
     HWREGH(base + EPWM_O_ETSEL) |= EPWM_ETSEL_INTEN;
 }
 
@@ -4109,10 +4653,17 @@ static inline void EPWM_enableInterrupt(uint32_t base)
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_disableInterrupt(uint32_t base)
+static inline void
+EPWM_disableInterrupt(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
-    //  disable ePWM interrupt
+
+    //
+    // Disable ePWM interrupt
+    //
     HWREGH(base + EPWM_O_ETSEL) &= ~EPWM_ETSEL_INTEN;
 }
 
@@ -4141,11 +4692,14 @@ static inline void EPWM_disableInterrupt(uint32_t base)
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setInterruptSource(uint32_t base,
-                                           uint16_t interruptSource)
+static inline void
+EPWM_setInterruptSource(uint32_t base, uint16_t interruptSource)
 {
     uint16_t intSource;
 
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
     ASSERT(((interruptSource > 0U) && (interruptSource < 9U)) ||
            (interruptSource == 10U) || (interruptSource == 12U) ||
@@ -4156,9 +4710,14 @@ static inline void EPWM_setInterruptSource(uint32_t base,
        (interruptSource == EPWM_INT_TBCTR_D_CMPC) ||
        (interruptSource == EPWM_INT_TBCTR_D_CMPD))
     {
+          //
           // Shift the interrupt source by 1
+          //
           intSource = interruptSource >> 1U;
+
+          //
           // Enable events based on comp C or comp D
+          //
           HWREGH(base + EPWM_O_ETSEL) |= EPWM_ETSEL_INTSELCMP;
     }
     else if((interruptSource == EPWM_INT_TBCTR_U_CMPA) ||
@@ -4168,7 +4727,9 @@ static inline void EPWM_setInterruptSource(uint32_t base,
     {
         intSource = interruptSource;
 
+        //
         // Enable events based on comp A or comp B
+        //
         HWREGH(base + EPWM_O_ETSEL) &= ~EPWM_ETSEL_INTSELCMP;
     }
     else
@@ -4176,7 +4737,9 @@ static inline void EPWM_setInterruptSource(uint32_t base,
         intSource = interruptSource;
     }
 
+    //
     // Set the interrupt source
+    //
     HWREGH(base + EPWM_O_ETSEL) =
             ((HWREGH(base + EPWM_O_ETSEL) & ~EPWM_ETSEL_INTSEL_M) | intSource);
 }
@@ -4195,13 +4758,18 @@ static inline void EPWM_setInterruptSource(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setInterruptEventCount(uint32_t base,
-                                               uint16_t eventCount)
+static inline void
+EPWM_setInterruptEventCount(uint32_t base, uint16_t eventCount)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
     ASSERT(eventCount < 16U);
 
+    //
     // Enable advanced feature of interrupt every up to 15 events
+    //
     HWREGH(base + EPWM_O_ETPS) |= EPWM_ETPS_INTPSSEL;
     HWREGH(base + EPWM_O_ETINTPS) =
          ((HWREGH(base + EPWM_O_ETINTPS) & ~EPWM_ETINTPS_INTPRD2_M) |
@@ -4221,10 +4789,17 @@ static inline void EPWM_setInterruptEventCount(uint32_t base,
 //!         Returns false if no interrupt was generated
 //
 //*****************************************************************************
-static inline bool EPWM_getEventTriggerInterruptStatus(uint32_t base)
+static inline bool
+EPWM_getEventTriggerInterruptStatus(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
+
+    //
     // Return INT bit of ETFLG register
+    //
     return(((HWREGH(base + EPWM_O_ETFLG) & 0x1U) == 0x1U) ? true : false);
 }
 
@@ -4239,10 +4814,17 @@ static inline bool EPWM_getEventTriggerInterruptStatus(uint32_t base)
 //! \return None
 //
 //*****************************************************************************
-static inline void EPWM_clearEventTriggerInterruptFlag(uint32_t base)
+static inline void
+EPWM_clearEventTriggerInterruptFlag(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
-    // clear INT bit of ETCLR register
+
+    //
+    // Clear INT bit of ETCLR register
+    //
     HWREGH(base + EPWM_O_ETCLR) |= EPWM_ETCLR_INT;
 }
 
@@ -4260,10 +4842,17 @@ static inline void EPWM_clearEventTriggerInterruptFlag(uint32_t base)
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_enableInterruptEventCountInit(uint32_t base)
+static inline void
+EPWM_enableInterruptEventCountInit(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
+
+    //
     // Enable interrupt event count initializing/loading
+    //
     HWREGH(base + EPWM_O_ETCNTINITCTL) |= EPWM_ETCNTINITCTL_INTINITEN;
 }
 
@@ -4279,10 +4868,17 @@ static inline void EPWM_enableInterruptEventCountInit(uint32_t base)
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_disableInterruptEventCountInit(uint32_t base)
+static inline void
+EPWM_disableInterruptEventCountInit(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
-    // disable interrupt event count initializing/loading
+
+    //
+    // Disable interrupt event count initializing/loading
+    //
     HWREGH(base + EPWM_O_ETCNTINITCTL) &= ~EPWM_ETCNTINITCTL_INTINITEN;
 }
 
@@ -4301,10 +4897,17 @@ static inline void EPWM_disableInterruptEventCountInit(uint32_t base)
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_forceInterruptEventCountInit(uint32_t base)
+static inline void
+EPWM_forceInterruptEventCountInit(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
+
+    //
     // Load the Interrupt Event counter value
+    //
     HWREGH(base + EPWM_O_ETCNTINITCTL) |= EPWM_ETCNTINITCTL_INTINITFRC;
 }
 
@@ -4322,13 +4925,18 @@ static inline void EPWM_forceInterruptEventCountInit(uint32_t base)
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setInterruptEventCountInitValue(uint32_t base,
-                                                        uint16_t eventCount)
+static inline void
+EPWM_setInterruptEventCountInitValue(uint32_t base, uint16_t eventCount)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
     ASSERT(eventCount < 16U);
 
+    //
     // Set the Pre-interrupt event count
+    //
     HWREGH(base + EPWM_O_ETCNTINIT) =
          ((HWREGH(base + EPWM_O_ETCNTINIT) & ~EPWM_ETCNTINIT_INTINIT_M) |
           (uint16_t)(eventCount & 0xFU));
@@ -4345,10 +4953,17 @@ static inline void EPWM_setInterruptEventCountInitValue(uint32_t base,
 //! \return The interrupt event counts that have occurred.
 //
 //*****************************************************************************
-static inline uint16_t EPWM_getInterruptEventCount(uint32_t base)
+static inline uint16_t
+EPWM_getInterruptEventCount(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
+
+    //
     // Return the interrupt event count
+    //
     return(((HWREGH(base + EPWM_O_ETINTPS) & EPWM_ETINTPS_INTCNT2_M) >>
              EPWM_ETINTPS_INTCNT2_S));
 }
@@ -4364,14 +4979,23 @@ static inline uint16_t EPWM_getInterruptEventCount(uint32_t base)
 //! \return None
 //
 //*****************************************************************************
-static inline void EPWM_forceEventTriggerInterrupt(uint32_t base)
+static inline void
+EPWM_forceEventTriggerInterrupt(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
+
+    //
     // Set INT bit of ETFRC register
+    //
     HWREGH(base + EPWM_O_ETFRC) |= EPWM_ETFRC_INT;
 }
 
-// SOC
+//
+// ADC SOC configuration related APIs
+//
 //*****************************************************************************
 //
 //! Enable ADC SOC event.
@@ -4387,12 +5011,17 @@ static inline void EPWM_forceEventTriggerInterrupt(uint32_t base)
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_enableADCTrigger(uint32_t base,
-                                     EPWM_ADCStartOfConversionType adcSOCType)
+static inline void
+EPWM_enableADCTrigger(uint32_t base, EPWM_ADCStartOfConversionType adcSOCType)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
-    // enable an SOC
+    //
+    // Enable an SOC
+    //
     if(adcSOCType == EPWM_SOC_A)
     {
          HWREGH(base + EPWM_O_ETSEL) |= EPWM_ETSEL_SOCAEN;
@@ -4418,12 +5047,17 @@ static inline void EPWM_enableADCTrigger(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_disableADCTrigger(uint32_t base,
-                                      EPWM_ADCStartOfConversionType adcSOCType)
+static inline void
+EPWM_disableADCTrigger(uint32_t base, EPWM_ADCStartOfConversionType adcSOCType)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
-    // disable an SOC
+    //
+    // Disable an SOC
+    //
     if(adcSOCType == EPWM_SOC_A)
     {
          HWREGH(base + EPWM_O_ETSEL) &= ~EPWM_ETSEL_SOCAEN;
@@ -4444,33 +5078,37 @@ static inline void EPWM_disableADCTrigger(uint32_t base,
 //!
 //! This function sets the ePWM ADC SOC source.
 //! Valid values for socSource are:
-//!  adcSOCType
-//!   - EPWM_SOC_A  - SOC A
-//!   - EPWM_SOC_B  - SOC B
-//!  socSource
-//!    - EPWM_SOC_DCxEVT1              - Event is based on DCxEVT1
-//!    - EPWM_SOC_TBCTR_ZERO           - Time-base counter equal to zero
-//!    - EPWM_SOC_TBCTR_PERIOD         - Time-base counter equal to period
-//!    - EPWM_SOC_TBCTR_ZERO_OR_PERIOD - Time-base counter equal to zero or
-//!                                      period
-//!    - EPWM_SOC_TBCTR_U_CMPx         - Where x is A,B,C or D
-//!                                      Time-base counter equal to CMPA, CMPB,
-//!                                      CMPC or CMPD(depending the value of x)
-//!                                      when the timer is incrementing
-//!    - EPWM_SOC_TBCTR_D_CMPx         - Where x is A,B,C or D
-//!                                      Time-base counter equal to CMPA, CMPB,
-//!                                      CMPC or CMPD(depending the value of x)
-//!                                      when the timer is decrementing
+//!  - adcSOCType
+//!     - EPWM_SOC_A  - SOC A
+//!     - EPWM_SOC_B  - SOC B
+//!  - socSource
+//!     - EPWM_SOC_DCxEVT1              - Event is based on DCxEVT1
+//!     - EPWM_SOC_TBCTR_ZERO           - Time-base counter equal to zero
+//!     - EPWM_SOC_TBCTR_PERIOD         - Time-base counter equal to period
+//!     - EPWM_SOC_TBCTR_ZERO_OR_PERIOD - Time-base counter equal to zero or
+//!                                       period
+//!     - EPWM_SOC_TBCTR_U_CMPx         - Where x is A,B,C or D
+//!                                       Time-base counter equal to CMPA, CMPB,
+//!                                       CMPC or CMPD(depending the value of x)
+//!                                       when the timer is incrementing
+//!     - EPWM_SOC_TBCTR_D_CMPx         - Where x is A,B,C or D
+//!                                       Time-base counter equal to CMPA, CMPB,
+//!                                       CMPC or CMPD(depending the value of x)
+//!                                       when the timer is decrementing
 //!
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setADCTriggerSource(uint32_t base,
-                                     EPWM_ADCStartOfConversionType adcSOCType,
-                                     EPWM_ADCStartOfConversionSource socSource)
+static inline void
+EPWM_setADCTriggerSource(uint32_t base,
+                         EPWM_ADCStartOfConversionType adcSOCType,
+                         EPWM_ADCStartOfConversionSource socSource)
 {
     uint16_t source;
 
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
     if((socSource == EPWM_SOC_TBCTR_U_CMPC) ||
@@ -4487,17 +5125,24 @@ static inline void EPWM_setADCTriggerSource(uint32_t base,
 
     if(adcSOCType == EPWM_SOC_A)
     {
+        //
         // Set the SOC source
+        //
         HWREGH(base + EPWM_O_ETSEL) =
                 ((HWREGH(base + EPWM_O_ETSEL) & ~EPWM_ETSEL_SOCASEL_M) |
                  (source << EPWM_ETSEL_SOCASEL_S));
+
+        //
         // Enable the comparator selection
+        //
         if((socSource == EPWM_SOC_TBCTR_U_CMPA) ||
            (socSource == EPWM_SOC_TBCTR_U_CMPB) ||
            (socSource == EPWM_SOC_TBCTR_D_CMPA) ||
            (socSource == EPWM_SOC_TBCTR_D_CMPB))
         {
+            //
             // Enable events based on comp A or comp B
+            //
             HWREGH(base + EPWM_O_ETSEL) &= ~EPWM_ETSEL_SOCASELCMP;
         }
         else if((socSource == EPWM_SOC_TBCTR_U_CMPC) ||
@@ -4505,27 +5150,38 @@ static inline void EPWM_setADCTriggerSource(uint32_t base,
                 (socSource == EPWM_SOC_TBCTR_D_CMPC) ||
                 (socSource == EPWM_SOC_TBCTR_D_CMPD))
         {
+            //
             // Enable events based on comp C or comp D
-             HWREGH(base + EPWM_O_ETSEL) |= EPWM_ETSEL_SOCASELCMP;
+            //
+            HWREGH(base + EPWM_O_ETSEL) |= EPWM_ETSEL_SOCASELCMP;
         }
         else
         {
-            ; // No action required for the other socSource options
+            //
+            // No action required for the other socSource options
+            //
         }
     }
     else
     {
+        //
         // Enable the comparator selection
+        //
         HWREGH(base + EPWM_O_ETSEL) =
                 ((HWREGH(base + EPWM_O_ETSEL) & ~EPWM_ETSEL_SOCBSEL_M) |
                  (source << EPWM_ETSEL_SOCBSEL_S));
+
+        //
         // Enable the comparator selection
+        //
         if((socSource == EPWM_SOC_TBCTR_U_CMPA) ||
            (socSource == EPWM_SOC_TBCTR_U_CMPB) ||
            (socSource == EPWM_SOC_TBCTR_D_CMPA) ||
            (socSource == EPWM_SOC_TBCTR_D_CMPB))
         {
+            //
             // Enable events based on comp A or comp B
+            //
             HWREGH(base + EPWM_O_ETSEL) &= ~EPWM_ETSEL_SOCBSELCMP;
         }
         else if((socSource == EPWM_SOC_TBCTR_U_CMPC) ||
@@ -4533,12 +5189,16 @@ static inline void EPWM_setADCTriggerSource(uint32_t base,
                 (socSource == EPWM_SOC_TBCTR_D_CMPC) ||
                 (socSource == EPWM_SOC_TBCTR_D_CMPD))
         {
+            //
             // Enable events based on comp C or comp D
+            //
             HWREGH(base + EPWM_O_ETSEL) |= EPWM_ETSEL_SOCBSELCMP;
         }
         else
         {
-            ; // No action required for the other socSource options
+            //
+            // No action required for the other socSource options
+            //
         }
     }
 }
@@ -4554,37 +5214,47 @@ static inline void EPWM_setADCTriggerSource(uint32_t base,
 //! This function sets the SOC event count that determines the number of
 //! events that have to occur before an SOC is issued.
 //!  Valid values for the parameters are:
-//!   adcSOCType
+//!   - adcSOCType
 //!       - EPWM_SOC_A  - SOC A
 //!       - EPWM_SOC_B  - SOC B
-//!   preScaleCount
+//!   - preScaleCount
 //!        - [1 - 15]  -  Generate SOC pulse every preScaleCount
-//!                       upto 15 events.
-//!        \b Note. A preScaleCount value of 0 disables the presale.
+//!                       up to 15 events.
+//!
+//! \note A preScaleCount value of 0 disables the prescale.
 //!
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setADCTriggerEventPrescale(uint32_t base,
-                                   EPWM_ADCStartOfConversionType adcSOCType,
-                                   uint16_t preScaleCount)
+static inline void
+EPWM_setADCTriggerEventPrescale(uint32_t base,
+                                EPWM_ADCStartOfConversionType adcSOCType,
+                                uint16_t preScaleCount)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
     ASSERT(preScaleCount < 16U);
 
-
+    //
     // Enable advanced feature of SOC every up to 15 events
+    //
     HWREGH(base + EPWM_O_ETPS) |= EPWM_ETPS_SOCPSSEL;
     if(adcSOCType == EPWM_SOC_A)
     {
-        // set the count for SOC A
+        //
+        // Set the count for SOC A
+        //
         HWREGH(base + EPWM_O_ETSOCPS) =
            ((HWREGH(base + EPWM_O_ETSOCPS) & ~EPWM_ETSOCPS_SOCAPRD2_M) |
              preScaleCount);
     }
     else
     {
-        // set the count for SOC B
+        //
+        // Set the count for SOC B
+        //
         HWREGH(base + EPWM_O_ETSOCPS) =
              ((HWREGH(base + EPWM_O_ETSOCPS) & ~EPWM_ETSOCPS_SOCBPRD2_M) |
               (preScaleCount << EPWM_ETSOCPS_SOCBPRD2_S));
@@ -4607,12 +5277,18 @@ static inline void EPWM_setADCTriggerEventPrescale(uint32_t base,
 //!         Returns false if the selected adcSOCType SOC was not generated.
 //
 //*****************************************************************************
-static inline bool EPWM_getADCTriggerFlagStatus(uint32_t base,
-                                     EPWM_ADCStartOfConversionType adcSOCType)
+static inline bool
+EPWM_getADCTriggerFlagStatus(uint32_t base,
+                             EPWM_ADCStartOfConversionType adcSOCType)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
+    //
     // Return the SOC A/ B status
+    //
     return((((HWREGH(base + EPWM_O_ETFLG) >>
               ((uint16_t)adcSOCType + 2U)) & 0x1U) == 0x1U) ? true : false);
 }
@@ -4632,12 +5308,18 @@ static inline bool EPWM_getADCTriggerFlagStatus(uint32_t base,
 //! \return None
 //
 //*****************************************************************************
-static inline void EPWM_clearADCTriggerFlag(uint32_t base,
-                                      EPWM_ADCStartOfConversionType adcSOCType)
+static inline void
+EPWM_clearADCTriggerFlag(uint32_t base,
+                         EPWM_ADCStartOfConversionType adcSOCType)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
-    // clear SOC A/B bit of ETCLR register
+    //
+    // Clear SOC A/B bit of ETCLR register
+    //
     HWREGH(base + EPWM_O_ETCLR) |= 1U << ((uint16_t)adcSOCType + 2U);
 }
 
@@ -4660,12 +5342,18 @@ static inline void EPWM_clearADCTriggerFlag(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_enableADCTriggerEventCountInit(uint32_t base,
-                                     EPWM_ADCStartOfConversionType adcSOCType)
+static inline void
+EPWM_enableADCTriggerEventCountInit(uint32_t base,
+                                    EPWM_ADCStartOfConversionType adcSOCType)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
+    //
     // Enable SOC event count initializing/loading
+    //
     HWREGH(base + EPWM_O_ETCNTINITCTL) |= 1U << ((uint16_t)adcSOCType + 14U);
 }
 
@@ -4687,12 +5375,18 @@ static inline void EPWM_enableADCTriggerEventCountInit(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_disableADCTriggerEventCountInit(uint32_t base,
-                                      EPWM_ADCStartOfConversionType adcSOCType)
+static inline void
+EPWM_disableADCTriggerEventCountInit(uint32_t base,
+                                     EPWM_ADCStartOfConversionType adcSOCType)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
-    // disable SOC event count initializing/loading
+    //
+    // Disable SOC event count initializing/loading
+    //
     HWREGH(base + EPWM_O_ETCNTINITCTL) &=
                                   ~(1U << ((uint16_t)adcSOCType + 14U));
 }
@@ -4713,12 +5407,18 @@ static inline void EPWM_disableADCTriggerEventCountInit(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_forceADCTriggerEventCountInit(uint32_t base,
-                                      EPWM_ADCStartOfConversionType adcSOCType)
+static inline void
+EPWM_forceADCTriggerEventCountInit(uint32_t base,
+                                   EPWM_ADCStartOfConversionType adcSOCType)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
+    //
     // Load the Interrupt Event counter value
+    //
     HWREGH(base + EPWM_O_ETCNTINITCTL) |= 1U << ((uint16_t)adcSOCType + 11U);
 }
 
@@ -4739,14 +5439,20 @@ static inline void EPWM_forceADCTriggerEventCountInit(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setADCTriggerEventCountInitValue(uint32_t base,
-                              EPWM_ADCStartOfConversionType adcSOCType,
-                                                   uint16_t eventCount)
+static inline void
+EPWM_setADCTriggerEventCountInitValue(uint32_t base,
+                                      EPWM_ADCStartOfConversionType adcSOCType,
+                                      uint16_t eventCount)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
     ASSERT(eventCount < 16);
 
+    //
     // Set the ADC Trigger event count
+    //
     if(adcSOCType == EPWM_SOC_A)
     {
         HWREGH(base + EPWM_O_ETCNTINIT) =
@@ -4776,13 +5482,20 @@ static inline void EPWM_setADCTriggerEventCountInitValue(uint32_t base,
 //! \return The SOC event counts that have occurred.
 //
 //*****************************************************************************
-static inline uint16_t EPWM_getADCTriggerEventCount(uint32_t base,
-                                     EPWM_ADCStartOfConversionType adcSOCType)
+static inline uint16_t
+EPWM_getADCTriggerEventCount(uint32_t base,
+                             EPWM_ADCStartOfConversionType adcSOCType)
 {
     uint16_t eventCount;
+
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
+    //
     // Return the SOC event count
+    //
     if(adcSOCType == EPWM_SOC_A)
     {
         eventCount = (HWREGH(base + EPWM_O_ETSOCPS) >>
@@ -4811,16 +5524,23 @@ static inline uint16_t EPWM_getADCTriggerEventCount(uint32_t base,
 //! \return None
 //
 //*****************************************************************************
-static inline void EPWM_forceADCTrigger(uint32_t base,
-                                    EPWM_ADCStartOfConversionType adcSOCType)
+static inline void
+EPWM_forceADCTrigger(uint32_t base, EPWM_ADCStartOfConversionType adcSOCType)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
+    //
     // Set SOC A/B bit of ETFRC register
+    //
     HWREGH(base + EPWM_O_ETFRC) |= 1U << ((uint16_t)adcSOCType + 2U);
 }
 
-// Digital Compare
+//
+// Digital Compare module related APIs
+//
 //*****************************************************************************
 //
 //! Set the DC trip input.
@@ -4832,28 +5552,33 @@ static inline void EPWM_forceADCTrigger(uint32_t base,
 //! This function sets the trip input to the Digital Compare (DC). For a given
 //! dcType the function sets the tripSource to be the input to the DC.
 //! Valid values for the parameter are:
-//!   dcType
+//!  - tripSource
+//!     - EPWM_DC_TRIP_TRIPINx - Trip x,where x ranges from 1 to 15 excluding 13
+//!     - EPWM_DC_TRIP_COMBINATION - selects all the Trip signals whose input
+//!                                  is enabled by the following function
+//!                              EPWM_enableDigitalCompareTripCombinationInput()
+//!  - dcType
 //!     - EPWM_DC_TYPE_DCAH  - Digital Compare A High
 //!     - EPWM_DC_TYPE_DCAL  - Digital Compare A Low
 //!     - EPWM_DC_TYPE_DCBH  - Digital Compare B High
 //!     - EPWM_DC_TYPE_DCBL  - Digital Compare B Low
-//!   tripSource
-//!   - EPWM_DC_TRIP_TRIPINx - Trip x,where x ranges from 1 to 15 excluding 13.
-//!   - EPWM_DC_TRIP_COMBINATION - selects all the Trip signals whose input is
-//!                               enabled by the EPWM_enableDCTripCombInput()
-//!                               function.
 //!
 //! \return None
 //
 //*****************************************************************************
-static inline void EPWM_selectDigitalCompareTripInput(uint32_t base,
-                                     EPWM_DigitalCompareTripInput tripSource,
-                                     EPWM_DigitalCompareType dcType)
+static inline void
+EPWM_selectDigitalCompareTripInput(uint32_t base,
+                                   EPWM_DigitalCompareTripInput tripSource,
+                                   EPWM_DigitalCompareType dcType)
 {
-
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
-    // set the DC trip input
+    //
+    // Set the DC trip input
+    //
     EALLOW;
     HWREGH(base + EPWM_O_DCTRIPSEL) =
      ((HWREGH(base + EPWM_O_DCTRIPSEL) & ~(0xFU << ((uint16_t)dcType << 2U))) |
@@ -4861,7 +5586,9 @@ static inline void EPWM_selectDigitalCompareTripInput(uint32_t base,
     EDIS;
 }
 
+//
 // DCFILT
+//
 //*****************************************************************************
 //
 //! Enable DC filter blanking window.
@@ -4873,14 +5600,19 @@ static inline void EPWM_selectDigitalCompareTripInput(uint32_t base,
 //! \return None
 //
 //*****************************************************************************
-static inline void EPWM_enableDigitalCompareBlankingWindow(uint32_t base)
+static inline void
+EPWM_enableDigitalCompareBlankingWindow(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
+
+    //
     // Enable DC filter blanking window
+    //
     EALLOW;
-
     HWREGH(base + EPWM_O_DCFCTL) |= EPWM_DCFCTL_BLANKE;
-
     EDIS;
 }
 
@@ -4895,14 +5627,19 @@ static inline void EPWM_enableDigitalCompareBlankingWindow(uint32_t base)
 //! \return None
 //
 //*****************************************************************************
-static inline void EPWM_disableDigitalCompareBlankingWindow(uint32_t base)
+static inline void
+EPWM_disableDigitalCompareBlankingWindow(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
+
+    //
     // Disable DC filter blanking window
+    //
     EALLOW;
-
     HWREGH(base + EPWM_O_DCFCTL) &= ~EPWM_DCFCTL_BLANKE;
-
     EDIS;
 }
 
@@ -4918,10 +5655,17 @@ static inline void EPWM_disableDigitalCompareBlankingWindow(uint32_t base)
 //! \return None
 //
 //*****************************************************************************
-static inline void EPWM_enableDigitalCompareWindowInverseMode(uint32_t base)
+static inline void
+EPWM_enableDigitalCompareWindowInverseMode(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
+    //
+    // Enable DC window inverse mode.
+    //
     EALLOW;
     HWREGH(base + EPWM_O_DCFCTL) |= EPWM_DCFCTL_BLANKINV;
     EDIS;
@@ -4938,10 +5682,17 @@ static inline void EPWM_enableDigitalCompareWindowInverseMode(uint32_t base)
 //! \return None
 //
 //*****************************************************************************
-static inline void EPWM_disableDigitalCompareWindowInverseMode(uint32_t base)
+static inline void
+EPWM_disableDigitalCompareWindowInverseMode(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
+    //
+    // Disable DC window inverse mode.
+    //
     EALLOW;
     HWREGH(base + EPWM_O_DCFCTL) &= ~EPWM_DCFCTL_BLANKINV;
     EDIS;
@@ -4965,11 +5716,18 @@ static inline void EPWM_disableDigitalCompareWindowInverseMode(uint32_t base)
 //! \return None
 //
 //*****************************************************************************
-static inline void EPWM_setDigitalCompareBlankingEvent(uint32_t base,
+static inline void
+EPWM_setDigitalCompareBlankingEvent(uint32_t base,
                                 EPWM_DigitalCompareBlankingPulse blankingPulse)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
+    //
+    // Set DC blanking event
+    //
     EALLOW;
     HWREGH(base + EPWM_O_DCFCTL) =
             ((HWREGH(base + EPWM_O_DCFCTL) & ~EPWM_DCFCTL_PULSESEL_M) |
@@ -4995,20 +5753,28 @@ static inline void EPWM_setDigitalCompareBlankingEvent(uint32_t base,
 //! \return None
 //
 //*****************************************************************************
-static inline void EPWM_setDigitalCompareFilterInput(uint32_t base,
-                                    EPWM_DigitalCompareFilterInput filterInput)
+static inline void
+EPWM_setDigitalCompareFilterInput(uint32_t base,
+                                  EPWM_DigitalCompareFilterInput filterInput)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
+    //
+    // Set the signal source that will be filtered
+    //
     EALLOW;
-    // Set the signal source that will be filtered.
     HWREGH(base + EPWM_O_DCFCTL) =
                   ((HWREGH(base + EPWM_O_DCFCTL) & ~EPWM_DCFCTL_SRCSEL_M) |
                    ((uint16_t)filterInput));
     EDIS;
 }
 
+//
 // DC Edge Filter
+//
 //*****************************************************************************
 //
 //! Enable Digital Compare Edge Filter.
@@ -5021,12 +5787,18 @@ static inline void EPWM_setDigitalCompareFilterInput(uint32_t base,
 //! \return None
 //
 //*****************************************************************************
-static inline void EPWM_enableDigitalCompareEdgeFilter(uint32_t base)
+static inline void
+EPWM_enableDigitalCompareEdgeFilter(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
+    //
+    // Enable DC Edge Filter
+    //
     EALLOW;
-    // Enable DC Edge Filter.
     HWREGH(base + EPWM_O_DCFCTL) |= EPWM_DCFCTL_EDGEFILTSEL;
     EDIS;
 }
@@ -5042,12 +5814,18 @@ static inline void EPWM_enableDigitalCompareEdgeFilter(uint32_t base)
 //! \return None
 //
 //*****************************************************************************
-static inline void EPWM_disableDigitalCompareEdgeFilter(uint32_t base)
+static inline void
+EPWM_disableDigitalCompareEdgeFilter(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
+    //
+    // Disable DC Edge Filter
+    //
     EALLOW;
-    // Disable DC Edge Filter.
     HWREGH(base + EPWM_O_DCFCTL) &= ~EPWM_DCFCTL_EDGEFILTSEL;
     EDIS;
 }
@@ -5068,13 +5846,19 @@ static inline void EPWM_disableDigitalCompareEdgeFilter(uint32_t base)
 //! \return None
 //
 //*****************************************************************************
-static inline void EPWM_setDigitalCompareEdgeFilterMode(uint32_t base,
-                                    EPWM_DigitalCompareEdgeFilterMode edgeMode)
+static inline void
+EPWM_setDigitalCompareEdgeFilterMode(uint32_t base,
+                                     EPWM_DigitalCompareEdgeFilterMode edgeMode)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
+    //
+    // Set DC Edge filter mode
+    //
     EALLOW;
-    // Set DC Edge filter mode.
     HWREGH(base + EPWM_O_DCFCTL) = (HWREGH(base + EPWM_O_DCFCTL) &
                                     ~EPWM_DCFCTL_EDGEMODE_M) |
                                    (edgeMode << EPWM_DCFCTL_EDGEMODE_S);
@@ -5086,29 +5870,34 @@ static inline void EPWM_setDigitalCompareEdgeFilterMode(uint32_t base,
 //! Set the Digital Compare Edge Filter Edge Count.
 //!
 //! \param base is the base address of the EPWM module.
-//! \param edgeMode is Digital Compare Edge filter mode.
+//! \param edgeCount is Digital Compare event filter count
 //!
-//! This function sets the Digital Compare Event filter Edge Count to genrate
+//! This function sets the Digital Compare Event filter Edge Count to generate
 //! events. Valid values for edgeCount can be:
-//! - EPWM_DC_EDGEFILT_EDGECNT_0 - No edge is required to generate event
-//! - EPWM_DC_EDGEFILT_EDGECNT_1 - 1 edge is required for event generation
-//! - EPWM_DC_EDGEFILT_EDGECNT_2 - 2 edges are required for event generation
-//! - EPWM_DC_EDGEFILT_EDGECNT_3 - 3 edges are required for event generation
-//! - EPWM_DC_EDGEFILT_EDGECNT_4 - 4 edges are required for event generation
-//! - EPWM_DC_EDGEFILT_EDGECNT_5 - 5 edges are required for event generation
-//! - EPWM_DC_EDGEFILT_EDGECNT_6 - 6 edges are required for event generation
-//! - EPWM_DC_EDGEFILT_EDGECNT_7 - 7 edges are required for event generation
+//!  - EPWM_DC_EDGEFILT_EDGECNT_0 - No edge is required to generate event
+//!  - EPWM_DC_EDGEFILT_EDGECNT_1 - 1 edge is required for event generation
+//!  - EPWM_DC_EDGEFILT_EDGECNT_2 - 2 edges are required for event generation
+//!  - EPWM_DC_EDGEFILT_EDGECNT_3 - 3 edges are required for event generation
+//!  - EPWM_DC_EDGEFILT_EDGECNT_4 - 4 edges are required for event generation
+//!  - EPWM_DC_EDGEFILT_EDGECNT_5 - 5 edges are required for event generation
+//!  - EPWM_DC_EDGEFILT_EDGECNT_6 - 6 edges are required for event generation
+//!  - EPWM_DC_EDGEFILT_EDGECNT_7 - 7 edges are required for event generation
 //!
 //! \return None
 //
 //*****************************************************************************
-static inline void EPWM_setDigitalCompareEdgeFilterEdgeCount(uint32_t base,
-                                                             uint16_t edgeCount)
+static inline void
+EPWM_setDigitalCompareEdgeFilterEdgeCount(uint32_t base, uint16_t edgeCount)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
+    //
+    // Set DC Edge filter edge count
+    //
     EALLOW;
-    // Set DC Edge filter edge count.
     HWREGH(base + EPWM_O_DCFCTL) = (HWREGH(base + EPWM_O_DCFCTL) &
                                     ~EPWM_DCFCTL_EDGECOUNT_M) |
                                    (edgeCount << EPWM_DCFCTL_EDGECOUNT_S);
@@ -5127,11 +5916,17 @@ static inline void EPWM_setDigitalCompareEdgeFilterEdgeCount(uint32_t base,
 //! \return Returns the configured DigitalCompare Edge filter edge count.
 //
 //*****************************************************************************
-static inline uint16_t EPWM_getDigitalCompareEdgeFilterEdgeCount(uint32_t base)
+static inline uint16_t
+EPWM_getDigitalCompareEdgeFilterEdgeCount(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
-    // Return configured DC edge filter edge count.
+    //
+    // Return configured DC edge filter edge count
+    //
     return((HWREGH(base + EPWM_O_DCFCTL) & EPWM_DCFCTL_EDGECOUNT_M) >>
            EPWM_DCFCTL_EDGECOUNT_S);
 }
@@ -5148,11 +5943,17 @@ static inline uint16_t EPWM_getDigitalCompareEdgeFilterEdgeCount(uint32_t base)
 //! \return Returns the count of captured edges
 //
 //*****************************************************************************
-static inline uint16_t EPWM_getDigitalCompareEdgeFilterEdgeStatus(uint32_t base)
+static inline uint16_t
+EPWM_getDigitalCompareEdgeFilterEdgeStatus(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
-    // Return captured edge count by DC Edge filter.
+    //
+    // Return captured edge count by DC Edge filter
+    //
     return((HWREGH(base + EPWM_O_DCFCTL) & EPWM_DCFCTL_EDGESTATUS_M) >>
            EPWM_DCFCTL_EDGESTATUS_S);
 }
@@ -5171,11 +5972,17 @@ static inline uint16_t EPWM_getDigitalCompareEdgeFilterEdgeStatus(uint32_t base)
 //! \return None
 //
 //*****************************************************************************
-static inline void EPWM_setDigitalCompareWindowOffset(uint32_t base,
-                                        uint16_t windowOffsetCount)
+static inline void
+EPWM_setDigitalCompareWindowOffset(uint32_t base, uint16_t windowOffsetCount)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
+
+    //
     // Set the blanking window offset in TBCLK counts
+    //
     HWREGH(base + EPWM_O_DCFOFFSET) = windowOffsetCount;
 }
 
@@ -5192,12 +5999,17 @@ static inline void EPWM_setDigitalCompareWindowOffset(uint32_t base,
 //! \return None
 //
 //*****************************************************************************
-static inline void EPWM_setDigitalCompareWindowLength(uint32_t base,
-                                        uint16_t windowLengthCount)
+static inline void
+EPWM_setDigitalCompareWindowLength(uint32_t base, uint16_t windowLengthCount)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
+    //
     // Set the blanking window length in TBCLK counts
+    //
     HWREGH(base + EPWM_O_DCFWINDOW) = windowLengthCount;
 }
 
@@ -5212,11 +6024,17 @@ static inline void EPWM_setDigitalCompareWindowLength(uint32_t base,
 //! \return None
 //
 //*****************************************************************************
-static inline uint16_t EPWM_getDigitalCompareBlankingWindowOffsetCount(
-                                                                 uint32_t base)
+static inline uint16_t
+EPWM_getDigitalCompareBlankingWindowOffsetCount(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
+
+    //
     // Return the Blanking Window Offset count
+    //
     return(HWREGH(base + EPWM_O_DCFOFFSETCNT));
 }
 
@@ -5231,11 +6049,17 @@ static inline uint16_t EPWM_getDigitalCompareBlankingWindowOffsetCount(
 //! \return None
 //
 //*****************************************************************************
-static inline uint16_t EPWM_getDigitalCompareBlankingWindowLengthCount(
-                                                                 uint32_t base)
+static inline uint16_t
+EPWM_getDigitalCompareBlankingWindowLengthCount(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
+
+    //
     // Return the Blanking Window Length count
+    //
     return(HWREGH(base + EPWM_O_DCFWINDOWCNT));
 }
 
@@ -5250,36 +6074,42 @@ static inline uint16_t EPWM_getDigitalCompareBlankingWindowLengthCount(
 //!
 //! This function sets up the Digital Compare module Event sources.
 //! The following are valid values for the parameters.
-//!   dcModule
-//!     - EPWM_DC_MODULE_A  - Digital Compare Module A
-//!     - EPWM_DC_MODULE_B  - Digital Compare Module B
-//!   dcEvent
-//!     - EPWM_DC_EVENT_1   - Digital Compare Event number 1
-//!     - EPWM_DC_EVENT_2   - Digital Compare Event number 2
-//!   dcEventSource
-//!     - EPWM_DC_EVENT_SOURCE_FILT_SIGNAL  - signal source is filtered
-//!           \note The signal source for this option is DCxEVTy, where the
-//!                 value of x is dependent on dcModule and the value of y is
-//!                 dependent on dcEvent. Possible signal sources are DCAEVT1,
-//!                 DCBEVT1, DCAEVT2 or DCBEVT2 depending on the value of both
-//!                 dcModule and dcEvent.
-//!     - EPWM_DC_EVENT_SOURCE_ORIG_SIGNAL  - signal source is unfiltered
-//!                  The signal source for this option is DCEVTFILT.
+//!  - dcModule
+//!      - EPWM_DC_MODULE_A  - Digital Compare Module A
+//!      - EPWM_DC_MODULE_B  - Digital Compare Module B
+//!  - dcEvent
+//!      - EPWM_DC_EVENT_1   - Digital Compare Event number 1
+//!      - EPWM_DC_EVENT_2   - Digital Compare Event number 2
+//!  - dcEventSource
+//!      - EPWM_DC_EVENT_SOURCE_FILT_SIGNAL  - signal source is filtered
+//!            \note The signal source for this option is DCxEVTy, where the
+//!                  value of x is dependent on dcModule and the value of y is
+//!                  dependent on dcEvent. Possible signal sources are DCAEVT1,
+//!                  DCBEVT1, DCAEVT2 or DCBEVT2 depending on the value of both
+//!                  dcModule and dcEvent.
+//!      - EPWM_DC_EVENT_SOURCE_ORIG_SIGNAL  - signal source is unfiltered
+//!                   The signal source for this option is DCEVTFILT.
 //! \return None
 //
 //*****************************************************************************
-static inline void EPWM_setDigitalCompareEventSource(uint32_t base,
+static inline void
+EPWM_setDigitalCompareEventSource(uint32_t base,
                                   EPWM_DigitalCompareModule dcModule,
                                   EPWM_DigitalCompareEvent dcEvent,
                                   EPWM_DigitalCompareEventSource dcEventSource)
 {
     uint32_t registerOffset;
 
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
     registerOffset = EPWM_O_DCACTL + (uint16_t)dcModule;
 
+    //
     // Set the DC event 1 source source
+    //
     EALLOW;
     if(dcEvent == EPWM_DC_EVENT_1)
     {
@@ -5307,33 +6137,39 @@ static inline void EPWM_setDigitalCompareEventSource(uint32_t base,
 //!
 //! This function sets up the Digital Compare module Event sources.
 //! The following are valid values for the parameters.
-//!   dcModule
-//!     - EPWM_DC_MODULE_A  - Digital Compare Module A
-//!     - EPWM_DC_MODULE_B  - Digital Compare Module B
-//!   dcEvent
-//!     - EPWM_DC_EVENT_1   - Digital Compare Event number 1
-//!     - EPWM_DC_EVENT_2   - Digital Compare Event number 2
-//!   syncMode
-//!     - EPWM_DC_EVENT_INPUT_SYNCED      - DC input signal is synced with
-//!                                         TBCLK
-//!     - EPWM_DC_EVENT_INPUT_NOT SYNCED  - DC input signal is not synced with
-//!                                            TBCLK
+//!  - dcModule
+//!      - EPWM_DC_MODULE_A  - Digital Compare Module A
+//!      - EPWM_DC_MODULE_B  - Digital Compare Module B
+//!  - dcEvent
+//!      - EPWM_DC_EVENT_1   - Digital Compare Event number 1
+//!      - EPWM_DC_EVENT_2   - Digital Compare Event number 2
+//!  - syncMode
+//!      - EPWM_DC_EVENT_INPUT_SYNCED      - DC input signal is synced with
+//!                                          TBCLK
+//!      - EPWM_DC_EVENT_INPUT_NOT SYNCED  - DC input signal is not synced with
+//!                                          TBCLK
 //!
 //! \return None
 //
 //*****************************************************************************
-static inline void EPWM_setDigitalCompareEventSyncMode(uint32_t base,
-                                          EPWM_DigitalCompareModule dcModule,
-                                          EPWM_DigitalCompareEvent dcEvent,
-                                          EPWM_DigitalCompareSyncMode syncMode)
+static inline void
+EPWM_setDigitalCompareEventSyncMode(uint32_t base,
+                                    EPWM_DigitalCompareModule dcModule,
+                                    EPWM_DigitalCompareEvent dcEvent,
+                                    EPWM_DigitalCompareSyncMode syncMode)
 {
     uint32_t registerOffset;
 
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
     registerOffset = EPWM_O_DCACTL + (uint16_t)dcModule;
 
+    //
     // Set the DC event sync mode
+    //
     EALLOW;
     if(dcEvent == EPWM_DC_EVENT_1)
     {
@@ -5359,25 +6195,29 @@ static inline void EPWM_setDigitalCompareEventSyncMode(uint32_t base,
 //!
 //! This function enables the Digital Compare Event 1 to generate Start of
 //! Conversion.
-//! The following are valid values for the parameters.
-//!   dcModule
+//! The following are valid values for the \e dcModule parameter.
 //!     - EPWM_DC_MODULE_A  - Digital Compare Module A
 //!     - EPWM_DC_MODULE_B  - Digital Compare Module B
 //!
 //! \return None
 //
 //*****************************************************************************
-static inline void EPWM_enableDigitalCompareADCTrigger(uint32_t base,
-                                            EPWM_DigitalCompareModule dcModule)
+static inline void
+EPWM_enableDigitalCompareADCTrigger(uint32_t base,
+                                    EPWM_DigitalCompareModule dcModule)
 {
     uint32_t registerOffset;
 
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
-
 
     registerOffset = EPWM_O_DCACTL + (uint16_t)dcModule;
 
-    // Enable digital Compare to generate Start of conversion
+    //
+    // Enable Digital Compare start of conversion generation
+    //
     EALLOW;
     HWREGH(base + registerOffset) =
                        (HWREGH(base + registerOffset) | EPWM_DCACTL_EVT1SOCE);
@@ -5393,27 +6233,30 @@ static inline void EPWM_enableDigitalCompareADCTrigger(uint32_t base,
 //!
 //! This function disables the Digital Compare Event 1 from generating Start of
 //! Conversion.
-//! The following are valid values for the parameters.
-//!   dcModule
+//! The following are valid values for the \e dcModule parameter.
 //!     - EPWM_DC_MODULE_A  - Digital Compare Module A
 //!     - EPWM_DC_MODULE_B  - Digital Compare Module B
 //!
 //! \return None
 //
 //*****************************************************************************
-static inline void EPWM_disableDigitalCompareADCTrigger(uint32_t base,
-                                            EPWM_DigitalCompareModule dcModule)
+static inline void
+EPWM_disableDigitalCompareADCTrigger(uint32_t base,
+                                     EPWM_DigitalCompareModule dcModule)
 {
     uint32_t registerOffset;
 
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
-
 
     registerOffset = EPWM_O_DCACTL + (uint16_t)dcModule;
 
-    // Disable digital Compare to generate Start of conversion
+    //
+    // Disable Digital Compare start of conversion generation
+    //
     EALLOW;
-
     HWREGH(base + registerOffset) =
                       (HWREGH(base + registerOffset) & ~EPWM_DCACTL_EVT1SOCE);
     EDIS;
@@ -5428,26 +6271,30 @@ static inline void EPWM_disableDigitalCompareADCTrigger(uint32_t base,
 //!
 //! This function enables the Digital Compare Event 1 to generate sync out
 //! pulse
-//! The following are valid values for the parameters.
-//!   dcModule
+//! The following are valid values for the \e dcModule parameter.
 //!     - EPWM_DC_MODULE_A  - Digital Compare Module A
 //!     - EPWM_DC_MODULE_B  - Digital Compare Module B
 //!
 //! \return None
 //
 //*****************************************************************************
-static inline void EPWM_enableDigitalCompareSyncEvent(uint32_t base,
-                                      EPWM_DigitalCompareModule dcModule)
+static inline void
+EPWM_enableDigitalCompareSyncEvent(uint32_t base,
+                                   EPWM_DigitalCompareModule dcModule)
 {
     uint32_t registerOffset;
 
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
     registerOffset = EPWM_O_DCACTL + (uint16_t)dcModule;
 
-    // Enable digital Compare to generate Start of conversion
+    //
+    // Enable Digital Compare sync out pulse generation
+    //
     EALLOW;
-
     HWREGH(base + registerOffset) =
                      (HWREGH(base + registerOffset) | EPWM_DCACTL_EVT1SYNCE);
     EDIS;
@@ -5462,31 +6309,38 @@ static inline void EPWM_enableDigitalCompareSyncEvent(uint32_t base,
 //!
 //! This function disables the Digital Compare Event 1 from generating synch
 //! out pulse.
-//! The following are valid values for the parameters.
-//!   dcModule
+//! The following are valid values for the \e dcModule parameters.
 //!     - EPWM_DC_MODULE_A  - Digital Compare Module A
 //!     - EPWM_DC_MODULE_B  - Digital Compare Module B
 //!
 //! \return None
 //
 //*****************************************************************************
-static inline void EPWM_disableDigitalCompareSyncEvent(uint32_t base,
-                                       EPWM_DigitalCompareModule dcModule)
+static inline void
+EPWM_disableDigitalCompareSyncEvent(uint32_t base,
+                                    EPWM_DigitalCompareModule dcModule)
 {
     uint32_t registerOffset;
 
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
     registerOffset = EPWM_O_DCACTL + (uint16_t)dcModule;
 
-    // Disable digital Compare to generate Start of conversion
+    //
+    // Disable Digital Compare sync out pulse generation
+    //
     EALLOW;
-
     HWREGH(base + registerOffset) =
                       (HWREGH(base + registerOffset) & ~EPWM_DCACTL_EVT1SYNCE);
     EDIS;
 }
+
+//
 // DC capture mode
+//
 //*****************************************************************************
 //
 //! Enables the Time Base Counter Capture controller.
@@ -5498,14 +6352,19 @@ static inline void EPWM_disableDigitalCompareSyncEvent(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_enableDigitalCompareCounterCapture(uint32_t base)
+static inline void
+EPWM_enableDigitalCompareCounterCapture(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
+
+    //
     // Enable Time base counter capture
+    //
     EALLOW;
-
     HWREGH(base + EPWM_O_DCCAPCTL) |= EPWM_DCCAPCTL_CAPE;
-
     EDIS;
 }
 
@@ -5520,14 +6379,19 @@ static inline void EPWM_enableDigitalCompareCounterCapture(uint32_t base)
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_disableDigitalCompareCounterCapture(uint32_t base)
+static inline void
+EPWM_disableDigitalCompareCounterCapture(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
+
+    //
     // Disable Time base counter capture
+    //
     EALLOW;
-
     HWREGH(base + EPWM_O_DCCAPCTL) &= ~EPWM_DCCAPCTL_CAPE;
-
     EDIS;
 }
 
@@ -5546,22 +6410,29 @@ static inline void EPWM_disableDigitalCompareCounterCapture(uint32_t base)
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setDigitalCompareCounterShadowMode(uint32_t base,
-                                                         bool enableShadowMode)
+static inline void
+EPWM_setDigitalCompareCounterShadowMode(uint32_t base, bool enableShadowMode)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
     EALLOW;
-
     if(enableShadowMode)
     {
+        //
+        // Enable DC counter shadow mode
+        //
         HWREGH(base + EPWM_O_DCCAPCTL) &= ~EPWM_DCCAPCTL_SHDWMODE;
     }
     else
     {
+       //
+       // Disable DC counter shadow mode
+       //
        HWREGH(base + EPWM_O_DCCAPCTL) |= EPWM_DCCAPCTL_SHDWMODE;
     }
-
     EDIS;
 }
 
@@ -5579,11 +6450,17 @@ static inline void EPWM_setDigitalCompareCounterShadowMode(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline bool EPWM_getDigitalCompareCaptureStatus(uint32_t base)
+static inline bool
+EPWM_getDigitalCompareCaptureStatus(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
+    //
     // Return the DC compare status
+    //
     return((HWREGH(base + EPWM_O_DCCAPCTL) & EPWM_DCCAPCTL_CAPSTS) ==
                                                         EPWM_DCCAPCTL_CAPSTS);
 }
@@ -5601,10 +6478,17 @@ static inline bool EPWM_getDigitalCompareCaptureStatus(uint32_t base)
 //! \return Returns the DC Time Base Counter Capture count value.
 //
 //*****************************************************************************
-static inline uint16_t EPWM_getDigitalCompareCaptureCount(uint32_t base)
+static inline uint16_t
+EPWM_getDigitalCompareCaptureCount(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
+
+    //
     // Return the DC Time Base Counter Capture count value
+    //
     return(HWREGH(base + EPWM_O_DCCAP));
 }
 
@@ -5618,34 +6502,45 @@ static inline uint16_t EPWM_getDigitalCompareCaptureCount(uint32_t base)
 //!
 //! This function enables the specified Trip input.
 //! Valid values for the parameters are:
-//!   tripInput
-//!     - EPWM_DC_COMBINATIONAL_TRIPINx, where x is 1,2,...12,14,15
-//!   dcType
-//!     - EPWM_DC_TYPE_DCAH  - Digital Compare A High
-//!     - EPWM_DC_TYPE_DCAL  - Digital Compare A Low
-//!     - EPWM_DC_TYPE_DCBH  - Digital Compare B High
-//!     - EPWM_DC_TYPE_DCBL  - Digital Compare B Low
+//!  - tripInput
+//!      - EPWM_DC_COMBINATIONAL_TRIPINx, where x is 1,2,...12,14,15
+//!  - dcType
+//!      - EPWM_DC_TYPE_DCAH  - Digital Compare A High
+//!      - EPWM_DC_TYPE_DCAL  - Digital Compare A Low
+//!      - EPWM_DC_TYPE_DCBH  - Digital Compare B High
+//!      - EPWM_DC_TYPE_DCBL  - Digital Compare B Low
 //!
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_enableDigitalCompareTripCombinationInput(uint32_t base,
-                                            uint16_t tripInput,
-                                            EPWM_DigitalCompareType dcType)
+static inline void
+EPWM_enableDigitalCompareTripCombinationInput(uint32_t base,
+                                              uint16_t tripInput,
+                                              EPWM_DigitalCompareType dcType)
 {
     uint32_t registerOffset;
 
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
-    // get the DCAHTRIPSEL, DCALTRIPSEL, DCBHTRIPSEL, DCBLTRIPSEL register
+    //
+    // Get the DCAHTRIPSEL, DCALTRIPSEL, DCBHTRIPSEL, DCBLTRIPSEL register
     // offset with respect to DCAHTRIPSEL
+    //
     registerOffset = EPWM_O_DCAHTRIPSEL + (uint16_t)dcType;
 
-    // set the DC trip input
+    //
+    // Set the DC trip input
+    //
     EALLOW;
     HWREGH(base + registerOffset) =
                            (HWREGH(base + registerOffset) | tripInput);
-    // Enable the combinational
+
+    //
+    // Enable the combination input
+    //
     HWREGH(base + EPWM_O_DCTRIPSEL) =
       (HWREGH(base + EPWM_O_DCTRIPSEL) | (0xFU << ((uint16_t)dcType << 2U)));
     EDIS;
@@ -5661,37 +6556,47 @@ static inline void EPWM_enableDigitalCompareTripCombinationInput(uint32_t base,
 //!
 //! This function disables the specified Trip input.
 //! Valid values for the parameters are:
-//!   tripInput
-//!     - EPWM_DC_COMBINATIONAL_TRIPINx, where x is 1,2,...12,14,15
-//!   dcType
-//!     - EPWM_DC_TYPE_DCAH  - Digital Compare A High
-//!     - EPWM_DC_TYPE_DCAL  - Digital Compare A Low
-//!     - EPWM_DC_TYPE_DCBH  - Digital Compare B High
-//!     - EPWM_DC_TYPE_DCBL  - Digital Compare B Low
+//!  - tripInput
+//!      - EPWM_DC_COMBINATIONAL_TRIPINx, where x is 1,2,...12,14,15
+//!  - dcType
+//!      - EPWM_DC_TYPE_DCAH  - Digital Compare A High
+//!      - EPWM_DC_TYPE_DCAL  - Digital Compare A Low
+//!      - EPWM_DC_TYPE_DCBH  - Digital Compare B High
+//!      - EPWM_DC_TYPE_DCBL  - Digital Compare B Low
 //!
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_disableDigitalCompareTripCombinationInput(
-                                               uint32_t base,
+static inline void
+EPWM_disableDigitalCompareTripCombinationInput(uint32_t base,
                                                uint16_t tripInput,
                                                EPWM_DigitalCompareType dcType)
 {
     uint32_t registerOffset;
 
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
-    // get the DCAHTRIPSEL, DCALTRIPSEL, DCBHTRIPSEL, DCBLTRIPSEL register
+    //
+    // Get the DCAHTRIPSEL, DCALTRIPSEL, DCBHTRIPSEL, DCBLTRIPSEL register
     // offset with respect to DCAHTRIPSEL
+    //
     registerOffset = EPWM_O_DCAHTRIPSEL + (uint16_t)dcType;
-    // set the DC trip input
+
+    //
+    // Set the DC trip input
+    //
     EALLOW;
     HWREGH(base + registerOffset) =
                            (HWREGH(base + registerOffset) & ~tripInput);
     EDIS;
 }
 
+//
 // Valley switching
+//
 //*****************************************************************************
 //
 //! Enable valley capture mode.
@@ -5703,11 +6608,17 @@ static inline void EPWM_disableDigitalCompareTripCombinationInput(
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_enableValleyCapture(uint32_t base)
+static inline void
+EPWM_enableValleyCapture(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
+    //
     // Set VCAPE bit
+    //
     EALLOW;
     HWREGH(base + EPWM_O_VCAPCTL) |= EPWM_VCAPCTL_VCAPE;
     EDIS;
@@ -5724,11 +6635,17 @@ static inline void EPWM_enableValleyCapture(uint32_t base)
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_disableValleyCapture(uint32_t base)
+static inline void
+EPWM_disableValleyCapture(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
+    //
     // Clear VCAPE bit
+    //
     EALLOW;
     HWREGH(base + EPWM_O_VCAPCTL) &= ~EPWM_VCAPCTL_VCAPE;
     EDIS;
@@ -5749,11 +6666,17 @@ static inline void EPWM_disableValleyCapture(uint32_t base)
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_startValleyCapture(uint32_t base)
+static inline void
+EPWM_startValleyCapture(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
+    //
     // Set VCAPSTART bit
+    //
     EALLOW;
     HWREGH(base + EPWM_O_VCAPCTL) |= EPWM_VCAPCTL_VCAPSTART;
     EDIS;
@@ -5774,12 +6697,17 @@ static inline void EPWM_startValleyCapture(uint32_t base)
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setValleyTriggerSource(uint32_t base,
-                                 EPWM_ValleyTriggerSource trigger)
+static inline void
+EPWM_setValleyTriggerSource(uint32_t base, EPWM_ValleyTriggerSource trigger)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
-    // write to TRIGSEL bits
+    //
+    // Write to TRIGSEL bits
+    //
     EALLOW;
     HWREGH(base + EPWM_O_VCAPCTL) =
              ((HWREGH(base + EPWM_O_VCAPCTL) & ~EPWM_VCAPCTL_TRIGSEL_M) |
@@ -5807,15 +6735,19 @@ static inline void EPWM_setValleyTriggerSource(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setValleyTriggerEdgeCounts(uint32_t base,
-                                                   uint16_t startCount,
-                                                   uint16_t stopCount)
+static inline void
+EPWM_setValleyTriggerEdgeCounts(uint32_t base, uint16_t startCount,
+                                uint16_t stopCount)
 {
-
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
     ASSERT((startCount < 16U) && (stopCount < 16U));
 
-    // write to STARTEDGE and STOPEDGE bits
+    //
+    // Write to STARTEDGE and STOPEDGE bits
+    //
     EALLOW;
     HWREGH(base + EPWM_O_VCNTCFG) =
                     ((HWREGH(base + EPWM_O_VCNTCFG) &
@@ -5835,11 +6767,17 @@ static inline void EPWM_setValleyTriggerEdgeCounts(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_enableValleyHWDelay(uint32_t base)
+static inline void
+EPWM_enableValleyHWDelay(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
+    //
     // Set EDGEFILTDLYSEL bit
+    //
     EALLOW;
     HWREGH(base + EPWM_O_VCAPCTL) |= EPWM_VCAPCTL_EDGEFILTDLYSEL;
     EDIS;
@@ -5856,11 +6794,17 @@ static inline void EPWM_enableValleyHWDelay(uint32_t base)
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_disableValleyHWDelay(uint32_t base)
+static inline void
+EPWM_disableValleyHWDelay(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
+    //
     // Clear EDGEFILTDLYSEL bit
+    //
     EALLOW;
     HWREGH(base + EPWM_O_VCAPCTL) &= ~EPWM_VCAPCTL_EDGEFILTDLYSEL;
     EDIS;
@@ -5878,13 +6822,17 @@ static inline void EPWM_disableValleyHWDelay(uint32_t base)
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setValleySWDelayValue(uint32_t base,
-                                              uint16_t delayOffsetValue)
+static inline void
+EPWM_setValleySWDelayValue(uint32_t base, uint16_t delayOffsetValue)
 {
-
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
+    //
     // Write to SWVDELVAL bits
+    //
     HWREGH(base + EPWM_O_SWVDELVAL) = delayOffsetValue;
 }
 
@@ -5900,14 +6848,18 @@ static inline void EPWM_setValleySWDelayValue(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setValleyDelayDivider(uint32_t base,
-                                            EPWM_ValleyDelayMode delayMode)
+static inline void
+EPWM_setValleyDelayDivider(uint32_t base, EPWM_ValleyDelayMode delayMode)
 {
-
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
-    EALLOW;
+    //
     // Write to VDELAYDIV bits
+    //
+    EALLOW;
     HWREGH(base + EPWM_O_VCAPCTL) =
          ((HWREGH(base + EPWM_O_VCAPCTL) & ~EPWM_VCAPCTL_VDELAYDIV_M) |
           ((uint16_t)delayMode << 7U));
@@ -5930,22 +6882,29 @@ static inline void EPWM_setValleyDelayDivider(uint32_t base,
 //!         Returns false if the specified edge has not occurred.
 //
 //*****************************************************************************
-static inline bool EPWM_getValleyEdgeStatus(uint32_t base,
-                                            EPWM_ValleyCounterEdge edge)
+static inline bool
+EPWM_getValleyEdgeStatus(uint32_t base, EPWM_ValleyCounterEdge edge)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
     if(edge == EPWM_VALLEY_COUNT_START_EDGE)
     {
-        // returns STARTEDGESTS status
+        //
+        // Returns STARTEDGESTS status
+        //
         return(((HWREGH(base + EPWM_O_VCNTCFG) & EPWM_VCNTCFG_STARTEDGESTS) ==
                    EPWM_VCNTCFG_STARTEDGESTS ) ? true : false);
     }
     else
     {
-        // returns STOPEDGESTS  status
+        //
+        // Returns STOPEDGESTS status
+        //
         return(((HWREGH(base + EPWM_O_VCNTCFG) & EPWM_VCNTCFG_STOPEDGESTS) ==
-                    EPWM_VCNTCFG_STOPEDGESTS) ? true : false);
+                EPWM_VCNTCFG_STOPEDGESTS) ? true : false);
     }
 }
 
@@ -5963,11 +6922,17 @@ static inline bool EPWM_getValleyEdgeStatus(uint32_t base,
 //! \return Returns the valley base time count.
 //
 //*****************************************************************************
-static inline uint16_t EPWM_getValleyCount(uint32_t base)
+static inline uint16_t
+EPWM_getValleyCount(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
+    //
     // Read VCNTVAL register
+    //
     return(HWREGH(base + EPWM_O_VCNTVAL));
 }
 
@@ -5982,11 +6947,17 @@ static inline uint16_t EPWM_getValleyCount(uint32_t base)
 //! \return Returns the valley delay count.
 //
 //*****************************************************************************
-static inline uint16_t EPWM_getValleyHWDelay(uint32_t base)
+static inline uint16_t
+EPWM_getValleyHWDelay(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
+    //
     // Read HWVDELVAL  register
+    //
     return(HWREGH(base + EPWM_O_HWVDELVAL));
 }
 
@@ -6003,12 +6974,18 @@ static inline uint16_t EPWM_getValleyHWDelay(uint32_t base)
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_enableGlobalLoad(uint32_t base)
+static inline void
+EPWM_enableGlobalLoad(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
+    //
+    // Shadow to active load is controlled globally
+    //
     EALLOW;
-    // shadow to active load is controlled globally
     HWREGH(base + EPWM_O_GLDCTL) |= EPWM_GLDCTL_GLD;
     EDIS;
 }
@@ -6025,12 +7002,18 @@ static inline void EPWM_enableGlobalLoad(uint32_t base)
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_disableGlobalLoad(uint32_t base)
+static inline void
+EPWM_disableGlobalLoad(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
+    //
+    // Shadow to active load is controlled individually
+    //
     EALLOW;
-    // shadow to active load is controlled individually
     HWREGH(base + EPWM_O_GLDCTL) &= ~EPWM_GLDCTL_GLD;
     EDIS;
 }
@@ -6046,31 +7029,35 @@ static inline void EPWM_disableGlobalLoad(uint32_t base)
 //! Valid values for the loadTrigger parameter are:
 //!
 //!   - EPWM_GL_LOAD_PULSE_CNTR_ZERO              - load when counter is equal
-//!                                                  to zero
+//!                                                 to zero
 //!   - EPWM_GL_LOAD_PULSE_CNTR_PERIOD            - load when counter is equal
-//!                                                  to period
+//!                                                 to period
 //!   - EPWM_GL_LOAD_PULSE_CNTR_ZERO_PERIOD       - load when counter is equal
-//!                                                  to zero or period
+//!                                                 to zero or period
 //!   - EPWM_GL_LOAD_PULSE_SYNC                    - load on sync event
 //!   - EPWM_GL_LOAD_PULSE_SYNC_OR_CNTR_ZERO      - load on sync event or when
-//!                                                  counter is equal to zero
+//!                                                 counter is equal to zero
 //!   - EPWM_GL_LOAD_PULSE_SYNC_OR_CNTR_PERIOD    - load on sync event or when
-//!                                                  counter is equal to period
+//!                                                 counter is equal to period
 //!   - EPWM_GL_LOAD_PULSE_SYNC_CNTR_ZERO_PERIOD  - load on sync event or when
-//!                                                  counter is equal to period
-//!                                                  or zero
+//!                                                 counter is equal to period
+//!                                                 or zero
 //!   - EPWM_GL_LOAD_PULSE_GLOBAL_FORCE            - load on global force
 //!
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setGlobalLoadTrigger(uint32_t base,
-                                   EPWM_GlobalLoadTrigger loadTrigger)
+static inline void
+EPWM_setGlobalLoadTrigger(uint32_t base, EPWM_GlobalLoadTrigger loadTrigger)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
-
-    // set the Global shadow to active load pulse.
+    //
+    // Set the Global shadow to active load pulse
+    //
     EALLOW;
     HWREGH(base + EPWM_O_GLDCTL) =
                ((HWREGH(base + EPWM_O_GLDCTL) & ~EPWM_GLDCTL_GLDMODE_M) |
@@ -6093,15 +7080,20 @@ static inline void EPWM_setGlobalLoadTrigger(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setGlobalLoadEventPrescale(uint32_t base,
-                                                    uint16_t prescalePulseCount)
+static inline void
+EPWM_setGlobalLoadEventPrescale(uint32_t base, uint16_t prescalePulseCount)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
     ASSERT(prescalePulseCount < 8U);
-    // Set the number of counts that have to occur before
-    // a load strobe is issued.
-    EALLOW;
 
+    //
+    // Set the number of counts that have to occur before
+    // a load strobe is issued
+    //
+    EALLOW;
     HWREGH(base + EPWM_O_GLDCTL) =
                 ((HWREGH(base + EPWM_O_GLDCTL) & ~EPWM_GLDCTL_GLDPRD_M) |
                  (prescalePulseCount << EPWM_GLDCTL_GLDPRD_S));
@@ -6121,10 +7113,17 @@ static inline void EPWM_setGlobalLoadEventPrescale(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline uint16_t EPWM_getGlobalLoadEventCount(uint32_t base)
+static inline uint16_t
+EPWM_getGlobalLoadEventCount(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
-    // Return the number of events that have occurred.
+
+    //
+    // Return the number of events that have occurred
+    //
     return((HWREGH(base + EPWM_O_GLDCTL) >> EPWM_GLDCTL_GLDCNT_S) & 0x7U);
 }
 
@@ -6141,14 +7140,19 @@ static inline uint16_t EPWM_getGlobalLoadEventCount(uint32_t base)
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_disableGlobalLoadOneShotMode(uint32_t base)
+static inline void
+EPWM_disableGlobalLoadOneShotMode(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
+
+    //
     // Enable global continuous shadow to active load
+    //
     EALLOW;
-
     HWREGH(base + EPWM_O_GLDCTL) &= ~EPWM_GLDCTL_OSHTMODE;
-
     EDIS;
 }
 
@@ -6165,15 +7169,19 @@ static inline void EPWM_disableGlobalLoadOneShotMode(uint32_t base)
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_enableGlobalLoadOneShotMode(uint32_t base)
+static inline void
+EPWM_enableGlobalLoadOneShotMode(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
+    //
     // Enable global continuous shadow to active load
+    //
     EALLOW;
-
     HWREGH(base + EPWM_O_GLDCTL) |= EPWM_GLDCTL_OSHTMODE;
-
     EDIS;
 }
 
@@ -6190,12 +7198,20 @@ static inline void EPWM_enableGlobalLoadOneShotMode(uint32_t base)
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_setGlobalLoadOneShotLatch(uint32_t base)
+static inline void
+EPWM_setGlobalLoadOneShotLatch(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
 
+    //
     // Set a one shot Global shadow load pulse.
+    //
+    EALLOW;
     HWREGH(base + EPWM_O_GLDCTL2) |= EPWM_GLDCTL2_OSHTLD;
+    EDIS;
 }
 
 //*****************************************************************************
@@ -6210,11 +7226,20 @@ static inline void EPWM_setGlobalLoadOneShotLatch(uint32_t base)
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_forceGlobalLoadOneShotEvent(uint32_t base)
+static inline void
+EPWM_forceGlobalLoadOneShotEvent(uint32_t base)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
-    // Force a Software Global shadow load pulse.
+
+    //
+    // Force a Software Global shadow load pulse
+    //
+    EALLOW;
     HWREGH(base + EPWM_O_GLDCTL2) |= EPWM_GLDCTL2_GFRCLD;
+    EDIS;
 }
 
 //*****************************************************************************
@@ -6242,16 +7267,20 @@ static inline void EPWM_forceGlobalLoadOneShotEvent(uint32_t base)
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_enableGlobalLoadRegisters(uint32_t base,
-                                                 uint16_t loadRegister)
+static inline void
+EPWM_enableGlobalLoadRegisters(uint32_t base, uint16_t loadRegister)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
     ASSERT((loadRegister > 0x0000U) && (loadRegister < 0x0800U));
-    // the register specified by loadRegister is loaded globally
+
+    //
+    // The register specified by loadRegister is loaded globally
+    //
     EALLOW;
-
     HWREGH(base + EPWM_O_GLDCFG) |= loadRegister;
-
     EDIS;
 }
 
@@ -6281,18 +7310,21 @@ static inline void EPWM_enableGlobalLoadRegisters(uint32_t base,
 //! \return None.
 //
 //*****************************************************************************
-static inline void EPWM_disableGlobalLoadRegisters(uint32_t base,
-                                                   uint16_t loadRegister)
+static inline void
+EPWM_disableGlobalLoadRegisters(uint32_t base, uint16_t loadRegister)
 {
+    //
+    // Check the arguments
+    //
     ASSERT(EPWM_isBaseValid(base));
     ASSERT((loadRegister > 0x0000U) && (loadRegister < 0x0800U));
 
-    // the register specified by loadRegister is loaded by individual
+    //
+    // The register specified by loadRegister is loaded by individual
     // register configuration setting
+    //
     EALLOW;
-
     HWREGH(base + EPWM_O_GLDCFG) &= ~loadRegister;
-
     EDIS;
 }
 
@@ -6306,16 +7338,16 @@ static inline void EPWM_disableGlobalLoadRegisters(uint32_t base,
 //! This function sets the emulation behaviours of the time base counter. Valid
 //! values for emulationMode are:
 //!  - EPWM_EMULATION_STOP_AFTER_NEXT_TB    - Stop after next Time Base counter
-//!                                               increment or decrement.
+//!                                           increment or decrement.
 //!  - EPWM_EMULATION_STOP_AFTER_FULL_CYCLE - Stop when counter completes whole
-//!                                               cycle.
+//!                                           cycle.
 //!  - EPWM_EMULATION_FREE_RUN               - Free run.
 //!
 //! \return None.
 //
 //*****************************************************************************
-extern void EPWM_setEmulationMode(uint32_t base,
-                                  EPWM_EmulationMode emulationMode);
+extern void
+EPWM_setEmulationMode(uint32_t base, EPWM_EmulationMode emulationMode);
 //*****************************************************************************
 //
 // Close the Doxygen group.

@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <?ccsproject version="1.0"?>
 <projectOptions>
-	<ccsVersion value="9.2.0"/>
+	<ccsVersion value="9.1.0"/>
 	<deviceVariant value="TMS320C28XX.TMS320F28377D"/>
 	<deviceFamily value="C2000"/>
 	<deviceEndianness value="little"/>
-	<codegenToolVersion value="18.12.3.LTS"/>
-	<isElfFormat value="false"/>
+	<codegenToolVersion value="18.12.2.LTS"/>
+	<isElfFormat value="true"/>
 	<rts value="libc.a"/>
 	<createSlaveProjects value=""/>
 	<templateProperties value="id=empty_driverlib_project.projectspec.empty_driverlib_project"/>
-	<origin value="C:\ti\C2000Ware_1_00_05_00_Software\driverlib\f2837xd\examples\cpu1\empty_projects\CCS\empty_driverlib_project.projectspec"/>
+	<origin value="C:\ti\C2000Ware_2_00_00_03_Software\driverlib\f2837xd\examples\cpu1\empty_projects\CCS\empty_driverlib_project.projectspec"/>
 	<filesToOpen value=""/>
 </projectOptions>

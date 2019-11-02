@@ -5,10 +5,10 @@
 // TITLE:  C28x McBSP driver.
 //
 //###########################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -40,8 +40,8 @@
 // $
 //###########################################################################
 
-#ifndef McBSP_H
-#define McBSP_H
+#ifndef MCBSP_H
+#define MCBSP_H
 
 //*****************************************************************************
 //
@@ -79,13 +79,13 @@ extern "C"
 // McBSP_setTxDataSize() anf McBSP_setRxDataSize().
 //
 //*****************************************************************************
-#define MCBSP_XCR1_M            (MCBSP_XCR1_XWDLEN1_M |\
+#define MCBSP_XCR1_M            (MCBSP_XCR1_XWDLEN1_M |                       \
                                  MCBSP_XCR1_XFRLEN1_M)
-#define MCBSP_RCR1_M            (MCBSP_RCR1_RWDLEN1_M |\
+#define MCBSP_RCR1_M            (MCBSP_RCR1_RWDLEN1_M |                       \
                                  MCBSP_RCR1_RFRLEN1_M)
-#define MCBSP_XCR2_M            (MCBSP_XCR2_XWDLEN2_M |\
+#define MCBSP_XCR2_M            (MCBSP_XCR2_XWDLEN2_M |                       \
                                  MCBSP_XCR2_XFRLEN2_M)
-#define MCBSP_RCR2_M            (MCBSP_RCR2_RWDLEN2_M |\
+#define MCBSP_RCR2_M            (MCBSP_RCR2_RWDLEN2_M |                       \
                                  MCBSP_RCR2_RFRLEN2_M)
 
 //*****************************************************************************
@@ -264,8 +264,10 @@ typedef enum
 //*****************************************************************************
 typedef enum
 {
-    MCBSP_SRG_RX_CLOCK_SOURCE_LSPCLK = 0x0001U, //!< LSPCLK is SRG clock source.
-    MCBSP_SRG_RX_CLOCK_SOURCE_MCLKX_PIN = 0x0003U//!< MCLKx is SRG clock source.
+    MCBSP_SRG_RX_CLOCK_SOURCE_LSPCLK = 0x0001U, //!< LSPCLK is SRG clock
+                                                //!< source.
+    MCBSP_SRG_RX_CLOCK_SOURCE_MCLKX_PIN = 0x0003U //!< MCLKx is SRG clock
+                                                  //!< source.
 }McBSP_SRGRxClockSource;
 
 //*****************************************************************************
@@ -276,7 +278,7 @@ typedef enum
 //*****************************************************************************
 typedef enum
 {
-    MCBSP_SRG_TX_CLOCK_SOURCE_LSPCLK = 0x0001U, //!< LSPCLK is SRG clock source.
+    MCBSP_SRG_TX_CLOCK_SOURCE_LSPCLK = 0x0001U,//!< LSPCLK is SRG clock source.
     MCBSP_SRG_TX_CLOCK_SOURCE_MCLKR_PIN = 0x0002U//!< MCLKris SRG clock source.
 }McBSP_SRGTxClockSource;
 
@@ -333,8 +335,8 @@ typedef enum
 //*****************************************************************************
 typedef enum
 {
-    MCBSP_ALL_RX_CHANNELS_ENABLED      = 0x0000U, //!< All Channels are enabled.
-    MCBSP_RX_CHANNEL_SELECTION_ENABLED = 0x0001U //!< Selected channels enabled.
+    MCBSP_ALL_RX_CHANNELS_ENABLED      = 0x0000U,//!< All Channels are enabled.
+    MCBSP_RX_CHANNEL_SELECTION_ENABLED = 0x0001U//!< Selected channels enabled.
 }McBSP_RxChannelMode;
 
 //*****************************************************************************
@@ -349,7 +351,7 @@ typedef enum
                                                         //!< Enabled.
     MCBSP_TX_CHANNEL_SELECTION_ENABLED       = 0x0001U, //!< Selection Enabled.
     MCBSP_ENABLE_MASKED_TX_CHANNEL_SELECTION = 0x0002U, //!< Masked Tx Channel.
-    MCBSP_SYMMERTIC_RX_TX_SELECTION          = 0x0003U //!< Symmetric Selection.
+    MCBSP_SYMMERTIC_RX_TX_SELECTION         = 0x0003U //!< Symmetric Selection.
 }McBSP_TxChannelMode;
 
 //*****************************************************************************
@@ -448,7 +450,8 @@ typedef enum
 //*****************************************************************************
 typedef enum
 {
-    MCBSP_RX_POLARITY_FALLING_EDGE  = 0x0000U,//!< RX data sampled falling edge.
+    MCBSP_RX_POLARITY_FALLING_EDGE  = 0x0000U, //!< RX data sampled falling
+                                               //!< edge.
     MCBSP_RX_POLARITY_RISING_EDGE =  0x0001U  //!< RX data sampled rising edge.
 }McBSP_RxClockPolarity;
 
@@ -478,22 +481,24 @@ typedef struct
     McBSP_RxClockSource clockSourceRx;         //!< McBSP RX clock source.
     McBSP_SRGRxClockSource clockRxSRGSource;   //!< SRG clock source.
     McBSP_SRGTxClockSource clockTxSRGSource;   //!< SRG clock source.
-    McBSP_TxClockPolarity clockMCLKXPolarity;  //!< Clock polarity of MCLKX pin.
-    McBSP_RxClockPolarity clockMCLKRPolarity;  //!< Clock polarity of MCLKR pin.
+    McBSP_TxClockPolarity clockMCLKXPolarity;  //!< Clock polarity of MCLKX
+                                               //!< pin.
+    McBSP_RxClockPolarity clockMCLKRPolarity;  //!< Clock polarity of MCLKR
+                                               //!< pin.
 }McBSP_ClockParams;
 
 //*****************************************************************************
 //
-//! Values that can be passed to McBSP_configureTxFrameSync() as the Transmitter
-//! \e frameSync parameters.
+//! Values that can be passed to McBSP_configureTxFrameSync() as the
+//! Transmitter \e frameSync parameters.
 //
 //*****************************************************************************
 typedef struct
 {
     bool syncSRGSyncFSRFlag;                      //!< Frame sync pulse.
     bool syncErrorDetect;                         //!< Frame sync detect flag.
-    uint16_t syncClockDivider;          //!< Clock divider for sync period.
-    uint16_t syncPulseDivider;          //!< Clock divider for sync pulse width.
+    uint16_t syncClockDivider;         //!< Clock divider for sync period.
+    uint16_t syncPulseDivider;         //!< Clock divider for sync pulse width.
     McBSP_TxFrameSyncSource syncSourceTx;           //!< Frame sync source.
     McBSP_TxInternalFrameSyncSource syncIntSource;//!< Internal Sync source.
     McBSP_TxFrameSyncPolarity syncFSXPolarity;    //!< Frame sync polarity.
@@ -510,7 +515,7 @@ typedef struct
     bool syncSRGSyncFSRFlag;                    //!< Frame sync pulse.
     bool syncErrorDetect;                       //!< Frame sync error detect.
     uint16_t syncClockDivider;                  //!< Clock divider sync period.
-    uint16_t syncPulseDivider;          //!< Clock divider for sync pulse width.
+    uint16_t syncPulseDivider;         //!< Clock divider for sync pulse width.
     McBSP_RxFrameSyncSource syncSourceRx;       //!< Frame sync source.
     McBSP_RxFrameSyncPolarity syncFSRPolarity;  //!< Frame sync polarity.
 }McBSP_RxFsyncParams;
@@ -565,8 +570,9 @@ typedef struct
 //*****************************************************************************
 typedef struct
 {
-    uint16_t channelCountRx;              //!< Number of channels to be enabled.
-    uint16_t *ptrChannelsListRx;//!< Pointer to array that has list of channels.
+    uint16_t channelCountRx;             //!< Number of channels to be enabled.
+    uint16_t *ptrChannelsListRx;         //!< Pointer to array that has list of
+                                         //!< channels.
     McBSP_RxChannelMode multichannelModeRx;   //!< Multichannel modes.
     McBSP_MultichannelPartition partitionRx;  //!< Multichannel partition.
 }McBSP_RxMultichannelParams;
@@ -580,7 +586,8 @@ typedef struct
 typedef struct
 {
     uint16_t channelCountTx;     //!< Number of channels to be enabled.
-    uint16_t *ptrChannelsListTx;//!< Pointer to array that has list of channels.
+    uint16_t *ptrChannelsListTx; //!< Pointer to array that has list of
+                                 //!< channels.
     McBSP_TxChannelMode multichannelModeTx;   //!< Multichannel modes.
     McBSP_MultichannelPartition partitionTx;  //!< Multichannel partition.
 }McBSP_TxMultichannelParams;
@@ -635,7 +642,7 @@ McBSP_SPISlaveModeParams;
 //
 //*****************************************************************************
 #ifdef DEBUG
-static bool
+static inline bool
 McBSP_isBaseValid(uint32_t base)
 {
     return((base == MCBSPA_BASE) || (base == MCBSPB_BASE));
@@ -701,7 +708,8 @@ McBSP_enableLoopback(uint32_t base)
 //!
 //! This function sets the sign extension mode. Valid values for mode are:
 //!  - \b MCBSP_RIGHT_JUSTIFY_FILL_ZERO - right justified MSB filled with zero.
-//!  - \b MCBSP_RIGHT_JUSTIFY_FILL_SIGN - right justified sign extended in MSBs.
+//!  - \b MCBSP_RIGHT_JUSTIFY_FILL_SIGN - right justified sign extended in
+//!                                       MSBs.
 //!  - \b MCBSP_LEFT_JUSTIFY_FILL_ZER0 - left justifies LBS filled with zero.
 //!
 //! \return None.
@@ -718,8 +726,8 @@ McBSP_setRxSignExtension(uint32_t base, const McBSP_RxSignExtensionMode mode)
     //
     // Write to RJUST bits.
     //
-    HWREGH(base + MCBSP_O_SPCR1) = ((HWREGH(base + MCBSP_O_SPCR1) &
-                                     ~MCBSP_SPCR1_RJUST_M ) | (uint16_t)mode);
+    HWREGH(base + MCBSP_O_SPCR1) =
+    ((HWREGH(base + MCBSP_O_SPCR1) & ~MCBSP_SPCR1_RJUST_M ) | (uint16_t)mode);
 }
 
 //*****************************************************************************
@@ -751,8 +759,8 @@ McBSP_setClockStopMode(uint32_t base, const McBSP_ClockStopMode mode)
     //
     // Write to CLKSTP bits.
     //
-    HWREGH(base + MCBSP_O_SPCR1) = ((HWREGH(base + MCBSP_O_SPCR1) &
-                                     ~MCBSP_SPCR1_CLKSTP_M) | (uint16_t)mode);
+    HWREGH(base + MCBSP_O_SPCR1) =
+    ((HWREGH(base + MCBSP_O_SPCR1) & ~MCBSP_SPCR1_CLKSTP_M) | (uint16_t)mode);
 }
 
 //*****************************************************************************
@@ -835,9 +843,9 @@ McBSP_setRxInterruptSource(uint32_t base,
     //
     // Write to RINTM bits.
     //
-    HWREGH(base + MCBSP_O_SPCR1) = ((HWREGH(base + MCBSP_O_SPCR1) &
-                                     ~MCBSP_SPCR1_RINTM_M) |
-                                     (uint16_t)interruptSource);
+    HWREGH(base + MCBSP_O_SPCR1) =
+    ((HWREGH(base + MCBSP_O_SPCR1) & ~MCBSP_SPCR1_RINTM_M) |
+     (uint16_t)interruptSource);
 }
 
 //*****************************************************************************
@@ -1005,9 +1013,9 @@ McBSP_setEmulationMode(uint32_t base, const McBSP_EmulationMode emulationMode)
     //
     // write to FREE and SOFT bits.
     //
-    HWREGH(base + MCBSP_O_SPCR2) =  ((HWREGH(base + MCBSP_O_SPCR2) &
-                                      ~(MCBSP_SPCR2_FREE | MCBSP_SPCR2_SOFT))
-                                     | (uint16_t)emulationMode);
+    HWREGH(base + MCBSP_O_SPCR2) =
+    ((HWREGH(base + MCBSP_O_SPCR2) & ~(MCBSP_SPCR2_FREE | MCBSP_SPCR2_SOFT))
+     | (uint16_t)emulationMode);
 }
 
 //*****************************************************************************
@@ -1140,9 +1148,9 @@ McBSP_setTxInterruptSource(uint32_t base,
     //
     // Write to XINTM bits.
     //
-    HWREGH(base + MCBSP_O_SPCR2) = ((HWREGH(base + MCBSP_O_SPCR2) &
-                                     ~MCBSP_SPCR2_XINTM_M) |
-                                     (uint16_t)interruptSource);
+    HWREGH(base + MCBSP_O_SPCR2) =
+    ((HWREGH(base + MCBSP_O_SPCR2) & ~MCBSP_SPCR2_XINTM_M) |
+     (uint16_t)interruptSource);
 }
 
 //*****************************************************************************
@@ -1222,7 +1230,9 @@ McBSP_isTxReady(uint32_t base)
     //
     ASSERT(McBSP_isBaseValid(base));
 
+    //
     // Check XRDY bit.
+    //
     return((HWREGH(base + MCBSP_O_SPCR2) & MCBSP_SPCR2_XRDY)
            == MCBSP_SPCR2_XRDY);
 }
@@ -1358,9 +1368,9 @@ McBSP_setRxCompandingMode(uint32_t base,
     //
     // Write to RCOMPAND bits.
     //
-    HWREGH(base + MCBSP_O_RCR2) = ((HWREGH(base + MCBSP_O_RCR2) &
-                                    ~MCBSP_RCR2_RCOMPAND_M) |
-                                   (uint16_t)compandingMode);
+    HWREGH(base + MCBSP_O_RCR2) =
+    ((HWREGH(base + MCBSP_O_RCR2) & ~MCBSP_RCR2_RCOMPAND_M) |
+     (uint16_t)compandingMode);
 }
 
 //*****************************************************************************
@@ -1442,9 +1452,9 @@ McBSP_setRxDataDelayBits(uint32_t base, const McBSP_DataDelayBits delayBits)
     //
     // Write to RDATDLY bits.
     //
-    HWREGH(base + MCBSP_O_RCR2) = ((HWREGH(base + MCBSP_O_RCR2) &
-                                    ~MCBSP_RCR2_RDATDLY_M) |
-                                   (uint16_t)delayBits);
+    HWREGH(base + MCBSP_O_RCR2) =
+    ((HWREGH(base + MCBSP_O_RCR2) & ~MCBSP_RCR2_RDATDLY_M) |
+     (uint16_t)delayBits);
 }
 
 //*****************************************************************************
@@ -1528,9 +1538,9 @@ McBSP_setTxCompandingMode(uint32_t base,
     //
     // Write to XCOMPAND bits.
     //
-    HWREGH(base + MCBSP_O_XCR2) = ((HWREGH(base + MCBSP_O_XCR2) &
-                                    ~MCBSP_XCR2_XCOMPAND_M) |
-                                   (uint16_t)compandingMode);
+    HWREGH(base + MCBSP_O_XCR2) =
+    ((HWREGH(base + MCBSP_O_XCR2) & ~MCBSP_XCR2_XCOMPAND_M) |
+     (uint16_t)compandingMode);
 }
 
 //*****************************************************************************
@@ -1611,9 +1621,9 @@ McBSP_setTxDataDelayBits(uint32_t base, const McBSP_DataDelayBits delayBits)
     //
     // Write to XDATDLY bits.
     //
-    HWREGH(base + MCBSP_O_XCR2) = ((HWREGH(base + MCBSP_O_XCR2) &
-                                    ~MCBSP_XCR2_XDATDLY_M) |
-                                   (uint16_t)delayBits);
+    HWREGH(base + MCBSP_O_XCR2) =
+    ((HWREGH(base + MCBSP_O_XCR2) & ~MCBSP_XCR2_XDATDLY_M) |
+     (uint16_t)delayBits);
 }
 
 //*****************************************************************************
@@ -1643,8 +1653,8 @@ McBSP_setFrameSyncPulsePeriod(uint32_t base, uint16_t frameClockDivider)
     //
     // Assign value to FPER to set the pulse width.
     //
-    HWREGH(base + MCBSP_O_SRGR2) = ((HWREGH(base + MCBSP_O_SRGR2) &
-                                     ~MCBSP_SRGR2_FPER_M) | frameClockDivider);
+    HWREGH(base + MCBSP_O_SRGR2) =
+    ((HWREGH(base + MCBSP_O_SRGR2) & ~MCBSP_SRGR2_FPER_M) | frameClockDivider);
 }
 
 //*****************************************************************************
@@ -1674,9 +1684,9 @@ McBSP_setFrameSyncPulseWidthDivider(uint32_t base, uint16_t pulseWidthDivider)
     //
     // Assign value to FWID to set sync clock rate.
     //
-    HWREGH(base + MCBSP_O_SRGR1) = ((HWREGH(base + MCBSP_O_SRGR1) &
-                                     ~MCBSP_SRGR1_FWID_M) |
-                                    (pulseWidthDivider << MCBSP_SRGR1_FWID_S));
+    HWREGH(base + MCBSP_O_SRGR1) =
+    ((HWREGH(base + MCBSP_O_SRGR1) & ~MCBSP_SRGR1_FWID_M) |
+     (uint16_t)(pulseWidthDivider << MCBSP_SRGR1_FWID_S));
 }
 
 //*****************************************************************************
@@ -1706,9 +1716,9 @@ McBSP_setSRGDataClockDivider(uint32_t base, uint16_t dataClockDivider)
     //
     // Assign value to CLKGDV to set data clock rate.
     //
-    HWREGH(base + MCBSP_O_SRGR1) = ((HWREGH(base + MCBSP_O_SRGR1) &
-                                     ~MCBSP_SRGR1_CLKGDV_M) |
-                                    dataClockDivider);
+    HWREGH(base + MCBSP_O_SRGR1) =
+    ((HWREGH(base + MCBSP_O_SRGR1) & ~MCBSP_SRGR1_CLKGDV_M) |
+     dataClockDivider);
 }
 
 //*****************************************************************************
@@ -1791,16 +1801,16 @@ McBSP_setRxSRGClockSource(uint32_t base,
     //
     // Set or clear CLKSM bit.
     //
-    HWREGH(base + MCBSP_O_SRGR2) = ((HWREGH(base + MCBSP_O_SRGR2) &
-                                     ~MCBSP_SRGR2_CLKSM) |
-                                    (((uint16_t)srgClockSource & 0x1U) << 13U));
+    HWREGH(base + MCBSP_O_SRGR2) =
+    ((HWREGH(base + MCBSP_O_SRGR2) & ~MCBSP_SRGR2_CLKSM) |
+     ((uint16_t)((uint16_t)srgClockSource & 0x1U) << 13U));
 
     //
     // Set or clear SCLKME bit.
     //
-    HWREGH(base + MCBSP_O_PCR) = ((HWREGH(base + MCBSP_O_PCR) &
-                                   ~MCBSP_PCR_SCLKME) |
-                            (uint16_t)(((uint16_t)srgClockSource >> 1U) << 7U));
+    HWREGH(base + MCBSP_O_PCR) =
+    ((HWREGH(base + MCBSP_O_PCR) & ~MCBSP_PCR_SCLKME) |
+     (uint16_t)(((uint16_t)srgClockSource >> 1U) << 7U));
 }
 
 //*****************************************************************************
@@ -1831,15 +1841,15 @@ McBSP_setTxSRGClockSource(uint32_t base,
     //
     // Set or clear CLKSM bit.
     //
-    HWREGH(base + MCBSP_O_SRGR2) = ((HWREGH(base + MCBSP_O_SRGR2) &
-                                     ~MCBSP_SRGR2_CLKSM) |
-                                    (((uint16_t)srgClockSource & 0x1U) << 13U));
+    HWREGH(base + MCBSP_O_SRGR2) =
+    ((HWREGH(base + MCBSP_O_SRGR2) & ~MCBSP_SRGR2_CLKSM) |
+     ((uint16_t)((uint16_t)srgClockSource & 0x1U) << 13U));
     //
     // Set or clear SCLKME bit.
     //
-    HWREGH(base + MCBSP_O_PCR) = ((HWREGH(base + MCBSP_O_PCR) &
-                                   ~MCBSP_PCR_SCLKME) |
-                            (uint16_t)(((uint16_t)srgClockSource >> 1U) << 7U));
+    HWREGH(base + MCBSP_O_PCR) =
+    ((HWREGH(base + MCBSP_O_PCR) & ~MCBSP_PCR_SCLKME) |
+     (uint16_t)(((uint16_t)srgClockSource >> 1U) << 7U));
 }
 
 //*****************************************************************************
@@ -1878,8 +1888,8 @@ McBSP_setTxInternalFrameSyncSource(uint32_t base,
     //
     // Set or clear FSGM bit.
     //
-    HWREGH(base + MCBSP_O_SRGR2) = ((HWREGH(base + MCBSP_O_SRGR2) &
-                                     ~MCBSP_SRGR2_FSGM) | (uint16_t)syncMode);
+    HWREGH(base + MCBSP_O_SRGR2) =
+    ((HWREGH(base + MCBSP_O_SRGR2) & ~MCBSP_SRGR2_FSGM) | (uint16_t)syncMode);
 }
 
 //*****************************************************************************
@@ -1908,8 +1918,8 @@ McBSP_setRxMultichannelPartition(uint32_t base,
     //
     // Set or Clear RMCME bit.
     //
-    HWREGH(base + MCBSP_O_MCR1) = ((HWREGH(base + MCBSP_O_MCR1) &
-                                   ~MCBSP_MCR1_RMCME) | (uint16_t)partition);
+    HWREGH(base + MCBSP_O_MCR1) =
+    ((HWREGH(base + MCBSP_O_MCR1) & ~MCBSP_MCR1_RMCME) | (uint16_t)partition);
 }
 
 //*****************************************************************************
@@ -1925,8 +1935,8 @@ McBSP_setRxMultichannelPartition(uint32_t base,
 //!  blocks to partition A. If values 1,3,5,or 7 are set to block, then
 //!  the API assigns the block to partition B.
 //!
-//! \note This function should be used with the two partition configuration only
-//!       and not with eight partition configuration.
+//! \note This function should be used with the two partition configuration
+//!       only and not with eight partition configuration.
 //!
 //! \return None.
 //
@@ -1950,18 +1960,18 @@ McBSP_setRxTwoPartitionBlock(uint32_t base, const McBSP_PartitionBlock block)
         //
         // write to RPABLK bits.
         //
-        HWREGH(base + MCBSP_O_MCR1)  = ((HWREGH(base + MCBSP_O_MCR1) &
-                                         ~MCBSP_MCR1_RPABLK_M) |
-                                      (uint16_t)(((uint16_t)block >> 1U)<< 5U));
+        HWREGH(base + MCBSP_O_MCR1)  =
+        ((HWREGH(base + MCBSP_O_MCR1) & ~MCBSP_MCR1_RPABLK_M) |
+         (uint16_t)(((uint16_t)block >> 1U)<< 5U));
     }
     else
     {
         //
         // write to RPBBLK bits.
         //
-        HWREGH(base + MCBSP_O_MCR1)  = ((HWREGH(base + MCBSP_O_MCR1) &
-                                         ~MCBSP_MCR1_RPBBLK_M) |
-                                      (uint16_t)(((uint16_t)block >> 1U)<< 7U));
+        HWREGH(base + MCBSP_O_MCR1)  =
+        ((HWREGH(base + MCBSP_O_MCR1) & ~MCBSP_MCR1_RPBBLK_M) |
+         (uint16_t)(((uint16_t)block >> 1U)<< 7U));
     }
 }
 
@@ -2021,8 +2031,8 @@ McBSP_setRxChannelMode(uint32_t base, const McBSP_RxChannelMode channelMode)
     //
     // Set or clear RMCM bit.
     //
-    HWREGH(base + MCBSP_O_MCR1) = ((HWREGH(base + MCBSP_O_MCR1) &
-                                   ~MCBSP_MCR1_RMCM) | (uint16_t)channelMode);
+    HWREGH(base + MCBSP_O_MCR1) =
+    ((HWREGH(base + MCBSP_O_MCR1) & ~MCBSP_MCR1_RMCM) | (uint16_t)channelMode);
 }
 
 //*****************************************************************************
@@ -2051,8 +2061,8 @@ McBSP_setTxMultichannelPartition(uint32_t base,
     //
     // Set or clear XMCME bit.
     //
-    HWREGH(base + MCBSP_O_MCR2) = ((HWREGH(base + MCBSP_O_MCR2) &
-                                   ~MCBSP_MCR2_XMCME) | (uint16_t)partition);
+    HWREGH(base + MCBSP_O_MCR2) =
+    ((HWREGH(base + MCBSP_O_MCR2) & ~MCBSP_MCR2_XMCME) | (uint16_t)partition);
 }
 
 //*****************************************************************************
@@ -2068,8 +2078,8 @@ McBSP_setTxMultichannelPartition(uint32_t base,
 //!  blocks to partition A. If values 1,3,5,or 7 are set to block, then
 //!  the API assigns the block to partition B.
 //!
-//! \note This function should be used with the two partition configuration only
-//!       and not with eight partition configuration.
+//! \note This function should be used with the two partition configuration
+//!       only and not with eight partition configuration.
 //!
 //! \return None.
 //
@@ -2090,18 +2100,18 @@ McBSP_setTxTwoPartitionBlock(uint32_t base, const McBSP_PartitionBlock block)
         //
         // write to XPABLK bits.
         //
-        HWREGH(base + MCBSP_O_MCR2)  = ((HWREGH(base + MCBSP_O_MCR2) &
-                                         ~MCBSP_MCR2_XPABLK_M) |
-                                      ((uint16_t)((uint16_t)block >> 1U)<< 5U));
+        HWREGH(base + MCBSP_O_MCR2)  =
+        ((HWREGH(base + MCBSP_O_MCR2) & ~MCBSP_MCR2_XPABLK_M) |
+         ((uint16_t)((uint16_t)block >> 1U)<< 5U));
     }
     else
     {
         //
         // write to XPBBLK bits.
         //
-        HWREGH(base + MCBSP_O_MCR2)  = ((HWREGH(base + MCBSP_O_MCR2) &
-                                         ~MCBSP_MCR2_XPBBLK_M) |
-                                      ((uint16_t)((uint16_t)block >> 1U)<< 7U));
+        HWREGH(base + MCBSP_O_MCR2)  =
+        ((HWREGH(base + MCBSP_O_MCR2) & ~MCBSP_MCR2_XPBBLK_M) |
+         ((uint16_t)((uint16_t)block >> 1U)<< 7U));
     }
 }
 
@@ -2166,8 +2176,9 @@ McBSP_setTxChannelMode(uint32_t base, const McBSP_TxChannelMode channelMode)
     //
     // Set values to the XMCM bits.
     //
-    HWREGH(base + MCBSP_O_MCR2) =((HWREGH(base + MCBSP_O_MCR2) &
-                                  ~MCBSP_MCR2_XMCM_M) | (uint16_t)channelMode );
+    HWREGH(base + MCBSP_O_MCR2) =
+    ((HWREGH(base + MCBSP_O_MCR2) & ~MCBSP_MCR2_XMCM_M) |
+     (uint16_t)channelMode);
 }
 
 //*****************************************************************************
@@ -2200,8 +2211,8 @@ McBSP_setTxFrameSyncSource(uint32_t base,
     //
     //Set or Clear the FSXM bit.
     //
-    HWREGH(base + MCBSP_O_PCR) = ((HWREGH(base + MCBSP_O_PCR) &
-                                   ~MCBSP_PCR_FSXM) | (uint16_t)syncSource);
+    HWREGH(base + MCBSP_O_PCR) =
+    ((HWREGH(base + MCBSP_O_PCR) & ~MCBSP_PCR_FSXM) | (uint16_t)syncSource);
 }
 
 //*****************************************************************************
@@ -2234,8 +2245,8 @@ McBSP_setRxFrameSyncSource(uint32_t base,
     //
     // Set or clear FSRM bit.
     //
-    HWREGH(base + MCBSP_O_PCR) = ((HWREGH(base + MCBSP_O_PCR) &
-                                   ~MCBSP_PCR_FSRM) | (uint16_t)syncSource);
+    HWREGH(base + MCBSP_O_PCR) =
+    ((HWREGH(base + MCBSP_O_PCR) & ~MCBSP_PCR_FSRM) | (uint16_t)syncSource);
 }
 
 //*****************************************************************************
@@ -2265,8 +2276,8 @@ McBSP_setTxClockSource(uint32_t base, const McBSP_TxClockSource clockSource)
     //
     // Set or clear CLKXM bit.
     //
-    HWREGH(base + MCBSP_O_PCR) =  ((HWREGH(base + MCBSP_O_PCR) &
-                                    ~MCBSP_PCR_CLKXM ) | (uint16_t)clockSource);
+    HWREGH(base + MCBSP_O_PCR) =
+    ((HWREGH(base + MCBSP_O_PCR) & ~MCBSP_PCR_CLKXM ) | (uint16_t)clockSource);
 }
 
 //*****************************************************************************
@@ -2296,8 +2307,8 @@ McBSP_setRxClockSource(uint32_t base, const McBSP_RxClockSource clockSource)
     //
     // Set or clear CLKRM bit.
     //
-    HWREGH(base + MCBSP_O_PCR) =  ((HWREGH(base + MCBSP_O_PCR) &
-                                    ~MCBSP_PCR_CLKRM) | (uint16_t)clockSource);
+    HWREGH(base + MCBSP_O_PCR) =
+    ((HWREGH(base + MCBSP_O_PCR) & ~MCBSP_PCR_CLKRM) | (uint16_t)clockSource);
 }
 
 //*****************************************************************************
@@ -2327,8 +2338,8 @@ McBSP_setTxFrameSyncPolarity(uint32_t base,
     //
     // Set or clear FSXP bit.
     //
-    HWREGH(base + MCBSP_O_PCR) = ((HWREGH(base + MCBSP_O_PCR) &
-                                  ~MCBSP_PCR_FSXP) | (uint16_t)syncPolarity);
+    HWREGH(base + MCBSP_O_PCR) =
+    ((HWREGH(base + MCBSP_O_PCR) & ~MCBSP_PCR_FSXP) | (uint16_t)syncPolarity);
 }
 
 //*****************************************************************************
@@ -2357,8 +2368,8 @@ McBSP_setRxFrameSyncPolarity(uint32_t base,
     //
     // Set or clear FSRP bit.
     //
-    HWREGH(base + MCBSP_O_PCR) = ((HWREGH(base + MCBSP_O_PCR) &
-                                  ~MCBSP_PCR_FSRP) | (uint16_t)syncPolarity);
+    HWREGH(base + MCBSP_O_PCR) =
+    ((HWREGH(base + MCBSP_O_PCR) & ~MCBSP_PCR_FSRP) | (uint16_t)syncPolarity);
 }
 
 //*****************************************************************************
@@ -2388,8 +2399,9 @@ McBSP_setTxClockPolarity(uint32_t base,
     //
     // Clear CLKXP bit first , then set or clear CLKXP bit.
     //
-    HWREGH(base + MCBSP_O_PCR) = ((HWREGH(base + MCBSP_O_PCR) &
-                                   ~MCBSP_PCR_CLKXP) | (uint16_t)clockPolarity);
+    HWREGH(base + MCBSP_O_PCR) =
+    ((HWREGH(base + MCBSP_O_PCR) & ~MCBSP_PCR_CLKXP) |
+     (uint16_t)clockPolarity);
 }
 
 //*****************************************************************************
@@ -2420,8 +2432,9 @@ McBSP_setRxClockPolarity(uint32_t base,
     //
     // Clear CLKRP bit first , then set or clear CLKRP bit.
     //
-    HWREGH(base + MCBSP_O_PCR) = ((HWREGH(base + MCBSP_O_PCR) &
-                                   ~MCBSP_PCR_CLKRP) | (uint16_t)clockPolarity);
+    HWREGH(base + MCBSP_O_PCR) =
+    ((HWREGH(base + MCBSP_O_PCR) & ~MCBSP_PCR_CLKRP) |
+     (uint16_t)clockPolarity);
 }
 
 //*****************************************************************************
@@ -2471,7 +2484,7 @@ McBSP_read32bitData(uint32_t base)
     //
     // Read DDR1 register and return DDR2:DDR1.
     //
-    return ((((uint32_t)HWREGH(base + MCBSP_O_DRR2) << 16U) |
+    return((((uint32_t)HWREGH(base + MCBSP_O_DRR2) << 16U) |
             HWREGH(base + MCBSP_O_DRR1)));
 }
 
@@ -2548,7 +2561,7 @@ static inline uint16_t
 McBSP_getLeftJustifyData(uint16_t data,
                          const McBSP_CompandingType compandingType)
 {
-    return(data << compandingType);
+    return(data << (uint16_t)compandingType);
 }
 
 
@@ -2694,8 +2707,9 @@ McBSP_transmit16BitDataBlocking(uint32_t base, uint16_t data);
 //! \param base is the base address of the McBSP port.
 //! \param data is the data to be written.
 //!
-//! This function sends 20 , 24 or 32 bit data to the transmitter buffer. If the
-//! transmitter buffer is empty the data will be written to the data registers.
+//! This function sends 20 , 24 or 32 bit data to the transmitter buffer. If
+//! the transmitter buffer is empty the data will be written to the data
+//! registers.
 //!
 //! \return None.
 //
@@ -3201,7 +3215,7 @@ McBSP_configureRxDataFormat(uint32_t base,
 //*****************************************************************************
 extern uint16_t
 McBSP_configureTxMultichannel(uint32_t base,
-                              const McBSP_TxMultichannelParams * ptrMchnParams);
+                             const McBSP_TxMultichannelParams * ptrMchnParams);
 
 //*****************************************************************************
 //
@@ -3246,7 +3260,7 @@ McBSP_configureTxMultichannel(uint32_t base,
 //*****************************************************************************
 extern uint16_t
 McBSP_configureRxMultichannel(uint32_t base,
-                              const McBSP_RxMultichannelParams * ptrMchnParams);
+                             const McBSP_RxMultichannelParams * ptrMchnParams);
 
 //*****************************************************************************
 //
@@ -3256,7 +3270,8 @@ McBSP_configureRxMultichannel(uint32_t base,
 //! \param ptrSPIMasterMode is a pointer to a structure containing SPI
 //!        parameters McBSP_SPIMasterModeParams.
 //! This function sets up the McBSP module in SPI master mode.The following are
-//! valid values and ranges for the parameters of the McBSP_SPIMasterModeParams.
+//! valid values and ranges for the parameters of the
+//! McBSP_SPIMasterModeParams.
 //!  - \b loopbackModeFlag - true for digital loop-back
 //!                          false for no loop-back
 //!  - \b clockStopMode    - MCBSP_CLOCK_SPI_MODE_NO_DELAY or
@@ -3275,7 +3290,7 @@ McBSP_configureRxMultichannel(uint32_t base,
 //*****************************************************************************
 extern void
 McBSP_configureSPIMasterMode(uint32_t base,
-                            const McBSP_SPIMasterModeParams * ptrSPIMasterMode);
+                           const McBSP_SPIMasterModeParams * ptrSPIMasterMode);
 
 //*****************************************************************************
 //
@@ -3319,4 +3334,4 @@ McBSP_configureSPISlaveMode(uint32_t base,
 }
 #endif
 
-#endif // McBSP_H
+#endif // MCBSP_H

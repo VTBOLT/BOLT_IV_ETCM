@@ -5,10 +5,10 @@
 // TITLE:  C28x McBSP driver.
 //
 //###########################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -60,7 +60,7 @@ McBSP_transmit16BitDataNonBlocking(uint32_t base, uint16_t data)
     //
     // Write data.
     //
-    McBSP_write16bitData(base,data);
+    McBSP_write16bitData(base, data);
 }
 
 //*****************************************************************************
@@ -86,7 +86,7 @@ McBSP_transmit16BitDataBlocking(uint32_t base, uint16_t data)
     //
     // Write data.
     //
-    McBSP_write16bitData(base,data);
+    McBSP_write16bitData(base, data);
 }
 
 //*****************************************************************************
@@ -105,7 +105,7 @@ McBSP_transmit32BitDataNonBlocking(uint32_t base, uint32_t data)
     //
     // Write data.
     //
-    McBSP_write32bitData(base,data);
+    McBSP_write32bitData(base, data);
 }
 
 //*****************************************************************************
@@ -131,7 +131,7 @@ McBSP_transmit32BitDataBlocking(uint32_t base, uint32_t data)
     //
     // Write data.
     //
-    McBSP_write32bitData(base,data);
+    McBSP_write32bitData(base, data);
 }
 
 //*****************************************************************************
@@ -246,9 +246,9 @@ McBSP_setRxDataSize(uint32_t base, const McBSP_DataPhaseFrame dataFrame,
         // Set bits per word , write to RWDLEN1 and words per frame , write to
         // RFRLEN1.
         //
-        HWREGH(base + MCBSP_O_RCR1) = ((HWREGH(base + MCBSP_O_RCR1) &
-                                     ~MCBSP_RCR1_M) | ((uint16_t)bitsPerWord |
-                                     (wordsPerFrame << MCBSP_RCR1_RFRLEN1_S)));
+        HWREGH(base + MCBSP_O_RCR1) =
+        ((HWREGH(base + MCBSP_O_RCR1) & ~MCBSP_RCR1_M) |
+         ((uint16_t)bitsPerWord | (wordsPerFrame << MCBSP_RCR1_RFRLEN1_S)));
     }
     else
     {
@@ -256,9 +256,9 @@ McBSP_setRxDataSize(uint32_t base, const McBSP_DataPhaseFrame dataFrame,
         // Set bits per word , write to RWDLEN2 and words per frame, write to
         // RFRLEN2.
         //
-        HWREGH(base + MCBSP_O_RCR2) = ((HWREGH(base + MCBSP_O_RCR2) &
-                                     ~MCBSP_RCR2_M) | ((uint16_t)bitsPerWord |
-                                     (wordsPerFrame << MCBSP_RCR2_RFRLEN2_S)));
+        HWREGH(base + MCBSP_O_RCR2) =
+        ((HWREGH(base + MCBSP_O_RCR2) & ~MCBSP_RCR2_M) |
+         ((uint16_t)bitsPerWord | (wordsPerFrame << MCBSP_RCR2_RFRLEN2_S)));
     }
 }
 
@@ -283,18 +283,18 @@ McBSP_setTxDataSize(uint32_t base, const McBSP_DataPhaseFrame dataFrame,
         //
         // Set bits per word XWDLEN1 and words per frame XFRLEN1.
         //
-        HWREGH(base + MCBSP_O_XCR1) = ((HWREGH(base + MCBSP_O_XCR1) &
-                                     ~MCBSP_XCR1_M) | ((uint16_t)bitsPerWord |
-                                     (wordsPerFrame << MCBSP_XCR1_XFRLEN1_S)));
+        HWREGH(base + MCBSP_O_XCR1) =
+        ((HWREGH(base + MCBSP_O_XCR1) & ~MCBSP_XCR1_M) |
+        ((uint16_t)bitsPerWord | (wordsPerFrame << MCBSP_XCR1_XFRLEN1_S)));
     }
     else
     {
         //
         // Set bits per word XWDLEN2 and words per frame XFRLEN2.
         //
-        HWREGH(base + MCBSP_O_XCR2) = ((HWREGH(base + MCBSP_O_XCR2) &
-                                     ~MCBSP_XCR2_M) | ((uint16_t)bitsPerWord |
-                                     (wordsPerFrame << MCBSP_XCR2_XFRLEN2_S)));
+        HWREGH(base + MCBSP_O_XCR2) =
+        ((HWREGH(base + MCBSP_O_XCR2) & ~MCBSP_XCR2_M) |
+         ((uint16_t)bitsPerWord | (wordsPerFrame << MCBSP_XCR2_XFRLEN2_S)));
     }
 }
 
@@ -607,7 +607,7 @@ void McBSP_enableTxChannel(uint32_t base,
 //
 //*****************************************************************************
 void
-McBSP_configureTxClock(uint32_t base, const McBSP_ClockParams* ptrClockParams)
+McBSP_configureTxClock(uint32_t base, const McBSP_ClockParams *ptrClockParams)
 {
     //
     // Check the arguments.
@@ -646,7 +646,7 @@ McBSP_configureTxClock(uint32_t base, const McBSP_ClockParams* ptrClockParams)
                     (McBSP_RxClockPolarity)ptrClockParams->clockMCLKRPolarity);
 
             //
-            // Check if SRG is to be synced with FSR i.e. GSYNC is to be
+            // Check if SRG is to be synced with FSR that is GSYNC is to be
             // enabled or not.
             //
             if(ptrClockParams->clockSRGSyncFlag)
@@ -680,7 +680,7 @@ McBSP_configureTxClock(uint32_t base, const McBSP_ClockParams* ptrClockParams)
 //
 //*****************************************************************************
 void
-McBSP_configureRxClock(uint32_t base, const McBSP_ClockParams* ptrClockParams)
+McBSP_configureRxClock(uint32_t base, const McBSP_ClockParams *ptrClockParams)
 {
     //
     // Check the arguments.
@@ -742,7 +742,7 @@ McBSP_configureRxClock(uint32_t base, const McBSP_ClockParams* ptrClockParams)
 //*****************************************************************************
 void
 McBSP_configureTxFrameSync(uint32_t base,
-                           const McBSP_TxFsyncParams* ptrFsyncParams)
+                           const McBSP_TxFsyncParams *ptrFsyncParams)
 {
     //
     // Check the arguments.
@@ -769,7 +769,7 @@ McBSP_configureTxFrameSync(uint32_t base,
 
         //
         // Check if using SRG FSG to trigger frame-sync pulse and GSYNC feature
-        // is disabled i.e. FSG is not derived from external MCLKR pin.
+        // is disabled that is FSG is not derived from external MCLKR pin.
         //
         if((ptrFsyncParams->syncIntSource ==
             MCBSP_TX_INTERNAL_FRAME_SYNC_SRG) &&
@@ -811,7 +811,7 @@ McBSP_configureTxFrameSync(uint32_t base,
 //*****************************************************************************
 void
 McBSP_configureRxFrameSync(uint32_t base,
-                           const McBSP_RxFsyncParams* ptrFsyncParams)
+                           const McBSP_RxFsyncParams *ptrFsyncParams)
 {
     //
     // Check the arguments.
@@ -830,7 +830,7 @@ McBSP_configureRxFrameSync(uint32_t base,
     if(ptrFsyncParams->syncSourceRx == MCBSP_RX_INTERNAL_FRAME_SYNC_SOURCE)
     {
         //
-        // Check if GSYNC feature is disabled i.e. FSG is not derived
+        // Check if GSYNC feature is disabled that is FSG is not derived
         // from external MCLKR pin.
         //
         if(ptrFsyncParams->syncSRGSyncFSRFlag == false)
@@ -871,7 +871,7 @@ McBSP_configureRxFrameSync(uint32_t base,
 //*****************************************************************************
 void
 McBSP_configureTxDataFormat(uint32_t base,
-                            const McBSP_TxDataParams* ptrDataParams)
+                            const McBSP_TxDataParams *ptrDataParams)
 {
     //
     // Check the arguments.
@@ -963,7 +963,7 @@ McBSP_configureTxDataFormat(uint32_t base,
 //*****************************************************************************
 void
 McBSP_configureRxDataFormat(uint32_t base,
-                            const McBSP_RxDataParams* ptrDataParams)
+                            const McBSP_RxDataParams *ptrDataParams)
 {
     //
     // Check the arguments.
@@ -1049,7 +1049,7 @@ McBSP_configureRxDataFormat(uint32_t base,
 //*****************************************************************************
 uint16_t
 McBSP_configureTxMultichannel(uint32_t base,
-                              const McBSP_TxMultichannelParams* ptrMchnParams)
+                              const McBSP_TxMultichannelParams *ptrMchnParams)
 {
     uint16_t index;
     uint16_t block;
@@ -1075,7 +1075,7 @@ McBSP_configureTxMultichannel(uint32_t base,
                        (McBSP_TxChannelMode)ptrMchnParams->multichannelModeTx);
 
     //
-    // Configuration for multichannel selections i.e. for
+    // Configuration for multichannel selections that is for
     // MCBSP_TX_CHANNEL_SELECTION_ENABLED,
     // MCBSP_ENABLE_MASKED_TX_CHANNEL_SELECTION or
     // MCBSP_SYMMERTIC_RX_TX_SELECTION.
@@ -1159,7 +1159,7 @@ McBSP_configureTxMultichannel(uint32_t base,
                         //
                         McBSP_enableTxChannel(base,
                                               MCBSP_MULTICHANNEL_TWO_PARTITION,
-                                 (uint16_t)*((ptrMchnParams->ptrChannelsListTx)
+                               (uint16_t)(*(ptrMchnParams->ptrChannelsListTx)
                                               + index));
                     }
                     else
@@ -1206,8 +1206,8 @@ McBSP_configureTxMultichannel(uint32_t base,
                         //
                         McBSP_enableTxChannel(base,
                                               MCBSP_MULTICHANNEL_TWO_PARTITION,
-                                 (uint16_t)*((ptrMchnParams->ptrChannelsListTx)
-                                              + index));
+                               (uint16_t)(*((ptrMchnParams->ptrChannelsListTx)
+                                              + index)));
                     }
                     else
                     {
@@ -1233,8 +1233,8 @@ McBSP_configureTxMultichannel(uint32_t base,
                 // Enable the Tx channels.
                 //
                 McBSP_enableTxChannel(base, MCBSP_MULTICHANNEL_EIGHT_PARTITION,
-                                 (uint16_t)*((ptrMchnParams->ptrChannelsListTx)
-                                      + index));
+                               (uint16_t)(*((ptrMchnParams->ptrChannelsListTx)
+                                      + index)));
             }
         }
     }
@@ -1248,7 +1248,7 @@ McBSP_configureTxMultichannel(uint32_t base,
 //*****************************************************************************
 uint16_t
 McBSP_configureRxMultichannel(uint32_t base,
-                              const McBSP_RxMultichannelParams* ptrMchnParams)
+                              const McBSP_RxMultichannelParams *ptrMchnParams)
 {
     uint16_t index;
     uint16_t block;
@@ -1280,7 +1280,7 @@ McBSP_configureRxMultichannel(uint32_t base,
                       (McBSP_MultichannelPartition)ptrMchnParams->partitionRx);
 
     //
-    // Configuration for multichannel selections i.e. for
+    // Configuration for multichannel selections that is for
     // MCBSP_RX_CHANNEL_SELECTION_ENABLED.
     //
     if((ptrMchnParams->multichannelModeRx) ==
@@ -1355,8 +1355,8 @@ McBSP_configureRxMultichannel(uint32_t base,
                         //
                         McBSP_enableRxChannel(base,
                                               MCBSP_MULTICHANNEL_TWO_PARTITION,
-                                 (uint16_t)*((ptrMchnParams->ptrChannelsListRx)
-                                              + index));
+                              (uint16_t)(*((ptrMchnParams->ptrChannelsListRx)
+                                              + index)));
                     }
                     else
                     {
@@ -1401,8 +1401,8 @@ McBSP_configureRxMultichannel(uint32_t base,
                         //
                         McBSP_enableRxChannel(base,
                                               MCBSP_MULTICHANNEL_TWO_PARTITION,
-                                 (uint16_t)*((ptrMchnParams->ptrChannelsListRx)
-                                              + index));
+                              (uint16_t)(*((ptrMchnParams->ptrChannelsListRx)
+                                              + index)));
                     }
                     else
                     {
@@ -1429,7 +1429,7 @@ McBSP_configureRxMultichannel(uint32_t base,
                 //
                 McBSP_enableRxChannel(base,
                                       MCBSP_MULTICHANNEL_EIGHT_PARTITION,
-                      (uint16_t)*((ptrMchnParams->ptrChannelsListRx) + index));
+                   (uint16_t)(*((ptrMchnParams->ptrChannelsListRx) + index)));
             }
         }
     }
@@ -1443,7 +1443,7 @@ McBSP_configureRxMultichannel(uint32_t base,
 //*****************************************************************************
 void
 McBSP_configureSPIMasterMode(uint32_t base,
-                         const McBSP_SPIMasterModeParams* ptrSPIMasterMode)
+                         const McBSP_SPIMasterModeParams *ptrSPIMasterMode)
 {
     //
     // Configure clock stop mode.
@@ -1538,7 +1538,7 @@ McBSP_configureSPIMasterMode(uint32_t base,
 //*****************************************************************************
 void
 McBSP_configureSPISlaveMode(uint32_t base,
-                            const McBSP_SPISlaveModeParams* ptrSPISlaveMode)
+                            const McBSP_SPISlaveModeParams *ptrSPISlaveMode)
 {
 
     //

@@ -5,10 +5,10 @@
 // TITLE:   Definitions for the XBAR registers.
 //
 //###########################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -142,6 +142,22 @@
 #define XBAR_FLG2_ADCSOCAO        0x40U        // Input Flag for ADCSOCAO
                                                // Signal
 #define XBAR_FLG2_ADCSOCBO        0x80U        // Input Flag for ADCSOCBO
+                                               // Signal
+#define XBAR_FLG2_CLB1_OUT4       0x100U       // Input Flag for CLB1_OUT4
+                                               // Signal
+#define XBAR_FLG2_CLB1_OUT5       0x200U       // Input Flag for CLB1_OUT5
+                                               // Signal
+#define XBAR_FLG2_CLB2_OUT4       0x400U       // Input Flag for CLB2_OUT4
+                                               // Signal
+#define XBAR_FLG2_CLB2_OUT5       0x800U       // Input Flag for CLB2_OUT5
+                                               // Signal
+#define XBAR_FLG2_CLB3_OUT4       0x1000U      // Input Flag for CLB3_OUT4
+                                               // Signal
+#define XBAR_FLG2_CLB3_OUT5       0x2000U      // Input Flag for CLB3_OUT5
+                                               // Signal
+#define XBAR_FLG2_CLB4_OUT4       0x4000U      // Input Flag for CLB4_OUT4
+                                               // Signal
+#define XBAR_FLG2_CLB4_OUT5       0x8000U      // Input Flag for CLB4_OUT5
                                                // Signal
 #define XBAR_FLG2_ECAP1_OUT       0x10000U     // Input Flag for ECAP1.OUT
                                                // Signal
@@ -319,6 +335,22 @@
                                                // Signal
 #define XBAR_CLR2_ADCSOCBO        0x80U        // Input Flag Clear for ADCSOCBO
                                                // Signal
+#define XBAR_CLR2_CLB1_OUT4       0x100U       // Input Flag Clear for
+                                               // CLB1_OUT4 Signal
+#define XBAR_CLR2_CLB1_OUT5       0x200U       // Input Flag Clear for
+                                               // CLB1_OUT5 Signal
+#define XBAR_CLR2_CLB2_OUT4       0x400U       // Input Flag Clear for
+                                               // CLB2_OUT4 Signal
+#define XBAR_CLR2_CLB2_OUT5       0x800U       // Input Flag Clear for
+                                               // CLB2_OUT5 Signal
+#define XBAR_CLR2_CLB3_OUT4       0x1000U      // Input Flag Clear for
+                                               // CLB3_OUT4 Signal
+#define XBAR_CLR2_CLB3_OUT5       0x2000U      // Input Flag Clear for
+                                               // CLB3_OUT5 Signal
+#define XBAR_CLR2_CLB4_OUT4       0x4000U      // Input Flag Clear for
+                                               // CLB4_OUT4 Signal
+#define XBAR_CLR2_CLB4_OUT5       0x8000U      // Input Flag Clear for
+                                               // CLB4_OUT5 Signal
 #define XBAR_CLR2_ECAP1_OUT       0x10000U     // Input Flag Clear for
                                                // ECAP1.OUT Signal
 #define XBAR_CLR2_ECAP2_OUT       0x20000U     // Input Flag Clear for

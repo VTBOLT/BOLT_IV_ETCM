@@ -5,10 +5,10 @@
 // TITLE:  C28x DMA driver.
 //
 //###########################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -57,6 +57,7 @@ extern "C"
 //*****************************************************************************
 //
 //! \addtogroup dma_api DMA
+//! \brief This module is used for DMA configurations.
 //! @{
 //
 //*****************************************************************************
@@ -70,7 +71,6 @@ extern "C"
 #include "cpu.h"
 #include "debug.h"
 
-#ifndef DOXYGEN_PDF_IGNORE
 //*****************************************************************************
 //
 // Values that can be passed to DMA_configMode() as the config parameter.
@@ -161,6 +161,7 @@ typedef enum
     DMA_TRIGGER_MCBSPBMXEVT  = 73,
     DMA_TRIGGER_MCBSPBMREVT  = 74,
 
+
     DMA_TRIGGER_SDFM1FLT1    = 95,
     DMA_TRIGGER_SDFM1FLT2    = 96,
     DMA_TRIGGER_SDFM1FLT3    = 97,
@@ -171,14 +172,19 @@ typedef enum
     DMA_TRIGGER_SDFM2FLT3    = 101,
     DMA_TRIGGER_SDFM2FLT4    = 102,
 
+
     DMA_TRIGGER_SPIATX       = 109,
     DMA_TRIGGER_SPIARX       = 110,
     DMA_TRIGGER_SPIBTX       = 111,
     DMA_TRIGGER_SPIBRX       = 112,
     DMA_TRIGGER_SPICTX       = 113,
-    DMA_TRIGGER_SPICRX       = 114
+    DMA_TRIGGER_SPICRX       = 114,
+    DMA_TRIGGER_CLB1INT      = 127,
+    DMA_TRIGGER_CLB2INT      = 128,
+    DMA_TRIGGER_CLB3INT      = 129,
+    DMA_TRIGGER_CLB4INT      = 130,
+
 } DMA_Trigger;
-#endif
 
 //*****************************************************************************
 //
@@ -252,7 +258,9 @@ DMA_initController(void)
 {
     EALLOW;
 
+    //
     // Set the hard reset bit. One NOP is required after HARDRESET.
+    //
     HWREGH(DMA_BASE + DMA_O_CTRL) |= DMA_CTRL_HARDRESET;
     NOP;
 
@@ -280,7 +288,9 @@ DMA_setEmulationMode(DMA_EmulationMode mode)
 {
     EALLOW;
 
+    //
     // Set emulation mode
+    //
     if(mode == DMA_EMULATION_STOP)
     {
         HWREGH(DMA_BASE + DMA_O_DEBUGCTRL) &= ~DMA_DEBUGCTRL_FREE;
@@ -308,10 +318,14 @@ DMA_setEmulationMode(DMA_EmulationMode mode)
 static inline void
 DMA_enableTrigger(uint32_t base)
 {
+    //
     // Check the arguments.
+    //
     ASSERT(DMA_isBaseValid(base));
 
+    //
     // Set the peripheral interrupt trigger enable bit.
+    //
     EALLOW;
     HWREGH(base + DMA_O_MODE) |= DMA_MODE_PERINTE;
     EDIS;
@@ -333,10 +347,14 @@ DMA_enableTrigger(uint32_t base)
 static inline void
 DMA_disableTrigger(uint32_t base)
 {
+    //
     // Check the arguments.
+    //
     ASSERT(DMA_isBaseValid(base));
 
+    //
     // Clear the peripheral interrupt trigger enable bit.
+    //
     EALLOW;
     HWREGH(base + DMA_O_MODE) &= ~DMA_MODE_PERINTE;
     EDIS;
@@ -358,10 +376,14 @@ DMA_disableTrigger(uint32_t base)
 static inline void
 DMA_forceTrigger(uint32_t base)
 {
+    //
     // Check the arguments.
+    //
     ASSERT(DMA_isBaseValid(base));
 
+    //
     // Set the peripheral interrupt trigger force bit.
+    //
     EALLOW;
     HWREGH(base + DMA_O_CONTROL) |= DMA_CONTROL_PERINTFRC;
     EDIS;
@@ -383,10 +405,14 @@ DMA_forceTrigger(uint32_t base)
 static inline void
 DMA_clearTriggerFlag(uint32_t base)
 {
+    //
     // Check the arguments.
+    //
     ASSERT(DMA_isBaseValid(base));
 
+    //
     // Write a one to the clear bit to clear the peripheral trigger flag.
+    //
     EALLOW;
     HWREGH(base + DMA_O_CONTROL) |= DMA_CONTROL_PERINTCLR;
     EDIS;
@@ -409,10 +435,14 @@ DMA_clearTriggerFlag(uint32_t base)
 static inline bool
 DMA_getTriggerFlagStatus(uint32_t base)
 {
+    //
     // Check the arguments.
+    //
     ASSERT(DMA_isBaseValid(base));
 
+    //
     // Read the peripheral trigger flag and return appropriately.
+    //
     return((HWREGH(base + DMA_O_CONTROL) & DMA_CONTROL_PERINTFLG) != 0U);
 }
 
@@ -432,10 +462,14 @@ DMA_getTriggerFlagStatus(uint32_t base)
 static inline void
 DMA_startChannel(uint32_t base)
 {
+    //
     // Check the arguments.
+    //
     ASSERT(DMA_isBaseValid(base));
 
+    //
     // Set the run bit.
+    //
     EALLOW;
     HWREGH(base + DMA_O_CONTROL) |= DMA_CONTROL_RUN;
     EDIS;
@@ -456,10 +490,14 @@ DMA_startChannel(uint32_t base)
 static inline void
 DMA_stopChannel(uint32_t base)
 {
+    //
     // Check the arguments.
+    //
     ASSERT(DMA_isBaseValid(base));
 
+    //
     // Set the halt bit.
+    //
     EALLOW;
     HWREGH(base + DMA_O_CONTROL) |= DMA_CONTROL_HALT;
     EDIS;
@@ -479,10 +517,14 @@ DMA_stopChannel(uint32_t base)
 static inline void
 DMA_enableInterrupt(uint32_t base)
 {
+    //
     // Check the arguments.
+    //
     ASSERT(DMA_isBaseValid(base));
 
+    //
     // Enable the specified DMA channel interrupt.
+    //
     EALLOW;
     HWREGH(base + DMA_O_MODE) |= DMA_MODE_CHINTE;
     EDIS;
@@ -502,10 +544,14 @@ DMA_enableInterrupt(uint32_t base)
 static inline void
 DMA_disableInterrupt(uint32_t base)
 {
+    //
     // Check the arguments.
+    //
     ASSERT(DMA_isBaseValid(base));
 
+    //
     // Disable the specified DMA channel interrupt.
+    //
     EALLOW;
     HWREGH(base + DMA_O_MODE) &= ~DMA_MODE_CHINTE;
     EDIS;
@@ -533,10 +579,14 @@ DMA_disableInterrupt(uint32_t base)
 static inline void
 DMA_enableOverrunInterrupt(uint32_t base)
 {
+    //
     // Check the arguments.
+    //
     ASSERT(DMA_isBaseValid(base));
 
+    //
     // Enable the specified DMA channel interrupt.
+    //
     EALLOW;
     HWREGH(base + DMA_O_MODE) |= DMA_MODE_OVRINTE;
     EDIS;
@@ -557,10 +607,14 @@ DMA_enableOverrunInterrupt(uint32_t base)
 static inline void
 DMA_disableOverrunInterrupt(uint32_t base)
 {
+    //
     // Check the arguments.
+    //
     ASSERT(DMA_isBaseValid(base));
 
+    //
     // Disable the specified DMA channel interrupt.
+    //
     EALLOW;
     HWREGH(base + DMA_O_MODE) &= ~DMA_MODE_OVRINTE;
     EDIS;
@@ -581,10 +635,14 @@ DMA_disableOverrunInterrupt(uint32_t base)
 static inline void
 DMA_clearErrorFlag(uint32_t base)
 {
+    //
     // Check the arguments.
+    //
     ASSERT(DMA_isBaseValid(base));
 
+    //
     // Write to the error clear bit.
+    //
     EALLOW;
     HWREGH(base + DMA_O_CONTROL) |= DMA_CONTROL_ERRCLR;
     EDIS;
@@ -609,12 +667,16 @@ DMA_clearErrorFlag(uint32_t base)
 static inline void
 DMA_setInterruptMode(uint32_t base, DMA_InterruptMode mode)
 {
+    //
     // Check the arguments.
+    //
     ASSERT(DMA_isBaseValid(base));
 
     EALLOW;
 
+    //
     // Write the selected interrupt generation mode to the register.
+    //
     if(mode == DMA_INT_AT_END)
     {
         HWREGH(base + DMA_O_MODE) |= DMA_MODE_CHINTMODE;
@@ -651,7 +713,9 @@ DMA_setPriorityMode(bool ch1IsHighPri)
 {
     EALLOW;
 
+    //
     // Write the selected priority mode to the register.
+    //
     if(ch1IsHighPri)
     {
         HWREGH(DMA_BASE + DMA_O_PRIORITYCTRL1) |=
@@ -668,11 +732,75 @@ DMA_setPriorityMode(bool ch1IsHighPri)
 
 //*****************************************************************************
 //
+//! Configures the source address for the DMA channel
+//!
+//! \param base is the base address of the DMA channel control registers.
+//! \param *srcAddr is a source address.
+//!
+//! This function configures the source address of a DMA
+//! channel.
+//!
+//! \return None.
+//
+//*****************************************************************************
+static inline void
+DMA_configSourceAddress(uint32_t base, const void *srcAddr)
+{
+    //
+    // Check the arguments.
+    //
+    ASSERT(DMA_isBaseValid(base));
+
+    EALLOW;
+
+    //
+    // Set up SOURCE address.
+    //
+    HWREG(base + DMA_O_SRC_BEG_ADDR_SHADOW) = (uint32_t)srcAddr;
+    HWREG(base + DMA_O_SRC_ADDR_SHADOW)     = (uint32_t)srcAddr;
+
+    EDIS;
+}
+
+//*****************************************************************************
+//
+//! Configures the destination address for the DMA channel
+//!
+//! \param base is the base address of the DMA channel control registers.
+//! \param *destAddr is the destination address.
+//!
+//! This function configures the destinaton address of a DMA
+//! channel.
+//!
+//! \return None.
+//
+//*****************************************************************************
+static inline void
+DMA_configDestAddress(uint32_t base, const void *destAddr)
+{
+    //
+    // Check the arguments.
+    //
+    ASSERT(DMA_isBaseValid(base));
+
+    EALLOW;
+
+    //
+    // Set up DESTINATION address.
+    //
+    HWREG(base + DMA_O_DST_BEG_ADDR_SHADOW) = (uint32_t)destAddr;
+    HWREG(base + DMA_O_DST_ADDR_SHADOW)     = (uint32_t)destAddr;
+
+    EDIS;
+}
+
+//*****************************************************************************
+//
 //! Configures the DMA channel
 //!
 //! \param base is the base address of the DMA channel control registers.
-//! \param *destAddr is the interrupt source that triggers a DMA transfer.
-//! \param *srcAddr is a bit field of several configuration selections.
+//! \param *destAddr is the destination address.
+//! \param *srcAddr is a source address.
 //!
 //! This function configures the source and destination addresses of a DMA
 //! channel. The parameters are pointers to the data to be transferred.

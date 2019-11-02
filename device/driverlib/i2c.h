@@ -5,10 +5,10 @@
 // TITLE:  C28x I2C driver.
 //
 //###########################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -109,12 +109,12 @@ extern "C"
 // Helpful define to mask out the bits in the I2CSTR register that aren't
 // associated with interrupts.
 //
-#define I2C_STR_INTMASK     ((uint16_t)I2C_INT_ARB_LOST |                     \
-                             (uint16_t)I2C_INT_NO_ACK |                       \
-                             (uint16_t)I2C_INT_REG_ACCESS_RDY |               \
-                             (uint16_t)I2C_INT_RX_DATA_RDY |                  \
-                             (uint16_t)I2C_INT_TX_DATA_RDY |                  \
-                             (uint16_t)I2C_INT_STOP_CONDITION |               \
+#define I2C_STR_INTMASK     ((uint16_t)I2C_INT_ARB_LOST |                      \
+                             (uint16_t)I2C_INT_NO_ACK |                        \
+                             (uint16_t)I2C_INT_REG_ACCESS_RDY |                \
+                             (uint16_t)I2C_INT_RX_DATA_RDY |                   \
+                             (uint16_t)I2C_INT_TX_DATA_RDY |                   \
+                             (uint16_t)I2C_INT_STOP_CONDITION |                \
                              (uint16_t)I2C_INT_ADDR_SLAVE)
 
 //*****************************************************************************
@@ -292,6 +292,7 @@ static inline bool
 I2C_isBaseValid(uint32_t base)
 {
     return((base == I2CA_BASE) || (base == I2CB_BASE));
+
 }
 #endif
 
@@ -486,6 +487,8 @@ I2C_getFIFOInterruptLevel(uint32_t base, I2C_TxFIFOLevel *txLevel,
 static inline I2C_TxFIFOLevel
 I2C_getTxFIFOStatus(uint32_t base)
 {
+    uint16_t level;
+
     //
     // Check the arguments.
     //
@@ -494,8 +497,10 @@ I2C_getTxFIFOStatus(uint32_t base)
     //
     // Get the current FIFO status
     //
-    return((I2C_TxFIFOLevel)((HWREGH(base + I2C_O_FFTX) & I2C_FFTX_TXFFST_M) >>
-                             I2C_FFTX_TXFFST_S));
+    level = ((HWREGH(base + I2C_O_FFTX) & I2C_FFTX_TXFFST_M) >>
+              I2C_FFTX_TXFFST_S);
+
+    return((I2C_TxFIFOLevel)level);
 }
 
 //*****************************************************************************
@@ -515,6 +520,8 @@ I2C_getTxFIFOStatus(uint32_t base)
 static inline I2C_RxFIFOLevel
 I2C_getRxFIFOStatus(uint32_t base)
 {
+    uint16_t level;
+
     //
     // Check the arguments.
     //
@@ -523,8 +530,10 @@ I2C_getRxFIFOStatus(uint32_t base)
     //
     // Get the current FIFO status
     //
-    return((I2C_RxFIFOLevel)((HWREGH(base + I2C_O_FFRX) & I2C_FFRX_RXFFST_M) >>
-                             I2C_FFRX_RXFFST_S));
+    level = ((HWREGH(base + I2C_O_FFRX) & I2C_FFRX_RXFFST_M) >>
+              I2C_FFRX_RXFFST_S);
+
+    return((I2C_RxFIFOLevel)level);
 }
 
 //*****************************************************************************

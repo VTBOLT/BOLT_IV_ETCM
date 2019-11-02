@@ -1,8 +1,8 @@
 //###########################################################################
 //
-// FILE:    hw_xint.h
+// FILE:   clb.c
 //
-// TITLE:   Definitions for the XINT registers.
+// TITLE:  C28x CLB driver.
 //
 //###########################################################################
 // $TI Release: F2837xD Support Library v3.07.00.00 $
@@ -40,65 +40,106 @@
 // $
 //###########################################################################
 
-#ifndef HW_XINT_H
-#define HW_XINT_H
+#include "clb.h"
 
 //*****************************************************************************
 //
-// The following are defines for the XINT register offsets
+// CLB_configCounterLoadMatch
 //
 //*****************************************************************************
-#define XINT_O_1CR                0x0U         // XINT1 configuration register
-#define XINT_O_2CR                0x1U         // XINT2 configuration register
-#define XINT_O_3CR                0x2U         // XINT3 configuration register
-#define XINT_O_4CR                0x3U         // XINT4 configuration register
-#define XINT_O_5CR                0x4U         // XINT5 configuration register
-#define XINT_O_1CTR               0x8U         // XINT1 counter register
-#define XINT_O_2CTR               0x9U         // XINT2 counter register
-#define XINT_O_3CTR               0xAU         // XINT3 counter register
+void CLB_configCounterLoadMatch(uint32_t base, CLB_Counters counterID,
+                               uint32_t load, uint32_t match1, uint32_t match2)
+{
+    ASSERT(CLB_isBaseValid(base));
+
+    EALLOW;
+    switch(counterID)
+    {
+        case CLB_CTR0:
+            CLB_writeInterface(base, CLB_ADDR_COUNTER_0_LOAD, load);
+            CLB_writeInterface(base, CLB_ADDR_COUNTER_0_MATCH1, match1);
+            CLB_writeInterface(base, CLB_ADDR_COUNTER_0_MATCH2, match2);
+            break;
+
+        case CLB_CTR1:
+            CLB_writeInterface(base, CLB_ADDR_COUNTER_1_LOAD, load);
+            CLB_writeInterface(base, CLB_ADDR_COUNTER_1_MATCH1, match1);
+            CLB_writeInterface(base, CLB_ADDR_COUNTER_1_MATCH2, match2);
+            break;
+
+        case CLB_CTR2:
+            CLB_writeInterface(base, CLB_ADDR_COUNTER_2_LOAD, load);
+            CLB_writeInterface(base, CLB_ADDR_COUNTER_2_MATCH1, match1);
+            CLB_writeInterface(base, CLB_ADDR_COUNTER_2_MATCH2, match2);
+            break;
+
+        default:
+            //
+            // Invalid counterID value
+            //
+            break;
+    }
+    EDIS;
+}
 
 //*****************************************************************************
 //
-// The following are defines for the bit fields in the XINT1CR register
+// CLB_clearFIFOs
 //
 //*****************************************************************************
-#define XINT_1CR_ENABLE           0x1U         // XINT1 Enable
-#define XINT_1CR_POLARITY_S       2U
-#define XINT_1CR_POLARITY_M       0xCU         // XINT1 Polarity
+void CLB_clearFIFOs(uint32_t base)
+{
+    uint16_t i;
+
+    ASSERT(CLB_isBaseValid(base));
+
+    for(i = 0U; i < CLB_FIFO_SIZE; i++)
+    {
+        HWREG(base + CLB_DATAEXCH + CLB_O_PULL(i)) = 0U;
+    }
+
+    HWREG(base + CLB_LOGICCTL + CLB_O_BUF_PTR) = 0U;
+}
 
 //*****************************************************************************
 //
-// The following are defines for the bit fields in the XINT2CR register
+// CLB_writeFIFOs
 //
 //*****************************************************************************
-#define XINT_2CR_ENABLE           0x1U         // XINT2 Enable
-#define XINT_2CR_POLARITY_S       2U
-#define XINT_2CR_POLARITY_M       0xCU         // XINT2 Polarity
+void CLB_writeFIFOs(uint32_t base , const uint32_t pullData[])
+{
+    ASSERT(CLB_isBaseValid(base));
+
+    //
+    // Clear the FIFO and pointer
+    //
+    CLB_clearFIFOs(base);
+
+    //
+    // Write data into the FIFO.
+    //
+    HWREG(base + CLB_DATAEXCH + CLB_O_PULL(0)) = pullData[0U];
+    HWREG(base + CLB_DATAEXCH + CLB_O_PULL(1)) = pullData[1U];
+    HWREG(base + CLB_DATAEXCH + CLB_O_PULL(2)) = pullData[2U];
+    HWREG(base + CLB_DATAEXCH + CLB_O_PULL(3)) = pullData[3U];
+}
 
 //*****************************************************************************
 //
-// The following are defines for the bit fields in the XINT3CR register
+// CLB_readFIFOs
 //
 //*****************************************************************************
-#define XINT_3CR_ENABLE           0x1U         // XINT3 Enable
-#define XINT_3CR_POLARITY_S       2U
-#define XINT_3CR_POLARITY_M       0xCU         // XINT3 Polarity
+void CLB_readFIFOs(uint32_t base , uint32_t pushData[])
+{
+    ASSERT(CLB_isBaseValid(base));
 
-//*****************************************************************************
-//
-// The following are defines for the bit fields in the XINT4CR register
-//
-//*****************************************************************************
-#define XINT_4CR_ENABLE           0x1U         // XINT4 Enable
-#define XINT_4CR_POLARITY_S       2U
-#define XINT_4CR_POLARITY_M       0xCU         // XINT4 Polarity
+    //
+    // Read data from the FIFO.
+    //
+    pushData[0U] = HWREG(base + CLB_DATAEXCH + CLB_O_PUSH(0)) ;
+    pushData[1U] = HWREG(base + CLB_DATAEXCH + CLB_O_PUSH(1)) ;
+    pushData[2U] = HWREG(base + CLB_DATAEXCH + CLB_O_PUSH(2)) ;
+    pushData[3U] = HWREG(base + CLB_DATAEXCH + CLB_O_PUSH(3)) ;
+}
 
-//*****************************************************************************
-//
-// The following are defines for the bit fields in the XINT5CR register
-//
-//*****************************************************************************
-#define XINT_5CR_ENABLE           0x1U         // XINT5 Enable
-#define XINT_5CR_POLARITY_S       2U
-#define XINT_5CR_POLARITY_M       0xCU         // XINT5 Polarity
-#endif
+

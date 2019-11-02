@@ -5,10 +5,10 @@
 // TITLE:  C28x CMPSS driver.
 //
 //###########################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -75,12 +75,12 @@ extern "C"
 // application code.
 //
 //*****************************************************************************
-#define CMPSS_HICMP_CTL_M   (CMPSS_COMPCTL_COMPHSOURCE |                      \
-                             CMPSS_COMPCTL_COMPHINV |                         \
+#define CMPSS_HICMP_CTL_M   (CMPSS_COMPCTL_COMPHSOURCE |                       \
+                             CMPSS_COMPCTL_COMPHINV |                          \
                              CMPSS_COMPCTL_ASYNCHEN)
 
-#define CMPSS_LOCMP_CTL_M   (CMPSS_COMPCTL_COMPLSOURCE |                      \
-                             CMPSS_COMPCTL_COMPLINV |                         \
+#define CMPSS_LOCMP_CTL_M   (CMPSS_COMPCTL_COMPLSOURCE |                       \
+                             CMPSS_COMPCTL_COMPLINV |                          \
                              CMPSS_COMPCTL_ASYNCLEN)
 
 #ifndef DOXYGEN_PDF_IGNORE
@@ -90,13 +90,17 @@ extern "C"
 // CMPSS_configHighComparator() as the config parameter.
 //
 //*****************************************************************************
+//
 // Comparator negative input source
+//
 //! Input driven by internal DAC
 #define CMPSS_INSRC_DAC                 0x0000U
 //! Input driven by external pin
 #define CMPSS_INSRC_PIN                 0x0001U
 
+//
 // Extra options
+//
 //! Comparator output is inverted
 #define CMPSS_INV_INVERTED              0x0002U
 //! Asynch comparator output feeds into OR with latched digital filter output
@@ -108,7 +112,9 @@ extern "C"
 // CMPSS_configOutputsHigh() as the config parameter.
 //
 //*****************************************************************************
+//
 // Signal driving CTRIPOUT
+//
 //! Asynchronous comparator output drives CTRIPOUT
 #define CMPSS_TRIPOUT_ASYNC_COMP        0x0000U
 //! Synchronous comparator output drives CTRIPOUT
@@ -118,7 +124,9 @@ extern "C"
 //! Latched filter output drives CTRIPOUT
 #define CMPSS_TRIPOUT_LATCH             0x0030U
 
+//
 // Signal driving CTRIP
+//
 //! Asynchronous comparator output drives CTRIP
 #define CMPSS_TRIP_ASYNC_COMP           0x0000U
 //! Synchronous comparator output drives CTRIP
@@ -147,19 +155,25 @@ extern "C"
 // Values that can be passed to CMPSS_configDAC() the config parameter.
 //
 //*****************************************************************************
+//
 // When is DAC value loaded from shadow register
+//
 //! DAC value updated from SYSCLK
 #define CMPSS_DACVAL_SYSCLK             0x0000U
 //! DAC value updated from PWMSYNC
 #define CMPSS_DACVAL_PWMSYNC            0x0080U
 
+//
 // DAC reference voltage
+//
 //! VDDA is the voltage reference
 #define CMPSS_DACREF_VDDA               0x0000U
 //! VDAC is the voltage reference
 #define CMPSS_DACREF_VDAC               0x0020U
 
+//
 // DAC value source
+//
 //! DAC value updated from shadow register
 #define CMPSS_DACSRC_SHDW               0x0000U
 //! DAC value is updated from the ramp register
@@ -973,12 +987,17 @@ CMPSS_setHysteresis(uint32_t base, uint16_t value)
 //!
 //! The \e samplePrescale parameter specifies the number of system clock cycles
 //! between samples. It is a 10-bit value so a number higher than 1023 should
-//! not be passed as this parameter.
+//! not be passed as this parameter. The prescale used by digital filter is 1
+//! more than \e samplePrescale value. So, the input provided should be 1 less
+//! than the expected prescale.
 //!
 //! The \e sampleWindow parameter configures the size of the window of FIFO
 //! samples taken from the input that will be monitored to determine when to
 //! change the filter output. This sample window may be no larger than 32
 //! samples.
+//!
+//! The threshold used by digital filter is 1 more than \e threshold parameter
+//! value. So, the input provided should be 1 less than the expected threshold.
 //!
 //! The filter output resolves to the majority value of the sample window where
 //! majority is defined by the value passed into the \e threshold parameter.
@@ -1016,12 +1035,17 @@ CMPSS_configFilterHigh(uint32_t base, uint16_t samplePrescale,
 //!
 //! The \e samplePrescale parameter specifies the number of system clock cycles
 //! between samples. It is a 10-bit value so a number higher than 1023 should
-//! not be passed as this parameter.
+//! not be passed as this parameter. The prescale used by digital filter is 1
+//! more than \e samplePrescale value. So, the input provided should be 1 less
+//! than the expected prescale.
 //!
 //! The \e sampleWindow parameter configures the size of the window of FIFO
 //! samples taken from the input that will be monitored to determine when to
 //! change the filter output. This sample window may be no larger than 32
 //! samples.
+//!
+//! The threshold used by digital filter is 1 more than \e threshold parameter
+//! value. So, the input provided should be 1 less than the expected threshold.
 //!
 //! The filter output resolves to the majority value of the sample window where
 //! majority is defined by the value passed into the \e threshold parameter.

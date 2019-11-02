@@ -5,10 +5,10 @@
 // TITLE:  C28x ADC driver.
 //
 //###########################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -48,15 +48,19 @@
 // ADC_setMode() ONLY. Not intended for use by application code.
 //
 //*****************************************************************************
+//
 // The following functions calibrate the ADC linearity.  Use them in the
-// ADC_setMode() function only
+// ADC_setMode() function only.
+//
 #define ADC_calADCAINL          0x0703B4U
 #define ADC_calADCBINL          0x0703B2U
 #define ADC_calADCCINL          0x0703B0U
 #define ADC_calADCDINL          0x0703AEU
 
+//
 // This function looks up the ADC offset trim for a given condition. Use this
 // in the ADC_setMode() function only.
+//
 #define ADC_getOffsetTrim       0x0703ACU
 
 //*****************************************************************************
@@ -68,59 +72,93 @@ void
 ADC_setMode(uint32_t base, ADC_Resolution resolution,
             ADC_SignalMode signalMode)
 {
-    uint16_t offsetIndex;
-    uint16_t offsetTrim;
+    uint16_t offsetIndex = 0U;
+    uint16_t offsetTrim = 0U;
+
+    //
+    // Check the arguments.
+    //
+    ASSERT(ADC_isBaseValid(base));
+
+    //
+    // Check for correct signal mode & resolution. In this device:
+    // Single ended signal conversions are supported in 12-bit mode only
+    // Differential signal conversions are supported in 16-bit mode only
+    //
+    if(signalMode == ADC_MODE_SINGLE_ENDED)
+    {
+        ASSERT(resolution == ADC_RESOLUTION_12BIT);
+    }
+    else
+    {
+        ASSERT(resolution == ADC_RESOLUTION_16BIT);
+    }
 
     EALLOW;
-
     switch(base)
     {
         case ADCA_BASE:
             offsetIndex = (uint16_t)(0U * 4U);
             if(HWREGH(ADC_calADCAINL) != 0xFFFFU)
             {
+                //
                 // Trim function is programmed into OTP, so call it
+                //
                 (*((void (*)(void))ADC_calADCAINL))();
             }
             else
             {
+                //
                 // Do nothing, no INL trim function populated
+                //
             }
             break;
         case ADCB_BASE:
             offsetIndex = (uint16_t)(1U * 4U);
             if(HWREGH(ADC_calADCBINL) != 0xFFFFU)
             {
+                //
                 // Trim function is programmed into OTP, so call it
+                //
                 (*((void (*)(void))ADC_calADCBINL))();
             }
             else
             {
+                //
                 // Do nothing, no INL trim function populated
+                //
             }
             break;
         case ADCC_BASE:
             offsetIndex = (uint16_t)(2U * 4U);
             if(HWREGH(ADC_calADCCINL) != 0xFFFFU)
             {
+                //
                 // Trim function is programmed into OTP, so call it
+                //
                 (*((void (*)(void))ADC_calADCCINL))();
             }
             else
             {
+                //
                 // Do nothing, no INL trim function populated
+                //
             }
             break;
         case ADCD_BASE:
             offsetIndex = (uint16_t)(3U * 4U);
             if(HWREGH(ADC_calADCDINL) != 0xFFFFU)
             {
+                //
                 // Trim function is programmed into OTP, so call it
+                //
                 (*((void (*)(void))ADC_calADCDINL))();
             }
             else
             {
+                //
                 // Do nothing, no INL trim function populated
+                //
             }
             break;
         default:
@@ -136,8 +174,10 @@ ADC_setMode(uint32_t base, ADC_Resolution resolution,
     //
     if(HWREGH(ADC_getOffsetTrim) != 0xFFFFU)
     {
+        //
         // Calculate the index into OTP table of offset trims and call
         // function to return the correct offset trim
+        //
         offsetIndex += ((signalMode == ADC_MODE_DIFFERENTIAL) ? 1U : 0U) +
                        (2U * ((resolution == ADC_RESOLUTION_16BIT) ? 1U : 0U));
 
@@ -146,7 +186,9 @@ ADC_setMode(uint32_t base, ADC_Resolution resolution,
     }
     else
     {
+        //
         // Offset trim function is not populated, so set offset trim to 0
+        //
         offsetTrim = 0U;
     }
 
@@ -154,22 +196,23 @@ ADC_setMode(uint32_t base, ADC_Resolution resolution,
     // Apply the resolution and signalMode to the specified ADC.
     //
     HWREGH(base + ADC_O_CTL2) = (HWREGH(base + ADC_O_CTL2) &
-                                 ~(ADC_CTL2_RESOLUTION | ADC_CTL2_SIGNALMODE))|
+                                 ~(ADC_CTL2_RESOLUTION | ADC_CTL2_SIGNALMODE)) |
                                 ((uint16_t)resolution | (uint16_t)signalMode);
 
     //
     // Also apply the offset trim and, if needed, linearity trim correction.
     //
     HWREGH(base + ADC_O_OFFTRIM) = offsetTrim;
-    if (resolution == ADC_RESOLUTION_12BIT)
+    if(resolution == ADC_RESOLUTION_12BIT)
     {
+        //
         // 12-bit linearity trim workaround
+        //
         HWREG(base + ADC_O_INLTRIM1) &= 0xFFFF0000U;
         HWREG(base + ADC_O_INLTRIM2) &= 0xFFFF0000U;
         HWREG(base + ADC_O_INLTRIM4) &= 0xFFFF0000U;
         HWREG(base + ADC_O_INLTRIM5) &= 0xFFFF0000U;
     }
-
     EDIS;
 }
 

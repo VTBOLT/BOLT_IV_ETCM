@@ -5,10 +5,10 @@
 // TITLE:  C28x system control driver.
 //
 //###########################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -46,12 +46,15 @@
 //
 // Define to isolate inline assembly
 //
-#define SYSCTL_DELAY        __asm(" .def _SysCtl_delay\n"                     \
-                                  " .sect \".TI.ramfunc\"\n"                  \
-                                  " .global  _SysCtl_delay\n"                 \
-                                  "_SysCtl_delay:\n"                          \
-                                  " SUB    ACC,#1\n"                          \
-                                  " BF     _SysCtl_delay,GEQ\n"               \
+#define SYSCTL_DELAY        __asm(" .if __TI_EABI__\n"                         \
+                                  " .asg    SysCtl_delay    , _SysCtl_delay\n" \
+                                  " .endif\n"                                  \
+                                  " .def _SysCtl_delay\n"                      \
+                                  " .sect \".TI.ramfunc\"\n"                   \
+                                  " .global  _SysCtl_delay\n"                  \
+                                  "_SysCtl_delay:\n"                           \
+                                  " SUB    ACC,#1\n"                           \
+                                  " BF     _SysCtl_delay, GEQ\n"               \
                                   " LRETR\n")
 #define SYSCTL_CLRC_DBGM    __asm(" CLRC DBGM")
 
@@ -119,38 +122,16 @@ SysCtl_getClock(uint32_t clockInHz)
             //
             // Calculate portion from fractional multiplier
             //
-            switch((HWREG(CLKCFG_BASE + SYSCTL_O_SYSPLLMULT) &
-                    SYSCTL_SYSPLLMULT_FMULT_M) >> SYSCTL_SYSPLLMULT_FMULT_S)
-            {
-                case 0U:
-                    // No fractional portion.
-                    temp = 0U;
-                    break;
-
-                case 1U:
-                    temp = clockInHz / 4U;
-                    break;
-
-                case 2U:
-                    temp = clockInHz / 2U;
-                    break;
-
-                case 3U:
-                    temp = (clockInHz * 3U) / 4U;
-                    break;
-
-                default:
-                    // Not a valid value for the FMULT register.
-                    temp = 0U;
-                    break;
-            }
+            temp = (clockInHz * ((HWREG(CLKCFG_BASE + SYSCTL_O_SYSPLLMULT) &
+                                  SYSCTL_SYSPLLMULT_FMULT_M) >>
+                                 SYSCTL_SYSPLLMULT_FMULT_S)) / 4U;
 
             //
             // Calculate integer multiplier and fixed divide by 2
             //
             clockOut = clockOut * ((HWREG(CLKCFG_BASE + SYSCTL_O_SYSPLLMULT) &
-                                      SYSCTL_SYSPLLMULT_IMULT_M) >>
-                                     SYSCTL_SYSPLLMULT_IMULT_S);
+                                    SYSCTL_SYSPLLMULT_IMULT_M) >>
+                                   SYSCTL_SYSPLLMULT_IMULT_S);
 
             //
             // Add in fractional portion
@@ -159,10 +140,10 @@ SysCtl_getClock(uint32_t clockInHz)
         }
 
         if((HWREG(CLKCFG_BASE + SYSCTL_O_SYSCLKDIVSEL) &
-           SYSCTL_SYSCLKDIVSEL_PLLSYSCLKDIV_M) != 0U)
+            SYSCTL_SYSCLKDIVSEL_PLLSYSCLKDIV_M) != 0U)
         {
             clockOut /= (2U * (HWREG(CLKCFG_BASE + SYSCTL_O_SYSCLKDIVSEL) &
-                                SYSCTL_SYSCLKDIVSEL_PLLSYSCLKDIV_M));
+                               SYSCTL_SYSCLKDIVSEL_PLLSYSCLKDIV_M));
         }
     }
 
@@ -180,13 +161,18 @@ uint32_t SysCtl_getAuxClock(uint32_t clockInHz)
     uint32_t oscSource;
     uint32_t clockOut;
 
-    oscSource = HWREG(CLKCFG_BASE + SYSCTL_O_CLKSRCCTL1) &
-            (uint32_t)SYSCTL_CLKSRCCTL1_OSCCLKSRCSEL_M;
+    oscSource = HWREG(CLKCFG_BASE + SYSCTL_O_CLKSRCCTL2) &
+                (uint32_t)SYSCTL_CLKSRCCTL2_AUXOSCCLKSRCSEL_M;
 
-    if((oscSource == ((uint32_t)SYSCTL_OSCSRC_OSC2 >> SYSCTL_OSCSRC_S)) ||
-       (oscSource == ((uint32_t)SYSCTL_OSCSRC_OSC1 >> SYSCTL_OSCSRC_S)))
+    //
+    // If one of the internal oscillators is being used, start from the
+    // known default frequency.  Otherwise, use clockInHz parameter.
+    //
+    if(oscSource == ((uint32_t)SYSCTL_AUXPLL_OSCSRC_OSC2 >> SYSCTL_OSCSRC_S))
     {
+        //
         // 10MHz Internal Clock
+        //
         clockOut = SYSCTL_DEFAULT_OSC_FREQ;
     }
     else
@@ -204,14 +190,15 @@ uint32_t SysCtl_getAuxClock(uint32_t clockInHz)
         // Calculate portion from fractional multiplier
         //
         temp = (clockInHz * ((HWREG(CLKCFG_BASE + SYSCTL_O_AUXPLLMULT) &
-                SYSCTL_AUXPLLMULT_FMULT_M) >> SYSCTL_AUXPLLMULT_FMULT_S)) / 4U;
+                              SYSCTL_AUXPLLMULT_FMULT_M) >>
+                             SYSCTL_AUXPLLMULT_FMULT_S)) / 4U;
 
         //
-        // Calculate integer multiplier and fixed divide by 2
+        // Calculate integer multiplier
         //
         clockOut = clockOut * ((HWREG(CLKCFG_BASE + SYSCTL_O_AUXPLLMULT) &
-                                  SYSCTL_AUXPLLMULT_IMULT_M) >>
-                                 SYSCTL_AUXPLLMULT_IMULT_S);
+                                SYSCTL_AUXPLLMULT_IMULT_M) >>
+                               SYSCTL_AUXPLLMULT_IMULT_S);
 
         //
         // Add in fractional portion
@@ -272,7 +259,10 @@ SysCtl_setClock(uint32_t config)
             ~SYSCTL_SYSPLLCTL1_PLLCLKEN;
         EDIS;
 
-        SysCtl_delay(3U);
+        //
+        // Delay of at least 120 OSCCLK cycles required post PLL bypass
+        //
+        SysCtl_delay(23U);
 
         //
         // Configure PLL if enabled
@@ -355,7 +345,7 @@ SysCtl_setClock(uint32_t config)
         {
             HWREGH(CLKCFG_BASE + SYSCTL_O_SYSCLKDIVSEL) =
                 (HWREGH(CLKCFG_BASE + SYSCTL_O_SYSCLKDIVSEL) &
-                 ~(uint16_t)SYSCTL_SYSCLKDIVSEL_PLLSYSCLKDIV_M) | (divSel + 1U);
+                ~(uint16_t)SYSCTL_SYSCLKDIVSEL_PLLSYSCLKDIV_M) | (divSel + 1U);
         }
         else
         {
@@ -406,7 +396,8 @@ SysCtl_setClock(uint32_t config)
         //
         // Enable PLLSYSCLK is fed from system PLL clock
         //
-        HWREGH(CLKCFG_BASE + SYSCTL_O_SYSPLLCTL1) |= SYSCTL_SYSPLLCTL1_PLLCLKEN;
+        HWREGH(CLKCFG_BASE +
+               SYSCTL_O_SYSPLLCTL1) |= SYSCTL_SYSPLLCTL1_PLLCLKEN;
 
         EDIS;
 
@@ -442,6 +433,11 @@ SysCtl_setClock(uint32_t config)
                 //
                 HWREGH(CLKCFG_BASE + SYSCTL_O_SYSPLLCTL1) &=
                     ~SYSCTL_SYSPLLCTL1_PLLCLKEN;
+
+                //
+                // Delay of at least 120 OSCCLK cycles required post PLL bypass
+                //
+                SysCtl_delay(23U);
 
                 //
                 // Turn off PLL
@@ -517,28 +513,36 @@ SysCtl_setClock(uint32_t config)
             switch (config & SYSCTL_OSCSRC_M)
             {
                 case SYSCTL_OSCSRC_OSC1:
+                    //
                     // Clk Src = INT_OSC1
+                    //
                     HWREGH(CPUTIMER2_BASE + SYSCTL_O_TMR2CLKCTL) &=
                         ~SYSCTL_TMR2CLKCTL_TMR2CLKSRCSEL_M;
                     HWREGH(CPUSYS_BASE + SYSCTL_O_TMR2CLKCTL) |= 1U;
                     break;
 
                 case SYSCTL_OSCSRC_OSC2:
+                    //
                     // Clk Src = INT_OSC2
+                    //
                     HWREGH(CPUTIMER2_BASE + SYSCTL_O_TMR2CLKCTL) &=
                         ~SYSCTL_TMR2CLKCTL_TMR2CLKSRCSEL_M;
                     HWREGH(CPUSYS_BASE + SYSCTL_O_TMR2CLKCTL) |= 2U;
                     break;
 
                 case SYSCTL_OSCSRC_XTAL:
+                    //
                     // Clk Src = XTAL
+                    //
                     HWREGH(CPUTIMER2_BASE + SYSCTL_O_TMR2CLKCTL) &=
                         ~SYSCTL_TMR2CLKCTL_TMR2CLKSRCSEL_M;
                     HWREGH(CPUSYS_BASE + SYSCTL_O_TMR2CLKCTL) |= 3U;
                     break;
 
                 default:
+                    //
                     // Do nothing. Not a valid clock source value.
+                    //
                     break;
             }
 
@@ -598,7 +602,8 @@ SysCtl_setClock(uint32_t config)
             //
             // Calculate elapsed counts on timer1
             //
-            ctr1 = (uint32_t)TMR1SYSCLKCTR - HWREG(CPUTIMER1_BASE + CPUTIMER_O_TIM);
+            ctr1 = (uint32_t)TMR1SYSCLKCTR - HWREG(CPUTIMER1_BASE +
+                                                   CPUTIMER_O_TIM);
 
             //
             // Restore timer settings
@@ -664,8 +669,8 @@ SysCtl_setClock(uint32_t config)
         EDIS;
 
         //
-        // Restore state of ST1[INTM]. This was set by the __disable_interrupts()
-        // intrinsic previously.
+        // Restore state of ST1[INTM]. This was set by the
+        // __disable_interrupts() intrinsic previously.
         //
         if((intStatus & 0x1U) == 0U)
         {
@@ -673,8 +678,8 @@ SysCtl_setClock(uint32_t config)
         }
 
         //
-        // Restore state of ST1[DBGM]. This was set by the __disable_interrupts()
-        // intrinsic previously.
+        // Restore state of ST1[DBGM]. This was set by the
+        // __disable_interrupts() intrinsic previously.
         //
         if((intStatus & 0x2U) == 0U)
         {
@@ -701,7 +706,6 @@ SysCtl_setClock(uint32_t config)
 
     return(status);
 }
-
 //*****************************************************************************
 //
 // SysCtl_setAuxClock()
@@ -710,8 +714,9 @@ SysCtl_setClock(uint32_t config)
 void SysCtl_setAuxClock(uint32_t config)
 {
     uint16_t pllMult = 0U;
-    uint16_t i, counter = 0U, started = 0U, attempts = 0U;
-    uint16_t t2TCR, t2TPR, t2TPRH, t2CLKCTL;
+    uint16_t counter = 0U, started = 0U, attempts = 0U;
+    uint16_t mult;
+    uint16_t i, t2TCR, t2TPR, t2TPRH, t2CLKCTL;
     uint32_t t2PRD;
 
     //
@@ -724,7 +729,11 @@ void SysCtl_setAuxClock(uint32_t config)
     //
     EALLOW;
     HWREGH(CLKCFG_BASE + SYSCTL_O_AUXPLLCTL1) &= ~SYSCTL_AUXPLLCTL1_PLLCLKEN;
-    SysCtl_delay(3U);
+
+    //
+    // Delay of at least 120 OSCCLK cycles required post PLL bypass
+    //
+    SysCtl_delay(23U);
 
     //
     // Configure oscillator source
@@ -732,19 +741,29 @@ void SysCtl_setAuxClock(uint32_t config)
     switch (config & SYSCTL_OSCSRC_M)
     {
         case SYSCTL_AUXPLL_OSCSRC_OSC2:
-            // Turn on INTOSC2OFF
+            //
+            // Turn on INTOSC2
+            //
             HWREGH(CLKCFG_BASE + SYSCTL_O_CLKSRCCTL1) &=
                     ~(SYSCTL_CLKSRCCTL1_INTOSC2OFF);
+
+            //
             // Clk Src = INTOSC2
+            //
             HWREGH(CLKCFG_BASE + SYSCTL_O_CLKSRCCTL2) &=
                     ~(SYSCTL_CLKSRCCTL2_AUXOSCCLKSRCSEL_M);
             break;
 
         case SYSCTL_AUXPLL_OSCSRC_XTAL:
+            //
             // Turn on XTALOSC
+            //
             HWREGH(CLKCFG_BASE + SYSCTL_O_CLKSRCCTL1) &=
-                    ~(SYSCTL_CLKSRCCTL1_XTALOFF);
+                   ~(SYSCTL_CLKSRCCTL1_XTALOFF);
+
+            //
             // Clk Src = XTAL
+            //
             HWREGH(CLKCFG_BASE + SYSCTL_O_CLKSRCCTL2) &=
                     ~(SYSCTL_CLKSRCCTL2_AUXOSCCLKSRCSEL_M);
             HWREGH(CLKCFG_BASE + SYSCTL_O_CLKSRCCTL2) |=
@@ -752,7 +771,9 @@ void SysCtl_setAuxClock(uint32_t config)
             break;
 
         case SYSCTL_AUXPLL_OSCSRC_AUXCLKIN:
+            //
             // Clk Src = AUXCLKIN
+            //
             HWREGH(CLKCFG_BASE + SYSCTL_O_CLKSRCCTL2) &=
                     ~(SYSCTL_CLKSRCCTL2_AUXOSCCLKSRCSEL_M);
             HWREGH(CLKCFG_BASE + SYSCTL_O_CLKSRCCTL2) |=
@@ -760,179 +781,211 @@ void SysCtl_setAuxClock(uint32_t config)
                     SYSCTL_CLKSRCCTL2_AUXOSCCLKSRCSEL_M;
             break;
         default:
+            //
             // Do nothing. Not a valid clock source value.
+            //
             break;
     }
     EDIS;
 
     //
-    // Configure PLL if enabled
+    // Get the PLL multiplier settings from config
     //
-    EALLOW;
-    if((config & SYSCTL_AUXPLL_ENABLE) == SYSCTL_AUXPLL_ENABLE)
+    pllMult |= (uint16_t)((config & SYSCTL_IMULT_M) <<
+                          SYSCTL_AUXPLLMULT_IMULT_S);
+    pllMult |= (uint16_t)(((config & SYSCTL_FMULT_M) >> SYSCTL_FMULT_S) <<
+                          SYSCTL_AUXPLLMULT_FMULT_S);
+
+    //
+    // Get the PLL multipliers currently programmed
+    //
+    mult  = (uint16_t)((HWREG(CLKCFG_BASE + SYSCTL_O_AUXPLLMULT) &
+                        (uint32_t)SYSCTL_AUXPLLMULT_IMULT_M) >>
+                       (uint32_t)SYSCTL_AUXPLLMULT_IMULT_S);
+    mult |= (uint16_t)(HWREG(CLKCFG_BASE + SYSCTL_O_AUXPLLMULT) &
+                             SYSCTL_AUXPLLMULT_FMULT_M);
+
+    //
+    // Lock PLL only if the multipliers need update
+    //
+    if(mult !=  pllMult)
     {
-        //
-        // Backup Timer 2 settings
-        //
-        t2CLKCTL = HWREGH(CPUSYS_BASE + SYSCTL_O_TMR2CLKCTL);
-        t2TCR = HWREGH(CPUTIMER2_BASE + CPUTIMER_O_TCR);
-        t2PRD = HWREG(CPUTIMER2_BASE + CPUTIMER_O_PRD);
-        t2TPR = HWREGH(CPUTIMER2_BASE + CPUTIMER_O_TPR);
-        t2TPRH = HWREGH(CPUTIMER2_BASE + CPUTIMER_O_TPRH);
 
         //
-        // Configure Timer 2 for AUXPLL as source in known configuration
-        // - Clock source to AUXPLL
-        // - Clock divider to divide by 1
-        // - Small period to detect overflow
-        // - Interrupt disabled
+        // Configure PLL if enabled
         //
-        EALLOW;
-        HWREGH(CPUSYS_BASE + SYSCTL_O_TMR2CLKCTL) = 6U;
-
-        HWREGH(CPUTIMER2_BASE + CPUTIMER_O_TCR) |= CPUTIMER_TCR_TSS;
-
-        HWREG(CPUTIMER2_BASE + CPUTIMER_O_PRD) = 10U;
-        HWREGH(CPUTIMER2_BASE + CPUTIMER_O_TPR) = 0U;
-        HWREGH(CPUTIMER2_BASE + CPUTIMER_O_TPRH) = 0U;
-        HWREGH(CPUTIMER2_BASE + CPUTIMER_O_TCR) &= ~CPUTIMER_TCR_TIE;
-
-        //
-        // Set AUX Divide by 8 to ensure that AUXPLLCLK <= SYSCLK / 2 while
-        // using Timer 2
-        //
-        HWREGH(CLKCFG_BASE + SYSCTL_O_AUXCLKDIVSEL) = 0x3U;
-        EDIS;
-
-        //
-        // Get the PLL multiplier settings from config
-        //
-        pllMult |= (uint16_t)((config & SYSCTL_IMULT_M) <<
-                              SYSCTL_AUXPLLMULT_IMULT_S);
-        pllMult |= (uint16_t)(((config & SYSCTL_FMULT_M) >> SYSCTL_FMULT_S) <<
-                              SYSCTL_AUXPLLMULT_FMULT_S);
-
-        //
-        // Lock the PLL up to five times. CPU Timer 2 will monitor a successful
-        // lock and break out of the loop earlier if detected.
-        //
-        while((counter < 5U) && (started == 0U))
+        if((config & SYSCTL_AUXPLL_ENABLE) == SYSCTL_AUXPLL_ENABLE)
         {
+            //
+            // Backup Timer 2 settings
+            //
+            t2CLKCTL = HWREGH(CPUSYS_BASE + SYSCTL_O_TMR2CLKCTL);
+            t2TCR = HWREGH(CPUTIMER2_BASE + CPUTIMER_O_TCR);
+            t2PRD = HWREG(CPUTIMER2_BASE + CPUTIMER_O_PRD);
+            t2TPR = HWREGH(CPUTIMER2_BASE + CPUTIMER_O_TPR);
+            t2TPRH = HWREGH(CPUTIMER2_BASE + CPUTIMER_O_TPRH);
+
+            //
+            // Configure Timer 2 for AUXPLL as source in known configuration
+            // - Clock source to AUXPLL
+            // - Clock divider to divide by 1
+            // - Small period to detect overflow
+            // - Interrupt disabled
+            //
             EALLOW;
-            //
-            // Turn off AUXPLL and delay for it to power down.
-            //
-            HWREGH(CLKCFG_BASE + SYSCTL_O_AUXPLLCTL1) &=
-                ~SYSCTL_AUXPLLCTL1_PLLEN;
-            SysCtl_delay(3U);
+            HWREGH(CPUSYS_BASE + SYSCTL_O_TMR2CLKCTL) = 6U;
+
+            HWREGH(CPUTIMER2_BASE + CPUTIMER_O_TCR) |= CPUTIMER_TCR_TSS;
+
+            HWREG(CPUTIMER2_BASE + CPUTIMER_O_PRD) = 10U;
+            HWREGH(CPUTIMER2_BASE + CPUTIMER_O_TPR) = 0U;
+            HWREGH(CPUTIMER2_BASE + CPUTIMER_O_TPRH) = 0U;
+            HWREGH(CPUTIMER2_BASE + CPUTIMER_O_TCR) &= ~CPUTIMER_TCR_TIE;
 
             //
-            // Set integer and fractional multiplier, which automatically turns
-            // on the PLL
+            // Set AUX Divide by 8 to ensure that AUXPLLCLK <= SYSCLK / 2
+            // while using Timer 2
             //
-            HWREGH(CLKCFG_BASE + SYSCTL_O_AUXPLLMULT) |= pllMult;
-
-            //
-            // Enable AUXPLL
-            //
-            HWREGH(CLKCFG_BASE + SYSCTL_O_AUXPLLCTL1) |=
-                SYSCTL_AUXPLLCTL1_PLLEN;
+            HWREGH(CLKCFG_BASE + SYSCTL_O_AUXCLKDIVSEL) = 0x3U;
             EDIS;
 
             //
-            // Wait for the AUXPLL lock counter
+            // Lock the PLL up to five times.
+            //CPU Timer 2 will monitor a successful
+            // lock and break out of the loop earlier if detected.
             //
-
-            while((HWREGH(CLKCFG_BASE + SYSCTL_O_AUXPLLSTS) &
-                   SYSCTL_AUXPLLSTS_LOCKS) != 1U)
+            while((counter < 5U) && (started == 0U))
             {
-                //
-                // Consider to servicing the watchdog using
-                // SysCtl_serviceWatchdog()
-                //
-            }
+                EALLOW;
 
-            //
-            // Enable AUXPLLCLK to be fed from AUXPLL
-            //
-            EALLOW;
-            HWREGH(CLKCFG_BASE + SYSCTL_O_AUXPLLCTL1) |=
-                SYSCTL_AUXPLLCTL1_PLLCLKEN;
-            SysCtl_delay(3U);
-
-            //
-            // CPU Timer 2 will now be setup to be clocked from AUXPLLCLK. This
-            // is used to test that the PLL has successfully started.
-            //
-            // Reload and start the timer
-            //
-            HWREGH(CPUTIMER2_BASE + CPUTIMER_O_TCR) |= CPUTIMER_TCR_TRB;
-            HWREGH(CPUTIMER2_BASE + CPUTIMER_O_TCR) &= ~CPUTIMER_TCR_TSS;
-
-            //
-            // Check to see timer is counting properly
-            //
-            for(i = 0U; i < 1000U; i++)
-            {
                 //
-                // Check overflow flag
+                // Turn off AUXPLL and delay for it to power down.
                 //
-                if((HWREGH(CPUTIMER2_BASE + CPUTIMER_O_TCR) &
-                    CPUTIMER_TCR_TIF) != 0U)
+                HWREGH(CLKCFG_BASE + SYSCTL_O_AUXPLLCTL1) &=
+                    ~SYSCTL_AUXPLLCTL1_PLLEN;
+                SysCtl_delay(3U);
+
+                //
+                // Set integer and fractional multiplier, which automatically
+                // turns on the PLL
+                //
+                HWREGH(CLKCFG_BASE + SYSCTL_O_AUXPLLMULT) |= pllMult;
+
+                //
+                // Enable AUXPLL
+                //
+                HWREGH(CLKCFG_BASE + SYSCTL_O_AUXPLLCTL1) |=
+                    SYSCTL_AUXPLLCTL1_PLLEN;
+                EDIS;
+
+                //
+                // Wait for the AUXPLL lock counter
+                //
+
+                while((HWREGH(CLKCFG_BASE + SYSCTL_O_AUXPLLSTS) &
+                       SYSCTL_AUXPLLSTS_LOCKS) != 1U)
                 {
                     //
-                    // Clear overflow flag
+                    // Consider to servicing the watchdog using
+                    // SysCtl_serviceWatchdog()
                     //
-                    HWREGH(CPUTIMER2_BASE + CPUTIMER_O_TCR) |= CPUTIMER_TCR_TIF;
-
-                    //
-                    // Set flag to indicate PLL started and break out of
-                    // for-loop
-                    //
-                    started = 1U;
-                    break;
                 }
+
+
+                //
+                // Enable AUXPLLCLK to be fed from AUXPLL
+                //
+                EALLOW;
+                HWREGH(CLKCFG_BASE + SYSCTL_O_AUXPLLCTL1) |=
+                    SYSCTL_AUXPLLCTL1_PLLCLKEN;
+                SysCtl_delay(3U);
+
+                //
+                // CPU Timer 2 will now be setup to be clocked from AUXPLLCLK.
+                // This is used to test that the PLL has successfully started.
+                //
+                // Reload and start the timer
+                //
+                HWREGH(CPUTIMER2_BASE + CPUTIMER_O_TCR) |= CPUTIMER_TCR_TRB;
+                HWREGH(CPUTIMER2_BASE + CPUTIMER_O_TCR) &= ~CPUTIMER_TCR_TSS;
+
+                //
+                // Check to see timer is counting properly
+                //
+                for(i = 0U; i < 1000U; i++)
+                {
+                    //
+                    // Check overflow flag
+                    //
+                    if((HWREGH(CPUTIMER2_BASE + CPUTIMER_O_TCR) &
+                        CPUTIMER_TCR_TIF) != 0U)
+                    {
+                        //
+                        // Clear overflow flag
+                        //
+                        HWREGH(CPUTIMER2_BASE +
+                               CPUTIMER_O_TCR) |= CPUTIMER_TCR_TIF;
+
+                        //
+                        // Set flag to indicate PLL started and break out of
+                        // for-loop
+                        //
+                        started = 1U;
+                        break;
+                    }
+                }
+
+                //
+                // Stop timer
+                //
+                HWREGH(CPUTIMER2_BASE + CPUTIMER_O_TCR) |= CPUTIMER_TCR_TSS;
+                counter++;
+                EDIS;
+            }
+
+            if(started == 0U)
+            {
+                //
+                // AUX PLL may not have started. Reset multiplier to 0 (bypass
+                // PLL).
+                //
+                EALLOW;
+                HWREGH(CLKCFG_BASE + SYSCTL_O_AUXPLLMULT) = 0U;
+                EDIS;
+
+                //
+                // The user should put some handler code here based on how
+                // this condition should be handled in their application.
+                //
+                ESTOP0;
             }
 
             //
-            // Stop timer
-            //
-            HWREGH(CPUTIMER2_BASE + CPUTIMER_O_TCR) |= CPUTIMER_TCR_TSS;
-            counter++;
-            EDIS;
-        }
-
-        if(started == 0U)
-        {
-            //
-            // AUX PLL may not have started. Reset multiplier to 0 (bypass
-            // PLL).
+            // Restore Timer 2 configuration
             //
             EALLOW;
-            HWREGH(CLKCFG_BASE + SYSCTL_O_AUXPLLMULT) = 0U;
+            HWREGH(CPUSYS_BASE + SYSCTL_O_TMR2CLKCTL) = t2CLKCTL;
+            HWREGH(CPUTIMER2_BASE + CPUTIMER_O_TCR) = t2TCR;
+            HWREG(CPUTIMER2_BASE + CPUTIMER_O_PRD) = t2PRD;
+            HWREGH(CPUTIMER2_BASE + CPUTIMER_O_TPR) = t2TPR;
+            HWREGH(CPUTIMER2_BASE + CPUTIMER_O_TPRH) = t2TPRH;
+
+            //
+            // Reload period value
+            //
+            HWREGH(CPUTIMER2_BASE + CPUTIMER_O_TCR) |= CPUTIMER_TCR_TRB;
             EDIS;
-
-            //
-            // The user should put some handler code here based on how this
-            // condition should be handled in their application.
-            //
-            ESTOP0;
         }
-
+    }
+    else
+    {
         //
-        // Restore Timer 2 configuration
+        // Enable AUXPLLCLK to be fed from AUXPLL
         //
         EALLOW;
-        HWREGH(CPUSYS_BASE + SYSCTL_O_TMR2CLKCTL) = t2CLKCTL;
-        HWREGH(CPUTIMER2_BASE + CPUTIMER_O_TCR) = t2TCR;
-        HWREG(CPUTIMER2_BASE + CPUTIMER_O_PRD) = t2PRD;
-        HWREGH(CPUTIMER2_BASE + CPUTIMER_O_TPR) = t2TPR;
-        HWREGH(CPUTIMER2_BASE + CPUTIMER_O_TPRH) = t2TPRH;
-
-        //
-        // Reload period value
-        //
-        HWREGH(CPUTIMER2_BASE + CPUTIMER_O_TCR) |= CPUTIMER_TCR_TRB;
+        HWREGH(CLKCFG_BASE + SYSCTL_O_AUXPLLCTL1) |= SYSCTL_AUXPLLCTL1_PLLCLKEN;
+        SysCtl_delay(3U);
+        EDIS;
     }
 
     //
@@ -948,14 +1001,18 @@ void SysCtl_setAuxClock(uint32_t config)
         //
         // Bypass AUXPLL
         //
-        HWREGH(CLKCFG_BASE + SYSCTL_O_AUXPLLCTL1) &= ~SYSCTL_AUXPLLCTL1_PLLCLKEN;
-        SysCtl_delay(3U);
+        HWREGH(CLKCFG_BASE +
+               SYSCTL_O_AUXPLLCTL1) &= ~SYSCTL_AUXPLLCTL1_PLLCLKEN;
+
+        //
+        // Delay of at least 120 OSCCLK cycles required post PLL bypass
+        //
+        SysCtl_delay(23U);
 
         //
         // Turn off AUXPLL
         //
-        HWREGH(CLKCFG_BASE + SYSCTL_O_AUXPLLCTL1) &=
-            ~SYSCTL_AUXPLLCTL1_PLLEN;
+        HWREGH(CLKCFG_BASE + SYSCTL_O_AUXPLLCTL1) &= ~SYSCTL_AUXPLLCTL1_PLLEN;
         SysCtl_delay(3U);
 
         //
@@ -967,8 +1024,7 @@ void SysCtl_setAuxClock(uint32_t config)
         //
         // Enable AUXPLL
         //
-        HWREGH(CLKCFG_BASE + SYSCTL_O_AUXPLLCTL1) |=
-            SYSCTL_AUXPLLCTL1_PLLEN;
+        HWREGH(CLKCFG_BASE + SYSCTL_O_AUXPLLCTL1) |= SYSCTL_AUXPLLCTL1_PLLEN;
 
         //
         // Wait for the AUXPLL lock counter
@@ -985,8 +1041,7 @@ void SysCtl_setAuxClock(uint32_t config)
         //
         // Enable AUXPLLCLK to be fed from AUXPLL
         //
-        HWREGH(CLKCFG_BASE + SYSCTL_O_AUXPLLCTL1) |=
-            SYSCTL_AUXPLLCTL1_PLLCLKEN;
+        HWREGH(CLKCFG_BASE + SYSCTL_O_AUXPLLCTL1) |= SYSCTL_AUXPLLCTL1_PLLCLKEN;
 
         SysCtl_delay(3U);
 
@@ -1002,6 +1057,7 @@ void SysCtl_setAuxClock(uint32_t config)
     HWREGH(CLKCFG_BASE + SYSCTL_O_AUXCLKDIVSEL) =
         (uint16_t)(config & SYSCTL_SYSDIV_M) >> SYSCTL_SYSDIV_S;
     EDIS;
+
 }
 
 //*****************************************************************************
@@ -1023,22 +1079,34 @@ SysCtl_selectOscSource(uint32_t oscSource)
     switch(oscSource)
     {
         case SYSCTL_OSCSRC_OSC2:
+            //
             // Turn on INTOSC2
+            //
             HWREGH(CLKCFG_BASE + SYSCTL_O_CLKSRCCTL1) &=
                 ~SYSCTL_CLKSRCCTL1_INTOSC2OFF;
+
+            //
             // Clk Src = INTOSC2
+            //
             HWREGH(CLKCFG_BASE + SYSCTL_O_CLKSRCCTL1) &=
                 ~SYSCTL_CLKSRCCTL1_OSCCLKSRCSEL_M;
+            //
             //Turn off XTALOSC
+            //
             HWREGH(CLKCFG_BASE + SYSCTL_O_CLKSRCCTL1) |=
                 SYSCTL_CLKSRCCTL1_XTALOFF;
             break;
 
         case SYSCTL_OSCSRC_XTAL:
+            //
             //Turn on XTALOSC
+            //
             HWREGH(CLKCFG_BASE + SYSCTL_O_CLKSRCCTL1) &=
                 ~SYSCTL_CLKSRCCTL1_XTALOFF;
+
+            //
             // Clk Src = XTALOSC
+            //
             HWREGH(CLKCFG_BASE + SYSCTL_O_CLKSRCCTL1) &=
                 ~SYSCTL_CLKSRCCTL1_OSCCLKSRCSEL_M;
             HWREGH(CLKCFG_BASE + SYSCTL_O_CLKSRCCTL1) |=
@@ -1046,18 +1114,24 @@ SysCtl_selectOscSource(uint32_t oscSource)
             break;
 
         case SYSCTL_OSCSRC_OSC1:
+            //
             // Clk Src = INTOSC1
+            //
             HWREGH(CLKCFG_BASE + SYSCTL_O_CLKSRCCTL1) &=
                 ~SYSCTL_CLKSRCCTL1_OSCCLKSRCSEL_M;
             HWREGH(CLKCFG_BASE + SYSCTL_O_CLKSRCCTL1) |=
                 ((uint32_t)SYSCTL_OSCSRC_OSC1 >> SYSCTL_OSCSRC_S);
+            //
             //Turn off XTALOSC
+            //
             HWREGH(CLKCFG_BASE + SYSCTL_O_CLKSRCCTL1) |=
                 SYSCTL_CLKSRCCTL1_XTALOFF;
             break;
 
         default:
+            //
             // Do nothing. Not a valid oscSource value.
+            //
             break;
     }
     EDIS;
@@ -1111,8 +1185,7 @@ SysCtl_getDeviceParametric(SysCtl_DeviceParametric parametric)
             // Qualification Status
             //
             value = ((HWREG(DEVCFG_BASE + SYSCTL_O_PARTIDL) &
-                                SYSCTL_PARTIDL_QUAL_M) >>
-                               SYSCTL_PARTIDL_QUAL_S);
+                      SYSCTL_PARTIDL_QUAL_M) >> SYSCTL_PARTIDL_QUAL_S);
             break;
 
         case SYSCTL_DEVICE_PINCOUNT:
@@ -1175,10 +1248,13 @@ SysCtl_getDeviceParametric(SysCtl_DeviceParametric parametric)
             break;
 
         default:
+            //
             // Not a valid value for PARTID register
+            //
             value = 0U;
             break;
     }
 
     return((uint16_t)value);
 }
+

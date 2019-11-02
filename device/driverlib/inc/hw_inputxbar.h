@@ -5,10 +5,10 @@
 // TITLE:   Definitions for the XBAR registers.
 //
 //###########################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -83,36 +83,36 @@
 // The following are defines for the bit fields in the INPUTSELECTLOCK register
 //
 //*****************************************************************************
-#define XBAR_INPUTSELECTLOCK_INPUT1SELECT  0x1U         // Lock bit for INPUT1SEL
+#define XBAR_INPUTSELECTLOCK_INPUT1SELECT  0x1U         // Lock bit for INPUT1SELECT
                                                // Register
-#define XBAR_INPUTSELECTLOCK_INPUT2SELECT  0x2U         // Lock bit for INPUT2SEL
+#define XBAR_INPUTSELECTLOCK_INPUT2SELECT  0x2U         // Lock bit for INPUT2SELECT
                                                // Register
-#define XBAR_INPUTSELECTLOCK_INPUT3SELECT  0x4U         // Lock bit for INPUT3SEL
+#define XBAR_INPUTSELECTLOCK_INPUT3SELECT  0x4U         // Lock bit for INPUT3SELECT
                                                // Register
-#define XBAR_INPUTSELECTLOCK_INPUT4SELECT  0x8U         // Lock bit for INPUT4SEL
+#define XBAR_INPUTSELECTLOCK_INPUT4SELECT  0x8U         // Lock bit for INPUT4SELECT
                                                // Register
-#define XBAR_INPUTSELECTLOCK_INPUT5SELECT  0x10U        // Lock bit for INPUT5SEL
+#define XBAR_INPUTSELECTLOCK_INPUT5SELECT  0x10U        // Lock bit for INPUT5SELECT
                                                // Register
-#define XBAR_INPUTSELECTLOCK_INPUT6SELECT  0x20U        // Lock bit for INPUT6SEL
+#define XBAR_INPUTSELECTLOCK_INPUT6SELECT  0x20U        // Lock bit for INPUT6SELECT
                                                // Register
-#define XBAR_INPUTSELECTLOCK_INPUT7SELECT  0x40U        // Lock bit for INPUT7SEL
+#define XBAR_INPUTSELECTLOCK_INPUT7SELECT  0x40U        // Lock bit for INPUT7SELECT
                                                // Register
-#define XBAR_INPUTSELECTLOCK_INPUT8SELECT  0x80U        // Lock bit for INPUT8SEL
+#define XBAR_INPUTSELECTLOCK_INPUT8SELECT  0x80U        // Lock bit for INPUT8SELECT
                                                // Register
-#define XBAR_INPUTSELECTLOCK_INPUT9SELECT  0x100U       // Lock bit for INPUT9SEL
+#define XBAR_INPUTSELECTLOCK_INPUT9SELECT  0x100U       // Lock bit for INPUT9SELECT
                                                // Register
-#define XBAR_INPUTSELECTLOCK_INPUT10SELECT  0x200U       // Lock bit for INPUT10SEL
+#define XBAR_INPUTSELECTLOCK_INPUT10SELECT  0x200U       // Lock bit for INPUT10SELECT
                                                // Register
-#define XBAR_INPUTSELECTLOCK_INPUT11SELECT  0x400U       // Lock bit for INPUT11SEL
+#define XBAR_INPUTSELECTLOCK_INPUT11SELECT  0x400U       // Lock bit for INPUT11SELECT
                                                // Register
-#define XBAR_INPUTSELECTLOCK_INPUT12SELECT  0x800U       // Lock bit for INPUT12SEL
+#define XBAR_INPUTSELECTLOCK_INPUT12SELECT  0x800U       // Lock bit for INPUT12SELECT
                                                // Register
-#define XBAR_INPUTSELECTLOCK_INPUT13SELECT  0x1000U      // Lock bit for INPUT13SEL
+#define XBAR_INPUTSELECTLOCK_INPUT13SELECT  0x1000U      // Lock bit for INPUT13SELECT
                                                // Register
-#define XBAR_INPUTSELECTLOCK_INPUT14SELECT  0x2000U      // Lock bit for INPUT14SEL
+#define XBAR_INPUTSELECTLOCK_INPUT14SELECT  0x2000U      // Lock bit for INPUT14SELECT
                                                // Register
-#define XBAR_INPUTSELECTLOCK_INPUT15SELECT  0x4000U      // Lock bit for INPUT15SEL
+#define XBAR_INPUTSELECTLOCK_INPUT15SELECT  0x4000U      // Lock bit for INPUT15SELECT
                                                // Register
-#define XBAR_INPUTSELECTLOCK_INPUT16SELECT  0x8000U      // Lock bit for INPUT16SEL
+#define XBAR_INPUTSELECTLOCK_INPUT16SELECT  0x8000U      // Lock bit for INPUT16SELECT
                                                // Register
 #endif

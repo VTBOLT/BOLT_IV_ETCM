@@ -5,10 +5,10 @@
 // TITLE:  C28x EPWM driver.
 //
 //###########################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -49,8 +49,14 @@
 //*****************************************************************************
 void EPWM_setEmulationMode(uint32_t base, EPWM_EmulationMode emulationMode)
 {
+    //
+    // Check the arguments.
+    //
     ASSERT(EPWM_isBaseValid(base));
-    // write to FREE_SOFT bits
+
+    //
+    // Write to FREE_SOFT bits
+    //
     HWREGH(base + EPWM_O_TBCTL) =
            ((HWREGH(base + EPWM_O_TBCTL) & (~EPWM_TBCTL_FREE_SOFT_M)) |
             ((uint16_t)emulationMode << EPWM_TBCTL_FREE_SOFT_S));

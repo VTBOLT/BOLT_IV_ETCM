@@ -5,10 +5,10 @@
 // TITLE:  C28x Flash driver.
 //
 //###########################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -44,6 +44,7 @@
 
 #ifndef __cplusplus
 #pragma CODE_SECTION(Flash_initModule, ".TI.ramfunc");
+#pragma CODE_SECTION(Flash_powerDown, ".TI.ramfunc");
 #endif
 
 //*****************************************************************************
@@ -116,6 +117,9 @@ Flash_initModule(uint32_t ctrlBase, uint32_t eccBase, uint16_t waitstates)
 // Flash_powerDown
 //
 //*****************************************************************************
+#ifdef __cplusplus
+#pragma CODE_SECTION(".TI.ramfunc");
+#endif
 void
 Flash_powerDown(uint32_t ctrlBase)
 {
@@ -139,3 +143,4 @@ Flash_powerDown(uint32_t ctrlBase)
     //
     Flash_setPumpPowerMode(ctrlBase, FLASH_PUMP_PWR_SLEEP);
 }
+

@@ -5,10 +5,10 @@
 // TITLE:  C28x CMPSS driver.
 //
 //###########################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -59,7 +59,7 @@ CMPSS_configFilterHigh(uint32_t base, uint16_t samplePrescale,
     ASSERT(CMPSS_isBaseValid(base));
     ASSERT(samplePrescale < 1024U);
     ASSERT((sampleWindow >= 1U) && (sampleWindow <= 32U));
-    ASSERT(threshold > ((sampleWindow - 1U) / 2U));
+    ASSERT(threshold >= ((sampleWindow - 1U) / 2U));
 
     //
     // Shift the sample window and threshold values into the correct positions
@@ -100,7 +100,7 @@ CMPSS_configFilterLow(uint32_t base, uint16_t samplePrescale,
     ASSERT(CMPSS_isBaseValid(base));
     ASSERT(samplePrescale < 1024U);
     ASSERT((sampleWindow >= 1U) && (sampleWindow <= 32U));
-    ASSERT(threshold > ((sampleWindow - 1U) / 2U));
+    ASSERT(threshold >= ((sampleWindow - 1U) / 2U));
 
     //
     // Shift the sample window and threshold values into the correct positions
@@ -182,7 +182,7 @@ CMPSS_configRamp(uint32_t base, uint16_t maxRampVal, uint16_t decrementVal,
     //
     ASSERT(CMPSS_isBaseValid(base));
     ASSERT(delayVal <= CMPSS_RAMPDLYS_DELAY_M);
-    ASSERT(pwmSyncSrc >= 1U && pwmSyncSrc <= 16U);
+    ASSERT((pwmSyncSrc >= 1U) && (pwmSyncSrc <= 16U));
 
     EALLOW;
 

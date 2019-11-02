@@ -5,10 +5,10 @@
 // TITLE:  C28x uPP driver.
 //
 //###########################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -117,7 +117,7 @@ extern "C"
 // Define to specify mask for setting emulation mode in UPP_setEmulationMode().
 //
 //*****************************************************************************
-#define UPP_SOFT_FREE_M        ((uint16_t)UPP_PERCTL_SOFT | \
+#define UPP_SOFT_FREE_M        ((uint16_t)UPP_PERCTL_SOFT |                   \
                                 (uint16_t)UPP_PERCTL_FREE)
 
 //*****************************************************************************
@@ -127,7 +127,7 @@ extern "C"
 //
 //*****************************************************************************
 #define UPP_TX_SIGNAL_MODE_M    UPP_IFCFG_WAITA
-#define UPP_RX_SIGNAL_MODE_M   ((uint16_t)UPP_IFCFG_STARTA | \
+#define UPP_RX_SIGNAL_MODE_M   ((uint16_t)UPP_IFCFG_STARTA |                   \
                                 (uint16_t)UPP_IFCFG_ENAA)
 
 //*****************************************************************************
@@ -136,8 +136,8 @@ extern "C"
 // in UPP_setControlSignalPolarity().
 //
 //*****************************************************************************
-#define UPP_SIGNAL_POLARITY_M  ((uint16_t)UPP_IFCFG_WAITPOLA | \
-                                (uint16_t)UPP_IFCFG_ENAPOLA  | \
+#define UPP_SIGNAL_POLARITY_M  ((uint16_t)UPP_IFCFG_WAITPOLA |                 \
+                                (uint16_t)UPP_IFCFG_ENAPOLA  |                 \
                                 (uint16_t)UPP_IFCFG_STARTPOLA)
 
 //*****************************************************************************
@@ -1420,7 +1420,7 @@ UPP_setDMAReadThreshold(uint32_t base, UPP_DMAChannel channel,
 //*****************************************************************************
 extern void
 UPP_setDMADescriptor(uint32_t base, UPP_DMAChannel channel,
-                     const UPP_DMADescriptor* const desc);
+                     const UPP_DMADescriptor * const desc);
 
 //*****************************************************************************
 //
@@ -1442,7 +1442,7 @@ UPP_setDMADescriptor(uint32_t base, UPP_DMAChannel channel,
 //*****************************************************************************
 extern void
 UPP_getDMAChannelStatus(uint32_t base, UPP_DMAChannel channel,
-                        UPP_DMAChannelStatus* const status);
+                        UPP_DMAChannelStatus * const status);
 
 //*****************************************************************************
 //

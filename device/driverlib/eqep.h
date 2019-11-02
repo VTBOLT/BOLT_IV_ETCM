@@ -5,10 +5,10 @@
 // TITLE:  C28x eQEP driver.
 //
 //###########################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -75,32 +75,45 @@ extern "C"
 // parameter.
 //
 //*****************************************************************************
+
+//
 // Operation Mode
+//
 #define EQEP_CONFIG_QUADRATURE      0x0000U //!< Quadrature-clock mode
 #define EQEP_CONFIG_CLOCK_DIR       0x4000U //!< Direction-count mode
 #define EQEP_CONFIG_UP_COUNT        0x8000U //!< Up-count mode, QDIR = 1
 #define EQEP_CONFIG_DOWN_COUNT      0xC000U //!< Down-count mode, QDIR = 0
 
+//
 // Resolution
+//
 #define EQEP_CONFIG_2X_RESOLUTION   0x0000U //!< Count rising and falling edge
 #define EQEP_CONFIG_1X_RESOLUTION   0x0800U //!< Count rising edge only
 
+//
 // Swap QEPA and QEPB
+//
 #define EQEP_CONFIG_NO_SWAP         0x0000U //!< Do not swap QEPA and QEPB
 #define EQEP_CONFIG_SWAP            0x0400U //!< Swap QEPA and QEPB
 
 //*****************************************************************************
+
 //
 // Values that can be passed to EQEP_setCompareConfig() as the config
 // parameter.
 //
 //*****************************************************************************
+
+//
 // Sync pulse pin
+//
 #define EQEP_COMPARE_NO_SYNC_OUT      0x0000U //!< Disable sync output
 #define EQEP_COMPARE_IDX_SYNC_OUT     0x2000U //!< Sync output on index pin
 #define EQEP_COMPARE_STROBE_SYNC_OUT  0x3000U //!< Sync output on strobe pin
 
+//
 // Shadow register use
+//
 #define EQEP_COMPARE_NO_SHADOW        0x0000U //!< Disable shadow of QPOSCMP
 #define EQEP_COMPARE_LOAD_ON_ZERO     0x8000U //!< Load on QPOSCNT = 0
 #define EQEP_COMPARE_LOAD_ON_MATCH    0xC000U //!< Load on QPOSCNT = QPOSCMP
@@ -152,17 +165,24 @@ extern "C"
 // Values that can be passed to EQEP_setLatchMode() as the latchMode parameter.
 //
 //*****************************************************************************
+
+//
 // Position counter latch event
+//
 #define EQEP_LATCH_CNT_READ_BY_CPU    0x0000U //!< On position counter read
 #define EQEP_LATCH_UNIT_TIME_OUT      0x0004U //!< On unit time-out event
 
+//
 // Strobe position counter latch event
+//
 //! On rising edge of strobe
 #define EQEP_LATCH_RISING_STROBE      0x0000U
 //! On rising edge when clockwise, on falling when counter clockwise
 #define EQEP_LATCH_EDGE_DIR_STROBE    0x0040U
 
+//
 // Index position counter latch event
+//
 #define EQEP_LATCH_RISING_INDEX       0x0010U //!< On rising edge of index
 #define EQEP_LATCH_FALLING_INDEX      0x0020U //!< On falling edge of index
 
@@ -176,13 +196,17 @@ extern "C"
 //*****************************************************************************
 #define EQEP_INIT_DO_NOTHING          0x0000U //!< Action is disabled
 
+//
 // Strobe events
+//
 //! On rising edge of strobe
 #define EQEP_INIT_RISING_STROBE       0x0800U
 //! On rising edge when clockwise, on falling when counter clockwise
 #define EQEP_INIT_EDGE_DIR_STROBE     0x0C00U
 
+//
 // Index events
+//
 #define EQEP_INIT_RISING_INDEX        0x0200U //!< On rising edge of index
 #define EQEP_INIT_FALLING_INDEX       0x0300U //!< On falling edge of index
 #endif
@@ -245,6 +269,7 @@ typedef enum
     EQEP_UNIT_POS_EVNT_DIV_2048         //!< UPEVNT = QCLK/2048
 } EQEP_UPEVNTPrescale;
 
+
 //*****************************************************************************
 //
 //! Values that can be passed to EQEP_setEmulationMode() as the \e emuMode
@@ -277,7 +302,7 @@ typedef enum
 //
 //*****************************************************************************
 #ifdef DEBUG
-static bool
+static inline bool
 EQEP_isBaseValid(uint32_t base)
 {
     return((base == EQEP1_BASE) || (base == EQEP2_BASE) ||
@@ -346,9 +371,9 @@ EQEP_disableModule(uint32_t base)
 //! \param base is the base address of the eQEP module.
 //! \param config is the configuration for the eQEP module decoder unit.
 //!
-//! This function configures the operation of the eQEP module's quadrature decoder
-//! unit.  The \e config parameter provides the configuration of the decoder
-//! and is the logical OR of several values:
+//! This function configures the operation of the eQEP module's quadrature
+//! decoder unit.  The \e config parameter provides the configuration
+//! of the decoder and is the logical OR of several values:
 //!
 //! - \b EQEP_CONFIG_2X_RESOLUTION or \b EQEP_CONFIG_1X_RESOLUTION specify
 //!   if both rising and falling edges should be counted or just rising edges.
@@ -1040,7 +1065,36 @@ EQEP_setComparePulseWidth(uint32_t base, uint16_t cycles)
     // Set the pulse width.
     //
     HWREGH(base + EQEP_O_QPOSCTL) = (HWREGH(base + EQEP_O_QPOSCTL) &
-                                     ~EQEP_QPOSCTL_PCSPW_M) | (cycles - 1U);
+                                     ~(uint16_t)EQEP_QPOSCTL_PCSPW_M) |
+                                    (cycles - 1U);
+}
+
+//*****************************************************************************
+//
+//! Loads the eQEP module unit timer period as number of SYSCLK cycles.
+//!
+//! \param base is the base address of the eQEP module.
+//! \param period is period value at which a unit time-out interrupt is set.
+//!
+//! This function sets the unit time-out interrupt when it matches the value
+//! specified by \e period
+//! The unit timer is clocked by SYSCLKOUT
+//!
+//! \return None.
+//
+//*****************************************************************************
+static inline void
+EQEP_loadUnitTimer(uint32_t base, uint32_t period)
+{
+    //
+    // Check the arguments.
+    //
+    ASSERT(EQEP_isBaseValid(base));
+
+    //
+    // Set the period of the unit timer.
+    //
+    HWREG(base + EQEP_O_QUPRD) = period;
 }
 
 //*****************************************************************************

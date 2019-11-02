@@ -5,10 +5,10 @@
 // TITLE:  Device setup for examples.
 //
 //#############################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -181,6 +181,9 @@ extern uint16_t RamfuncsRunSize;
 
 #endif
 
+extern uint32_t Example_PassCount;
+extern uint32_t Example_Fail;
+
 //*****************************************************************************
 //
 // Function Prototypes
@@ -193,6 +196,9 @@ extern void Device_enableUnbondedGPIOPullupsFor176Pin(void);
 extern void Device_enableUnbondedGPIOPullupsFor100Pin(void);
 extern void Device_enableUnbondedGPIOPullups(void);
 extern void __error__(char *filename, uint32_t line);
+extern void Example_setResultPass(void);
+extern void Example_setResultFail(void);
+extern void Example_done(void);
 
 //
 // End of file

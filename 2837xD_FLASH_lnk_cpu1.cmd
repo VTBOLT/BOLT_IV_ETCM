@@ -64,22 +64,31 @@ PAGE 1 : /* Data Memory */
 SECTIONS
 {
    /* Allocate program areas: */
-   .cinit              : > FLASHB      PAGE = 0, ALIGN(4)
-   .pinit              : > FLASHB,     PAGE = 0, ALIGN(4)
-   .text               : >> FLASHB | FLASHC | FLASHD | FLASHE      PAGE = 0, ALIGN(4)
-   codestart           : > BEGIN       PAGE = 0, ALIGN(4)
-
+   .cinit              : > FLASHB      PAGE = 0, ALIGN(8)
+   .text               : >> FLASHB | FLASHC | FLASHD | FLASHE      PAGE = 0, ALIGN(8)
+   codestart           : > BEGIN       PAGE = 0, ALIGN(8)
    /* Allocate uninitalized data sections: */
-   .stack              : > RAMM1        PAGE = 1
-   .ebss               : >> RAMLS5 | RAMGS0 | RAMGS1       PAGE = 1
-   .esysmem            : > RAMLS5       PAGE = 1
-   .cio                : > RAMLS5     PAGE = 1
-   
-   /* Initalized sections go in Flash */
-   .econst             : >> FLASHF | FLASHG | FLASHH      PAGE = 0, ALIGN(4)
-   .switch             : > FLASHB      PAGE = 0, ALIGN(4)
+   .stack              : > RAMM1       PAGE = 1
+   .switch             : > FLASHB      PAGE = 0, ALIGN(8)
+   .reset              : > RESET,      PAGE = 0, TYPE = DSECT /* not used, */
 
-   .reset              : > RESET,     PAGE = 0, TYPE = DSECT /* not used, */
+#if defined(__TI_EABI__)
+   .init_array         : > FLASHB,       PAGE = 0,       ALIGN(8)
+   .bss                : > RAMLS5,       PAGE = 1
+   .bss:output         : > RAMLS3,       PAGE = 0
+   .bss:cio            : > RAMLS5,       PAGE = 1
+   .data               : > RAMLS5,       PAGE = 1
+   .sysmem             : > RAMLS5,       PAGE = 1
+   /* Initalized sections go in Flash */
+   .const              : > FLASHF,       PAGE = 0,       ALIGN(8)
+#else
+   .pinit              : > FLASHB,       PAGE = 0,       ALIGN(8)
+   .ebss               : >> RAMLS5 | RAMGS0 | RAMGS1,    PAGE = 1
+   .esysmem            : > RAMLS5,       PAGE = 1
+   .cio                : > RAMLS5,       PAGE = 1
+   /* Initalized sections go in Flash */
+   .econst             : >> FLASHF      PAGE = 0, ALIGN(8)
+#endif
 
    Filter_RegsFile     : > RAMGS0,	   PAGE = 1
 
@@ -89,27 +98,40 @@ SECTIONS
    ramgs1           : > RAMGS1,     PAGE = 1
 
 #ifdef __TI_COMPILER_VERSION__
-	#if __TI_COMPILER_VERSION__ >= 15009000
-	.TI.ramfunc : {} LOAD = FLASHD,
-						 RUN = RAMLS0 | RAMLS1 | RAMLS2 |RAMLS3,
-                         LOAD_START(_RamfuncsLoadStart),
-                         LOAD_SIZE(_RamfuncsLoadSize),
-                         LOAD_END(_RamfuncsLoadEnd),
-                         RUN_START(_RamfuncsRunStart),
-                         RUN_SIZE(_RamfuncsRunSize),
-                         RUN_END(_RamfuncsRunEnd),
-						 PAGE = 0, ALIGN(4)
-	#else
+    #if __TI_COMPILER_VERSION__ >= 15009000
+        #if defined(__TI_EABI__)
+            .TI.ramfunc : {} LOAD = FLASHD,
+                                 RUN = RAMLS0,
+                                 LOAD_START(RamfuncsLoadStart),
+                                 LOAD_SIZE(RamfuncsLoadSize),
+                                 LOAD_END(RamfuncsLoadEnd),
+                                 RUN_START(RamfuncsRunStart),
+                                 RUN_SIZE(RamfuncsRunSize),
+                                 RUN_END(RamfuncsRunEnd),
+                                 PAGE = 0, ALIGN(8)
+        #else
+            .TI.ramfunc : {} LOAD = FLASHD,
+                             RUN = RAMLS0,
+                             LOAD_START(_RamfuncsLoadStart),
+                             LOAD_SIZE(_RamfuncsLoadSize),
+                             LOAD_END(_RamfuncsLoadEnd),
+                             RUN_START(_RamfuncsRunStart),
+                             RUN_SIZE(_RamfuncsRunSize),
+                             RUN_END(_RamfuncsRunEnd),
+                             PAGE = 0, ALIGN(8)
+        #endif
+    #else
    ramfuncs            : LOAD = FLASHD,
-                         RUN = RAMLS0 | RAMLS1 | RAMLS2 |RAMLS3,
+                         RUN = RAMLS0,
                          LOAD_START(_RamfuncsLoadStart),
                          LOAD_SIZE(_RamfuncsLoadSize),
                          LOAD_END(_RamfuncsLoadEnd),
                          RUN_START(_RamfuncsRunStart),
                          RUN_SIZE(_RamfuncsRunSize),
                          RUN_END(_RamfuncsRunEnd),
-                         PAGE = 0, ALIGN(4)    
+                         PAGE = 0, ALIGN(8)
     #endif
+
 #endif
 
    /* The following section definitions are required when using the IPC API Drivers */

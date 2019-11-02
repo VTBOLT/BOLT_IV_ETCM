@@ -5,10 +5,10 @@
 // TITLE:  C28x Driver for the DCSM security module.
 //
 //#############################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -77,6 +77,7 @@ extern "C"
 // These are not intended for application code.
 //
 //*****************************************************************************
+
 #define DCSM_O_Z1_CSMPSWD0              0x08U //!< Z1 CSMPSWD0 offset
 #define DCSM_O_Z1_CSMPSWD1              0x0AU //!< Z1 CSMPSWD1 offset
 #define DCSM_O_Z1_CSMPSWD2              0x0CU //!< Z1 CSMPSWD2 offset
@@ -145,8 +146,8 @@ typedef enum
 {
     DCSM_STATUS_SECURE,   //!< Secure
     DCSM_STATUS_UNSECURE, //!< Unsecure
-    DCSM_STATUS_LOCKED    //!< Locked
-} DCSM_SecurityStatus;    //!< Blocked
+    DCSM_STATUS_LOCKED,   //!< Locked
+} DCSM_SecurityStatus;
 
 //*****************************************************************************
 //
@@ -184,6 +185,9 @@ typedef enum
 //*****************************************************************************
 typedef enum
 {
+    //
+    //C28x RAMs
+    //
     DCSM_RAMLS0, //!< RAMLS0
     DCSM_RAMLS1, //!< RAMLS1
     DCSM_RAMLS2, //!< RAMLS2
@@ -217,19 +221,8 @@ typedef enum
     DCSM_SECTOR_K, //!< Sector K
     DCSM_SECTOR_L, //!< Sector L
     DCSM_SECTOR_M, //!< Sector M
-    DCSM_SECTOR_N  //!< Sector N
+    DCSM_SECTOR_N,  //!< Sector N
 } DCSM_Sector;
-
-//*****************************************************************************
-//
-// Defines for the FLSEM register.
-// These values can be passed to the DCSM_setFlashSemaphore().
-//
-//*****************************************************************************
-#define DCSM_FLSEM_ALLACCESS_1          0x00000000 //!< No restriction
-#define DCSM_FLSEM_Z1ACCESS             0x00000001 //!< Zone 1 Access
-#define DCSM_FLSEM_Z2ACCESS             0x00000002 //!< Zone 2 Access
-#define DCSM_FLSEM_ALLACCESS_2          0x00000003 //!< No restriction
 
 //*****************************************************************************
 //
@@ -370,6 +363,7 @@ DCSM_getZone1ControlStatus(void)
     // Return the contents of the CR register.
     //
     return(HWREGH(DCSM_Z1_BASE + DCSM_O_Z1_CR));
+
 }
 
 //*****************************************************************************
@@ -396,6 +390,7 @@ DCSM_getZone2ControlStatus(void)
 //! Returns the security zone a RAM section belongs to
 //!
 //! \param module is the RAM module value. Valid values are type DCSM_RAMModule
+//! C28x RAMs :
 //! - \b DCSM_RAMLS0
 //! - \b DCSM_RAMLS1
 //! - \b DCSM_RAMLS2
@@ -404,7 +399,6 @@ DCSM_getZone2ControlStatus(void)
 //! - \b DCSM_RAMLS5
 //! - \b DCSM_RAMD0
 //! - \b DCSM_RAMD1
-//! - \b DCSM_CLA
 //!
 //! This function returns the security zone a RAM section belongs to.
 //!
@@ -418,12 +412,12 @@ static inline DCSM_MemoryStatus
 DCSM_getRAMZone(DCSM_RAMModule module)
 {
     uint16_t shift = (uint16_t)module * 2U;
-
     //
     //Read the RAMSTAT register for the specific RAM Module.
     //
     return((DCSM_MemoryStatus)((HWREG(DCSMCOMMON_BASE + DCSM_O_RAMSTAT) >>
                                 shift) & 0x03U));
+
 }
 
 //*****************************************************************************
@@ -529,7 +523,6 @@ DCSM_unlockZone1CSM(const DCSM_CSMPasswordKey * const psCMDKey);
 //*****************************************************************************
 extern void
 DCSM_unlockZone2CSM(const DCSM_CSMPasswordKey * const psCMDKey);
-
 //*****************************************************************************
 //
 //! Returns the EXE-ONLY status of zone 1 for a flash sector
@@ -552,6 +545,7 @@ DCSM_getZone1FlashEXEStatus(DCSM_Sector sector);
 //! Returns the EXE-ONLY status of zone 1 for a RAM module
 //!
 //! \param module is the RAM module value. Valid values are type DCSM_RAMModule
+//! C28x RAMs :
 //! - \b DCSM_RAMLS0
 //! - \b DCSM_RAMLS1
 //! - \b DCSM_RAMLS2
@@ -595,6 +589,7 @@ DCSM_getZone2FlashEXEStatus(DCSM_Sector sector);
 //! Returns the EXE-ONLY status of zone 2 for a RAM module
 //!
 //! \param module is the RAM module value. Valid values are type DCSM_RAMModule
+//! C28x RAMs :
 //! - \b DCSM_RAMLS0
 //! - \b DCSM_RAMLS1
 //! - \b DCSM_RAMLS2
@@ -644,6 +639,7 @@ DCSM_claimZoneSemaphore(DCSM_SemaphoreZone zone);
 //*****************************************************************************
 extern bool
 DCSM_releaseZoneSemaphore(void);
+
 
 //*****************************************************************************
 //

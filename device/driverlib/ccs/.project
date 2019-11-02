@@ -46,6 +46,11 @@
 			<locationURI>PARENT-1-PROJECT_LOC/cla.c</locationURI>
 		</link>
 		<link>
+			<name>clb.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/clb.c</locationURI>
+		</link>
+		<link>
 			<name>cmpss.c</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/cmpss.c</locationURI>
@@ -151,10 +156,15 @@
 			<locationURI>PARENT-1-PROJECT_LOC/upp.c</locationURI>
 		</link>
 		<link>
+			<name>usb.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/usb.c</locationURI>
+		</link>
+		<link>
 			<name>version.c</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/version.c</locationURI>
-		</link>         
+		</link>
 		<link>
 			<name>xbar.c</name>
 			<type>1</type>

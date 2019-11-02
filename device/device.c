@@ -5,10 +5,10 @@
 // TITLE:  Device setup for examples.
 //
 //#############################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -48,6 +48,13 @@
 #ifdef __cplusplus
 using std::memcpy;
 #endif
+
+#define PASS 0
+#define FAIL 1
+
+uint32_t Example_Result = FAIL;
+uint32_t Example_PassCount = 0;
+uint32_t Example_Fail = 0;
 
 //*****************************************************************************
 //
@@ -104,6 +111,11 @@ void Device_init(void)
     // Turn on all peripherals
     //
     Device_enableAllPeripherals();
+	
+	//
+	// Initialize result parameter as FAIL
+	//
+	Example_Result = FAIL;
 }
 
 //*****************************************************************************
@@ -125,7 +137,6 @@ void Device_enableAllPeripherals(void)
     SysCtl_enablePeripheral(SYSCTL_PERIPH_CLK_HRPWM);
 #endif
     SysCtl_enablePeripheral(SYSCTL_PERIPH_CLK_TBCLKSYNC);
-    SysCtl_enablePeripheral(SYSCTL_PERIPH_CLK_GTBCLKSYNC);
 
 #ifdef CPU1
     SysCtl_enablePeripheral(SYSCTL_PERIPH_CLK_EMIF1);
@@ -325,4 +336,19 @@ void __error__(char *filename, uint32_t line)
     // line parameters to determine what went wrong.
     //
     ESTOP0;
+}
+
+void Example_setResultPass(void)
+{
+	Example_Result = PASS;
+}
+
+void Example_setResultFail(void)
+{
+	Example_Result = FAIL;
+}
+
+void Example_done(void)
+{
+	while(1);
 }

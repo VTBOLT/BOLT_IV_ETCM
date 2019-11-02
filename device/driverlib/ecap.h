@@ -5,10 +5,10 @@
 // TITLE: C28x ECAP driver
 //
 //#############################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -61,9 +61,11 @@ extern "C"
 //
 //*****************************************************************************
 
-// ****************************************************************************
-// the includes
-// ****************************************************************************
+//*****************************************************************************
+//
+// Includes
+//
+//*****************************************************************************
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -210,8 +212,8 @@ typedef enum
 #ifdef DEBUG
 static inline bool ECAP_isBaseValid(uint32_t base)
 {
-    return((base == ECAP1_BASE) || (base == ECAP2_BASE)||
-           (base == ECAP3_BASE) || (base == ECAP4_BASE)||
+    return((base == ECAP1_BASE) || (base == ECAP2_BASE) ||
+           (base == ECAP3_BASE) || (base == ECAP4_BASE) ||
            (base == ECAP5_BASE) || (base == ECAP6_BASE));
 }
 #endif
@@ -239,7 +241,10 @@ static inline void ECAP_setEventPrescaler(uint32_t base,
 
     ASSERT(preScalerValue < ECAP_MAX_PRESCALER_VALUE);
 
-    // write to PRESCALE bit
+
+    //
+    // Write to PRESCALE bit
+    //
     HWREGH(base + ECAP_O_ECCTL1) =
                  ((HWREGH(base + ECAP_O_ECCTL1) & (~ECAP_ECCTL1_PRESCALE_M)) |
                   (preScalerValue << ECAP_ECCTL1_PRESCALE_S));
@@ -274,7 +279,10 @@ static inline void ECAP_setEventPolarity(uint32_t base,
 
     shift = ((uint16_t)event) << 1U;
 
-    // write to CAP1POL, CAP2POL, CAP3POL or CAP4POL
+
+    //
+    // Write to CAP1POL, CAP2POL, CAP3POL or CAP4POL
+    //
     HWREGH(base + ECAP_O_ECCTL1) =
                          (HWREGH(base + ECAP_O_ECCTL1) & ~(1U << shift)) |
                          ((uint16_t)polarity << shift);
@@ -307,11 +315,17 @@ static inline void ECAP_setCaptureMode(uint32_t base,
 {
     ASSERT(ECAP_isBaseValid(base));
 
-    // write to CONT/ONESHT
+
+    //
+    // Write to CONT/ONESHT
+    //
     HWREGH(base + ECAP_O_ECCTL2) =
                ((HWREGH(base + ECAP_O_ECCTL2) & (~ECAP_ECCTL2_CONT_ONESHT)) |
                 (uint16_t)mode);
-    // write to STOP_WRAP
+
+    //
+    // Write to STOP_WRAP
+    //
     HWREGH(base + ECAP_O_ECCTL2) =
                ((HWREGH(base + ECAP_O_ECCTL2) & (~ECAP_ECCTL2_STOP_WRAP_M)) |
                 (((uint16_t)event) << ECAP_ECCTL2_STOP_WRAP_S ));
@@ -332,7 +346,10 @@ static inline void ECAP_reArm(uint32_t base)
 {
     ASSERT(ECAP_isBaseValid(base));
 
-    // write to RE-ARM bit
+
+    //
+    // Write to RE-ARM bit
+    //
     HWREGH(base + ECAP_O_ECCTL2) |= ECAP_ECCTL2_REARM;
 }
 
@@ -362,9 +379,19 @@ static inline void ECAP_enableInterrupt(uint32_t base,
                                         uint16_t intFlags)
 {
     ASSERT(ECAP_isBaseValid(base));
-    ASSERT((intFlags > 1U) && (intFlags < 0xFFU));
+    ASSERT((intFlags & ~(ECAP_ISR_SOURCE_CAPTURE_EVENT_1 |
+                         ECAP_ISR_SOURCE_CAPTURE_EVENT_2 |
+                         ECAP_ISR_SOURCE_CAPTURE_EVENT_3 |
+                         ECAP_ISR_SOURCE_CAPTURE_EVENT_4 |
+                         ECAP_ISR_SOURCE_COUNTER_OVERFLOW |
+                         ECAP_ISR_SOURCE_COUNTER_PERIOD |
+                         ECAP_ISR_SOURCE_COUNTER_COMPARE)) == 0U);
 
-    // set bits in ECEINT register
+
+
+    //
+    // Set bits in ECEINT register
+    //
     HWREGH(base + ECAP_O_ECEINT) |= intFlags;
 }
 
@@ -395,9 +422,18 @@ static inline void ECAP_disableInterrupt(uint32_t base,
 {
 
     ASSERT(ECAP_isBaseValid(base));
-    ASSERT((intFlags > 1U) && (intFlags < 0xFFU));
+    ASSERT((intFlags & ~(ECAP_ISR_SOURCE_CAPTURE_EVENT_1 |
+                         ECAP_ISR_SOURCE_CAPTURE_EVENT_2 |
+                         ECAP_ISR_SOURCE_CAPTURE_EVENT_3 |
+                         ECAP_ISR_SOURCE_CAPTURE_EVENT_4 |
+                         ECAP_ISR_SOURCE_COUNTER_OVERFLOW |
+                         ECAP_ISR_SOURCE_COUNTER_PERIOD |
+                         ECAP_ISR_SOURCE_COUNTER_COMPARE)) == 0U);
 
-    // clear bits in ECEINT register
+
+    //
+    // Clear bits in ECEINT register
+    //
     HWREGH(base + ECAP_O_ECEINT) &= ~intFlags;
 }
 
@@ -430,7 +466,9 @@ static inline uint16_t ECAP_getInterruptSource(uint32_t base)
 {
     ASSERT(ECAP_isBaseValid(base));
 
-    // return contents of ECFLG register
+    //
+    // Return contents of ECFLG register
+    //
     return(HWREGH(base + ECAP_O_ECFLG) & 0xFEU);
 }
 
@@ -449,7 +487,9 @@ static inline bool ECAP_getGlobalInterruptStatus(uint32_t base)
 {
     ASSERT(ECAP_isBaseValid(base));
 
-    // return contents of Global interrupt bit
+    //
+    // Return contents of Global interrupt bit
+    //
     return((HWREGH(base + ECAP_O_ECFLG) & 0x1U) == 0x1U);
 }
 
@@ -479,9 +519,17 @@ static inline void ECAP_clearInterrupt(uint32_t base,
                                        uint16_t intFlags)
 {
     ASSERT(ECAP_isBaseValid(base));
-    ASSERT((intFlags > 1U) && (intFlags < 0xFFU));
+    ASSERT((intFlags & ~(ECAP_ISR_SOURCE_CAPTURE_EVENT_1 |
+                         ECAP_ISR_SOURCE_CAPTURE_EVENT_2 |
+                         ECAP_ISR_SOURCE_CAPTURE_EVENT_3 |
+                         ECAP_ISR_SOURCE_CAPTURE_EVENT_4 |
+                         ECAP_ISR_SOURCE_COUNTER_OVERFLOW |
+                         ECAP_ISR_SOURCE_COUNTER_PERIOD |
+                         ECAP_ISR_SOURCE_COUNTER_COMPARE)) == 0U);
 
-    // write to ECCLR register
+    //
+    // Write to ECCLR register
+    //
     HWREGH(base + ECAP_O_ECCLR) |= intFlags;
 }
 
@@ -500,7 +548,9 @@ static inline void ECAP_clearGlobalInterrupt(uint32_t base)
 {
     ASSERT(ECAP_isBaseValid(base));
 
-    // write to INT bit
+    //
+    // Write to INT bit
+    //
     HWREGH(base + ECAP_O_ECCLR) |= ECAP_ECCLR_INT;
 }
 
@@ -530,9 +580,18 @@ static inline void ECAP_forceInterrupt(uint32_t base,
                                        uint16_t intFlags)
 {
     ASSERT(ECAP_isBaseValid(base));
-    ASSERT((intFlags > 1U) && (intFlags < 0xFFU));
+    ASSERT((intFlags & ~(ECAP_ISR_SOURCE_CAPTURE_EVENT_1 |
+                         ECAP_ISR_SOURCE_CAPTURE_EVENT_2 |
+                         ECAP_ISR_SOURCE_CAPTURE_EVENT_3 |
+                         ECAP_ISR_SOURCE_CAPTURE_EVENT_4 |
+                         ECAP_ISR_SOURCE_COUNTER_OVERFLOW |
+                         ECAP_ISR_SOURCE_COUNTER_PERIOD |
+                         ECAP_ISR_SOURCE_COUNTER_COMPARE)) == 0U);
 
-    // write to ECFRC register
+
+    //
+    // Write to ECFRC register
+    //
     HWREGH(base + ECAP_O_ECFRC) |= intFlags;
 }
 
@@ -551,7 +610,10 @@ static inline void ECAP_enableCaptureMode(uint32_t base)
 {
     ASSERT(ECAP_isBaseValid(base));
 
-    // clear CAP/APWM bit
+
+    //
+    // Clear CAP/APWM bit
+    //
     HWREGH(base + ECAP_O_ECCTL2) &= ~ECAP_ECCTL2_CAP_APWM;
 }
 
@@ -570,7 +632,10 @@ static inline void ECAP_enableAPWMMode(uint32_t base)
 {
     ASSERT(ECAP_isBaseValid(base));
 
-    // set CAP/APWM bit
+
+    //
+    // Set CAP/APWM bit
+    //
     HWREGH(base + ECAP_O_ECCTL2) |= ECAP_ECCTL2_CAP_APWM;
 }
 
@@ -593,7 +658,10 @@ static inline void ECAP_enableCounterResetOnEvent(uint32_t base,
 {
     ASSERT(ECAP_isBaseValid(base));
 
-    // set CTRRST1,CTRRST2,CTRRST3 or CTRRST4 bits
+
+    //
+    // Set CTRRST1,CTRRST2,CTRRST3 or CTRRST4 bits
+    //
     HWREGH(base + ECAP_O_ECCTL1) |= 1U << ((2U * (uint16_t)event) + 1U);
 }
 
@@ -605,7 +673,8 @@ static inline void ECAP_enableCounterResetOnEvent(uint32_t base,
 //! \param event is the event number the time base gets reset.
 //!
 //! This function disables the base timer, TSCTR, from being reset on capture
-//! event provided by the variable event. Valid inputs for event are 1 to 4.
+//! event provided by the variable event. Valid inputs for event are
+//! \b ECAP_EVENT_1 to \b ECAP_EVENT_4.
 //!
 //! \return None.
 //
@@ -616,7 +685,10 @@ static inline void ECAP_disableCounterResetOnEvent(uint32_t base,
     ASSERT(ECAP_isBaseValid(base));
     ASSERT((event >= 1U) || (event <= 4U));
 
-    // clear CTRRST1,CTRRST2,CTRRST3 or CTRRST4 bits
+
+    //
+    // Clear CTRRST1,CTRRST2,CTRRST3 or CTRRST4 bits
+    //
     HWREGH(base + ECAP_O_ECCTL1) &= ~(1U << ((2U * (uint16_t)event) + 1U));
 }
 
@@ -635,7 +707,10 @@ static inline void ECAP_enableTimeStampCapture(uint32_t base)
 {
     ASSERT(ECAP_isBaseValid(base));
 
-    // set CAPLDEN bit
+
+    //
+    // Set CAPLDEN bit
+    //
     HWREGH(base + ECAP_O_ECCTL1) |= ECAP_ECCTL1_CAPLDEN;
 }
 
@@ -654,7 +729,10 @@ static inline void ECAP_disableTimeStampCapture(uint32_t base)
 {
     ASSERT(ECAP_isBaseValid(base));
 
-    // clear CAPLDEN bit
+
+    //
+    // Clear CAPLDEN bit
+    //
     HWREGH(base + ECAP_O_ECCTL1) &= ~ECAP_ECCTL1_CAPLDEN;
 }
 
@@ -675,7 +753,9 @@ static inline void ECAP_setPhaseShiftCount(uint32_t base, uint32_t shiftCount)
 {
     ASSERT(ECAP_isBaseValid(base));
 
-    // write to CTRPHS
+    //
+    // Write to CTRPHS
+    //
     HWREG(base + ECAP_O_CTRPHS) = shiftCount;
 }
 
@@ -696,7 +776,10 @@ static inline void ECAP_enableLoadCounter(uint32_t base)
 
     ASSERT(ECAP_isBaseValid(base));
 
-    // write to SYNCI_EN
+
+    //
+    // Write to SYNCI_EN
+    //
     HWREGH(base + ECAP_O_ECCTL2) |= ECAP_ECCTL2_SYNCI_EN;
 }
 
@@ -717,7 +800,10 @@ static inline void ECAP_disableLoadCounter(uint32_t base)
 
     ASSERT(ECAP_isBaseValid(base));
 
-    // write to SYNCI_EN
+
+    //
+    // Write to SYNCI_EN
+    //
     HWREGH(base + ECAP_O_ECCTL2) &= ~ECAP_ECCTL2_SYNCI_EN;
 }
 
@@ -739,7 +825,10 @@ static inline void ECAP_loadCounter(uint32_t base)
 {
     ASSERT(ECAP_isBaseValid(base));
 
-    // write to SWSYNC
+
+    //
+    // Write to SWSYNC
+    //
     HWREGH(base + ECAP_O_ECCTL2) |= ECAP_ECCTL2_SWSYNC;
 }
 
@@ -763,7 +852,10 @@ static inline void ECAP_setSyncOutMode(uint32_t base,
 {
     ASSERT(ECAP_isBaseValid(base));
 
-     // write to SYNCO_SEL
+
+    //
+    // Write to SYNCO_SEL
+    //
      HWREGH(base + ECAP_O_ECCTL2) =
                 ((HWREGH(base + ECAP_O_ECCTL2) & (~ECAP_ECCTL2_SYNCO_SEL_M)) |
                  (uint16_t)mode);
@@ -784,8 +876,11 @@ static inline void ECAP_stopCounter(uint32_t base)
 {
     ASSERT(ECAP_isBaseValid(base));
 
-     // clear TSCTR
-     HWREGH(base + ECAP_O_ECCTL2) &= ~ECAP_ECCTL2_TSCTRSTOP;
+
+    //
+    // Clear TSCTR
+    //
+    HWREGH(base + ECAP_O_ECCTL2) &= ~ECAP_ECCTL2_TSCTRSTOP;
 }
 
 //*****************************************************************************
@@ -803,7 +898,10 @@ static inline void ECAP_startCounter(uint32_t base)
 {
     ASSERT(ECAP_isBaseValid(base));
 
-    // set TSCTR
+
+    //
+    // Set TSCTR
+    //
     HWREGH(base + ECAP_O_ECCTL2) |= ECAP_ECCTL2_TSCTRSTOP;
 }
 
@@ -851,7 +949,9 @@ static inline void ECAP_setAPWMPeriod(uint32_t base, uint32_t periodCount)
 {
     ASSERT(ECAP_isBaseValid(base));
 
-    // write to CAP1
+    //
+    // Write to CAP1
+    //
     HWREG(base + ECAP_O_CAP1) = periodCount;
 }
 
@@ -877,7 +977,9 @@ static inline void ECAP_setAPWMCompare(uint32_t base, uint32_t compareCount)
 {
     ASSERT(ECAP_isBaseValid(base));
 
-    // write to CAP2
+    //
+    // Write to CAP2
+    //
     HWREG(base + ECAP_O_CAP2) = compareCount;
 }
 
@@ -901,7 +1003,9 @@ static inline void ECAP_setAPWMShadowPeriod(uint32_t base,
 {
     ASSERT(ECAP_isBaseValid(base));
 
-    // write to CAP3
+    //
+    // Write to CAP3
+    //
     HWREG(base + ECAP_O_CAP3) = periodCount;
 }
 
@@ -928,7 +1032,9 @@ static inline void ECAP_setAPWMShadowCompare(uint32_t base,
 {
     ASSERT(ECAP_isBaseValid(base));
 
-    // write to CAP4
+    //
+    // Write to CAP4
+    //
     HWREG(base + ECAP_O_CAP4) = compareCount;
 }
 
@@ -943,11 +1049,13 @@ static inline void ECAP_setAPWMShadowCompare(uint32_t base,
 //! \return Returns the time base counter value.
 //
 //*****************************************************************************
-static uint32_t ECAP_getTimeBaseCounter(uint32_t base)
+static inline uint32_t ECAP_getTimeBaseCounter(uint32_t base)
 {
     ASSERT(ECAP_isBaseValid(base));
 
+    //
     // Read the Time base counter value
+    //
     return(HWREG(base + ECAP_O_TSCTR));
 }
 
@@ -974,27 +1082,41 @@ static inline uint32_t ECAP_getEventTimeStamp(uint32_t base, ECAP_Events event)
     switch(event)
     {
         case ECAP_EVENT_1:
-            // read CAP1 register
+
+            //
+            // Read CAP1 register
+            //
             count = HWREG(base + ECAP_O_CAP1);
         break;
 
         case ECAP_EVENT_2:
-            // read CAP2 register
+            //
+            // Read CAP2 register
+            //
             count = HWREG(base + ECAP_O_CAP2);
         break;
 
         case ECAP_EVENT_3:
-            // read CAP3 register
+
+            //
+            // Read CAP3 register
+            //
             count = HWREG(base + ECAP_O_CAP3);
         break;
 
         case ECAP_EVENT_4:
-            // read CAP4 register
+
+            //
+            // Read CAP4 register
+            //
             count = HWREG(base + ECAP_O_CAP4);
         break;
 
         default:
-            // invalid event parameter
+
+            //
+            // Invalid event parameter
+            //
             count = 0U;
         break;
     }

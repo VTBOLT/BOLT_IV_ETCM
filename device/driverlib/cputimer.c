@@ -2,13 +2,13 @@
 //
 // FILE:   cputimer.c
 //
-// TITLE:  C28x CPU timer Driver
+// TITLE:   C28x CPU timer Driver
 //
 //#############################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -50,7 +50,9 @@
 void CPUTimer_setEmulationMode(uint32_t base, CPUTimer_EmulationMode mode)
 {
     ASSERT(CPUTimer_isBaseValid(base));
+    //
     // Write to FREE_SOFT bits of register TCR
+    //
       HWREGH(base + CPUTIMER_O_TCR) =
             (HWREGH(base + CPUTIMER_O_TCR) &
             ~(CPUTIMER_TCR_FREE | CPUTIMER_TCR_SOFT)) |

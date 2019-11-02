@@ -5,10 +5,10 @@
 // TITLE:  C28x SPI driver.
 //
 //###########################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -57,6 +57,7 @@ extern "C"
 //*****************************************************************************
 //
 //! \addtogroup spi_api SPI
+//! \brief This module is used for SPI configurations.
 //! @{
 //
 //*****************************************************************************
@@ -987,6 +988,115 @@ SPI_setEmulationMode(uint32_t base, SPI_EmulationMode mode)
     HWREGH(base + SPI_O_PRI) = (HWREGH(base + SPI_O_PRI) &
                                 ~(SPI_PRI_FREE | SPI_PRI_SOFT)) |
                                (uint16_t)mode;
+}
+
+//*****************************************************************************
+//
+//! Configures the FIFO Transmit Delay
+//!
+//! \param base is the base address of the SPI port.
+//! \param delay Tx FIFO delay to be configured in cycles (0..0xFF)
+//!
+//! This function sets the delay between every transfer from FIFO
+//! transmit buffer to transmit shift register. The delay is defined in
+//! number SPI serial clock cycles.
+//!
+//! \return None
+//
+//*****************************************************************************
+static inline void
+SPI_setTxFifoTransmitDelay(uint32_t base, uint16_t delay)
+{
+    //
+    // Check the arguments.
+    //
+    ASSERT(SPI_isBaseValid(base));
+    ASSERT(delay <= 0xFFU);
+
+    //
+    // Configure the FIFO Transmit Delay Bits
+    //
+    HWREGH(base + SPI_O_FFCT) = delay;
+}
+
+//*****************************************************************************
+//
+//! Returns the Emulation Buffer Received Data
+//!
+//! \param base is the base address of the SPI port.
+//!
+//! This function returns the Emulation Buffer Received Data
+//!
+//! \return Rx emulation buffer data
+//
+//*****************************************************************************
+static inline uint16_t
+SPI_readRxEmulationBuffer(uint32_t base)
+{
+    //
+    // Check the arguments.
+    //
+    ASSERT(SPI_isBaseValid(base));
+
+    //
+    // Return Emulation Buffer Received Data
+    //
+    return(HWREGH(base + SPI_O_RXEMU));
+}
+
+//*****************************************************************************
+//
+//! Enable Trasnmit
+//!
+//! \param base is the base address of the SPI port.
+//!
+//! This function sets the TALK bit enabling the data trasnmission.
+//! This bit is enabled by SPI_setConfig if the parameter \r mode is selected as
+//! SPI_MODE_SLAVE or SPI_MODE_MASTER.
+//!
+//! \return None
+//
+//*****************************************************************************
+static inline void
+SPI_enableTalk(uint32_t base)
+{
+    //
+    // Check the arguments.
+    //
+    ASSERT(SPI_isBaseValid(base));
+
+    //
+    // Set the TALK bit
+    //
+    HWREGH(base + SPI_O_CTL) |= SPI_CTL_TALK;
+}
+
+//*****************************************************************************
+//
+//! Disable Trasnmit
+//!
+//! \param base is the base address of the SPI port.
+//!
+//! This function clears the TALK bit disabling the data trasnmission. The
+//! output pin will be put in high-impedance state.
+//! This bit is enabled by SPI_setConfig if the parameter \r mode is selected as
+//! SPI_MODE_SLAVE or SPI_MODE_MASTER.
+//!
+//! \return None
+//
+//*****************************************************************************
+static inline void
+SPI_disableTalk(uint32_t base)
+{
+    //
+    // Check the arguments.
+    //
+    ASSERT(SPI_isBaseValid(base));
+
+    //
+    // Set the TALK bit
+    //
+    HWREGH(base + SPI_O_CTL) &= ~SPI_CTL_TALK;
 }
 
 //*****************************************************************************

@@ -5,10 +5,10 @@
 // TITLE:  C28x Flash driver.
 //
 //###########################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -82,7 +82,7 @@ extern "C"
 
 //*****************************************************************************
 //
-//! Values that can be passed to Flash_setBankPowerMode() as the bank parameter.
+//! Values that can be passed to Flash_setBankPowerMode() as the bank parameter
 //
 //*****************************************************************************
 typedef enum
@@ -196,7 +196,7 @@ typedef enum
 // Key value for claiming the pump semaphore.
 //
 //*****************************************************************************
-#define PUMP_KEY                  0x5A5A0000UL //!< Pump semaphore key
+#define FLASH_PUMP_KEY                  0x5A5A0000UL //!< Pump semaphore key
 
 //*****************************************************************************
 //
@@ -217,7 +217,7 @@ typedef enum
 //
 //*****************************************************************************
 #ifdef DEBUG
-static bool
+static inline bool
 Flash_isCtrlBaseValid(uint32_t ctrlBase)
 {
     return((ctrlBase == FLASH0CTRL_BASE));
@@ -238,7 +238,7 @@ Flash_isCtrlBaseValid(uint32_t ctrlBase)
 //
 //*****************************************************************************
 #ifdef DEBUG
-static bool
+static inline bool
 Flash_isECCBaseValid(uint32_t eccBase)
 {
     return((eccBase == FLASH0ECC_BASE));
@@ -259,7 +259,7 @@ Flash_isECCBaseValid(uint32_t eccBase)
 //
 //*****************************************************************************
 #ifdef DEBUG
-static bool
+static inline bool
 Flash_isPumpSemBaseValid(uint32_t pumpSemBase)
 {
     return((pumpSemBase == FLASHPUMPSEMAPHORE_BASE));
@@ -293,6 +293,10 @@ Flash_setWaitstates(uint32_t ctrlBase, uint16_t waitstates)
     // Check the arguments.
     //
     ASSERT(Flash_isCtrlBaseValid(ctrlBase));
+
+    //
+    // waitstates is 4 bits wide.
+    //
     ASSERT(waitstates <= 0xFU);
 
     EALLOW;
@@ -627,6 +631,10 @@ Flash_setPumpWakeupTime(uint32_t ctrlBase, uint16_t sysclkCycles)
     // Check the arguments.
     //
     ASSERT(Flash_isCtrlBaseValid(ctrlBase));
+
+    //
+    // PSLEEP = sysclkCycles/2. PSLEEP maximum value is 4095(12 bits wide)
+    //
     ASSERT( sysclkCycles <= 8190U );
 
     EALLOW;
@@ -637,7 +645,7 @@ Flash_setPumpWakeupTime(uint32_t ctrlBase, uint16_t sysclkCycles)
     HWREG(ctrlBase + FLASH_O_FPAC1) =
           (HWREG(ctrlBase + FLASH_O_FPAC1) &
           ~(uint32_t)FLASH_FPAC1_PSLEEP_M) |
-          (((uint32_t)sysclkCycles/(uint32_t)2) <<
+          (((uint32_t)sysclkCycles / (uint32_t)2) <<
           (uint32_t)FLASH_FPAC1_PSLEEP_S);
     EDIS;
 }
@@ -936,6 +944,7 @@ Flash_getHighErrorPosition(uint32_t eccBase)
 static inline Flash_ErrorType
 Flash_getLowErrorType(uint32_t eccBase)
 {
+    Flash_ErrorType errorType;
     //
     // Check the arguments.
     //
@@ -945,8 +954,13 @@ Flash_getLowErrorType(uint32_t eccBase)
     // Check which error type.
     // If bit is 1 then ECC error, else it is a Data error.
     //
-    return((Flash_ErrorType)((HWREG(eccBase + FLASH_O_ERR_POS) &
-          (uint32_t)FLASH_ERR_POS_ERR_TYPE_L) >> 8U));
+    if((HWREG(eccBase + FLASH_O_ERR_POS) & FLASH_ERR_POS_ERR_TYPE_L)
+                                == FLASH_ERR_POS_ERR_TYPE_L)
+        errorType =  FLASH_ECC_ERR;
+    else
+        errorType =  FLASH_DATA_ERR;
+
+    return(errorType);
 }
 
 //*****************************************************************************
@@ -964,6 +978,7 @@ Flash_getLowErrorType(uint32_t eccBase)
 static inline Flash_ErrorType
 Flash_getHighErrorType(uint32_t eccBase)
 {
+    Flash_ErrorType errorType;
     //
     // Check the arguments.
     //
@@ -973,8 +988,13 @@ Flash_getHighErrorType(uint32_t eccBase)
     // Check which error type.
     // If bit is 1 then ECC error, else it is a Data error.
     //
-    return((Flash_ErrorType)((HWREG(eccBase + FLASH_O_ERR_POS) &
-            (uint32_t)FLASH_ERR_POS_ERR_TYPE_H) >> 24U));
+    if((HWREG(eccBase + FLASH_O_ERR_POS) & FLASH_ERR_POS_ERR_TYPE_H)
+                                == FLASH_ERR_POS_ERR_TYPE_H)
+        errorType =  FLASH_ECC_ERR;
+    else
+        errorType =  FLASH_DATA_ERR;
+
+    return(errorType);
 }
 
 //*****************************************************************************
@@ -1212,7 +1232,7 @@ Flash_setDataHighECCTest(uint32_t eccBase, uint32_t data)
 //! \param address is a 32-bit value containing an address. Bits 21-3 will be
 //! used as the flash word (128-bit) address.
 //!
-//! This function left shifts the address 1 bit to convert it to a byte address.
+//! This function left shifts the address 1 bit to convert it to a byte address
 //!
 //! \return None.
 //
@@ -1236,7 +1256,9 @@ Flash_setECCTestAddress(uint32_t eccBase, uint32_t address)
     // Write bits 21-3 to the register.
     //
     HWREG(eccBase + FLASH_O_FADDR_TEST) = byteAddress;
+
     EDIS;
+
 }
 
 //*****************************************************************************
@@ -1446,8 +1468,7 @@ Flash_getECCTestStatus(uint32_t eccBase)
     //
     // Read which type of error occurred.
     //
-    return((HWREG(eccBase + FLASH_O_FECC_STATUS) &
-                   (uint32_t)0x3U));
+    return((HWREG(eccBase + FLASH_O_FECC_STATUS)) & (uint32_t)0x3U);
 }
 
 //*****************************************************************************
@@ -1491,6 +1512,7 @@ Flash_getECCTestErrorPosition(uint32_t eccBase)
 static inline Flash_SingleBitErrorIndicator
 Flash_getECCTestSingleBitErrorType(uint32_t eccBase)
 {
+    uint32_t errorType;
     //
     // Check the arguments.
     //
@@ -1499,9 +1521,9 @@ Flash_getECCTestSingleBitErrorType(uint32_t eccBase)
     //
     // Read the ERR_TYPE bit to see where the single bit error was.
     //
-    return((Flash_SingleBitErrorIndicator)
-                ((HWREG(eccBase + FLASH_O_FECC_STATUS) &
-                (uint32_t)FLASH_FECC_STATUS_ERR_TYPE) >> 8U));
+    errorType = ((HWREG(eccBase + FLASH_O_FECC_STATUS) &
+                (uint32_t)FLASH_FECC_STATUS_ERR_TYPE) >> 8U);
+    return((Flash_SingleBitErrorIndicator)errorType);
 }
 
 //*****************************************************************************
@@ -1531,7 +1553,7 @@ Flash_claimPumpSemaphore(uint32_t pumpSemBase, Flash_PumpOwnership wrapper)
            & FLASH_PUMPREQUEST_PUMP_OWNERSHIP_M) != wrapper)
     {
         HWREG(pumpSemBase + FLASH_O_PUMPREQUEST) =
-              PUMP_KEY | (uint32_t)wrapper;
+              FLASH_PUMP_KEY | (uint32_t)wrapper;
     }
     EDIS;
 }
@@ -1557,7 +1579,7 @@ Flash_releasePumpSemaphore(uint32_t pumpSemBase)
     // Relinquish the pump semaphore.
     //
     EALLOW;
-    HWREG(pumpSemBase + FLASH_O_PUMPREQUEST) = PUMP_KEY;
+    HWREG(pumpSemBase + FLASH_O_PUMPREQUEST) = FLASH_PUMP_KEY;
     EDIS;
 }
 
@@ -1601,8 +1623,9 @@ Flash_initModule(uint32_t ctrlBase, uint32_t eccBase, uint16_t waitstates);
 //! \return None.
 //
 //*****************************************************************************
-void
+extern void
 Flash_powerDown(uint32_t ctrlBase);
+
 
 //*****************************************************************************
 //

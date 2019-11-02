@@ -5,10 +5,10 @@
 // TITLE:  C28x Driver for the DCSM security module.
 //
 //#############################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -52,21 +52,47 @@ DCSM_unlockZone1CSM(const DCSM_CSMPasswordKey * const psCMDKey)
 {
     uint32_t linkPointer;
     uint32_t zsbBase  = (DCSM_Z1OTP_BASE + 0x20U); // base address of the ZSB
-    int32_t bitPos = 28;
+    int32_t bitPos = 28; // Bits [28:0] point to a ZSB (29-bit link pointer)
     int32_t zeroFound = 0;
 
+    //
+    // Check the arguments.
+    //
+    ASSERT(psCMDKey != NULL);
+
     linkPointer = HWREG(DCSM_Z1_BASE + DCSM_O_Z1_LINKPOINTER);
-    linkPointer = linkPointer << 3; // Bits 31 and 30 as most-significant 0 are
-                                    //invalid LinkPointer options
+
+    //
+    // Bits 31 and 30 as most-significant 0 are invalid LinkPointer options
+    //
+    linkPointer = linkPointer << 3;
+
+    //
+    // Zone-Select Block (ZSB) selection using Link-Pointers
+    // and 0's bit position within the Link pointer
+    //
     while((zeroFound == 0) && (bitPos > -1))
     {
+        //
+        // The most significant bit position in the resolved link pointer
+        // which is 0, defines the valid base address for the ZSB.
+        //
         if((linkPointer & 0x80000000U) == 0U)
         {
             zeroFound = 1;
-            zsbBase =(DCSM_Z1OTP_BASE + (((uint32_t)bitPos + 3U) * 0x10U));
+            //
+            // Base address of the ZSB is calculated using
+            // 0x10 as the slope/step with which zsbBase expands with
+            // change in the bitPos and 3*0x10 is the offset
+            //
+            zsbBase = (DCSM_Z1OTP_BASE + (((uint32_t)bitPos + 3U) * 0x10U));
         }
         else
         {
+            //
+            // Move through the linkPointer to find the most significant
+            // bit position of 0
+            //
             bitPos--;
             linkPointer = linkPointer << 1;
         }
@@ -81,10 +107,13 @@ DCSM_unlockZone1CSM(const DCSM_CSMPasswordKey * const psCMDKey)
     linkPointer = HWREG(zsbBase + DCSM_O_Z1_CSMPSWD2);
     linkPointer = HWREG(zsbBase + DCSM_O_Z1_CSMPSWD3);
 
-    HWREG(DCSM_Z1_BASE + DCSM_O_Z1_CSMKEY0) = psCMDKey->csmKey0;
-    HWREG(DCSM_Z1_BASE + DCSM_O_Z1_CSMKEY1) = psCMDKey->csmKey1;
-    HWREG(DCSM_Z1_BASE + DCSM_O_Z1_CSMKEY2) = psCMDKey->csmKey2;
-    HWREG(DCSM_Z1_BASE + DCSM_O_Z1_CSMKEY3) = psCMDKey->csmKey3;
+    if(psCMDKey != NULL)
+    {
+        HWREG(DCSM_Z1_BASE + DCSM_O_Z1_CSMKEY0) = psCMDKey->csmKey0;
+        HWREG(DCSM_Z1_BASE + DCSM_O_Z1_CSMKEY1) = psCMDKey->csmKey1;
+        HWREG(DCSM_Z1_BASE + DCSM_O_Z1_CSMKEY2) = psCMDKey->csmKey2;
+        HWREG(DCSM_Z1_BASE + DCSM_O_Z1_CSMKEY3) = psCMDKey->csmKey3;
+    }
 }
 
 //*****************************************************************************
@@ -97,21 +126,47 @@ DCSM_unlockZone2CSM(const DCSM_CSMPasswordKey * const psCMDKey)
 {
     uint32_t linkPointer;
     uint32_t zsbBase = (DCSM_Z2OTP_BASE + 0x20U); // base address of the ZSB
-    int32_t bitPos = 28;
+    int32_t bitPos = 28; // Bits [28:0] point to a ZSB (29-bit link pointer)
     int32_t zeroFound = 0;
 
+    //
+    // Check the arguments.
+    //
+    ASSERT(psCMDKey != NULL);
+
     linkPointer = HWREG(DCSM_Z2_BASE + DCSM_O_Z2_LINKPOINTER);
-    linkPointer = linkPointer << 3; // Bits 31 and 30 as most-sigificant 0 are
-                                    //invalid LinkPointer options
+
+    //
+    // Bits 31 and 30 as most-significant 0 are invalid LinkPointer options
+    //
+    linkPointer = linkPointer << 3;
+
+    //
+    // Zone-Select Block (ZSB) selection using Link-Pointers
+    // and 0's bit position within the Link pointer
+    //
     while((zeroFound == 0) && (bitPos > -1))
     {
+        //
+        // The most significant bit position in the resolved link pointer
+        // which is 0, defines the valid base address for the ZSB.
+        //
         if((linkPointer & 0x80000000U) == 0U)
         {
             zeroFound = 1;
+            //
+            // Base address of the ZSB is calculated using
+            // 0x10 as the slope/step with which zsbBase expands with
+            // change in the bitPos and 3*0x10 is the offset
+            //
             zsbBase = (DCSM_Z2OTP_BASE + (((uint32_t)bitPos + 3U) * 0x10U));
         }
         else
         {
+            //
+            // Move through the linkPointer to find the most significant
+            // bit position of 0
+            //
             bitPos--;
             linkPointer = linkPointer << 1;
         }
@@ -126,12 +181,14 @@ DCSM_unlockZone2CSM(const DCSM_CSMPasswordKey * const psCMDKey)
     linkPointer = HWREG(zsbBase + DCSM_O_Z2_CSMPSWD2);
     linkPointer = HWREG(zsbBase + DCSM_O_Z2_CSMPSWD3);
 
-    HWREG(DCSM_Z2_BASE + DCSM_O_Z2_CSMKEY0) = psCMDKey->csmKey0;
-    HWREG(DCSM_Z2_BASE + DCSM_O_Z2_CSMKEY1) = psCMDKey->csmKey1;
-    HWREG(DCSM_Z2_BASE + DCSM_O_Z2_CSMKEY2) = psCMDKey->csmKey2;
-    HWREG(DCSM_Z2_BASE + DCSM_O_Z2_CSMKEY3) = psCMDKey->csmKey3;
+    if(psCMDKey != NULL)
+    {
+        HWREG(DCSM_Z2_BASE + DCSM_O_Z2_CSMKEY0) = psCMDKey->csmKey0;
+        HWREG(DCSM_Z2_BASE + DCSM_O_Z2_CSMKEY1) = psCMDKey->csmKey1;
+        HWREG(DCSM_Z2_BASE + DCSM_O_Z2_CSMKEY2) = psCMDKey->csmKey2;
+        HWREG(DCSM_Z2_BASE + DCSM_O_Z2_CSMKEY3) = psCMDKey->csmKey3;
+    }
 }
-
 //*****************************************************************************
 //
 // DCSM_getZone1FlashEXEStatus
@@ -163,7 +220,7 @@ DCSM_getZone1FlashEXEStatus(DCSM_Sector sector)
         status = (DCSM_EXEOnlyStatus)((regValue >> (uint16_t)sector) &
                                     (uint16_t)0x01U);
     }
-    return status;
+    return(status);
 }
 
 //*****************************************************************************
@@ -192,7 +249,7 @@ DCSM_getZone1RAMEXEStatus(DCSM_RAMModule module)
         status = (DCSM_EXEOnlyStatus)((HWREGH(DCSM_Z1_BASE +
            DCSM_O_Z1_EXEONLYRAMR) >> (uint16_t)module) & (uint16_t)0x01U);
     }
-    return status;
+    return(status);
 }
 
 //*****************************************************************************
@@ -227,7 +284,7 @@ DCSM_getZone2FlashEXEStatus(DCSM_Sector sector)
                                     (uint16_t)0x01U);
     }
 
-    return status;
+    return(status);
 }
 
 //*****************************************************************************
@@ -256,7 +313,7 @@ DCSM_getZone2RAMEXEStatus(DCSM_RAMModule module)
         status = (DCSM_EXEOnlyStatus)((HWREGH(DCSM_Z2_BASE +
                DCSM_O_Z2_EXEONLYRAMR) >> (uint16_t)module) & (uint16_t)0x01U);
     }
-    return status;
+    return(status);
 }
 
 //*****************************************************************************
@@ -318,3 +375,4 @@ DCSM_releaseZoneSemaphore(void)
     //
     return(((HWREGH(regAddress) & DCSM_FLSEM_SEM_M) == 0x0U) ? true : false);
 }
+

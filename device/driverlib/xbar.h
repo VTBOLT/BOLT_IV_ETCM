@@ -5,10 +5,10 @@
 // TITLE:  C28x X-BAR driver.
 //
 //###########################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -63,6 +63,7 @@ extern "C"
 
 #include <stdbool.h>
 #include <stdint.h>
+#include "inc/hw_clbxbar.h"
 #include "inc/hw_epwmxbar.h"
 #include "inc/hw_inputxbar.h"
 #include "inc/hw_outputxbar.h"
@@ -74,14 +75,16 @@ extern "C"
 
 //*****************************************************************************
 //
-// Useful defines used within the driver functions. Not intended for use by
-// application code.
+// Useful defines used within the driver functions.
+// Not intended for use by application code.
 //
 //*****************************************************************************
 #define XBAR_OUTPUT_CFG_REG_BASE  (OUTPUTXBAR_BASE + XBAR_O_OUTPUT1MUX0TO15CFG)
 #define XBAR_OUTPUT_EN_REG_BASE   (OUTPUTXBAR_BASE + XBAR_O_OUTPUT1MUXENABLE)
 #define XBAR_EPWM_CFG_REG_BASE    (EPWMXBAR_BASE + XBAR_O_TRIP4MUX0TO15CFG)
 #define XBAR_EPWM_EN_REG_BASE     (EPWMXBAR_BASE + XBAR_O_TRIP4MUXENABLE)
+#define XBAR_CLB_CFG_REG_BASE     (CLBXBAR_BASE + XBAR_O_AUXSIG0MUX0TO15CFG)
+#define XBAR_CLB_EN_REG_BASE      (CLBXBAR_BASE + XBAR_O_AUXSIG0MUXENABLE)
 #define XBAR_INPUT_BASE           (INPUTXBAR_BASE + XBAR_O_INPUT1SELECT)
 
 #define XBAR_INPUT_FLG_INPUT_M    0x00FFU
@@ -89,6 +92,7 @@ extern "C"
 #define XBAR_INPUT_FLG_REG_1      0x0000U
 #define XBAR_INPUT_FLG_REG_2      0x0100U
 #define XBAR_INPUT_FLG_REG_3      0x0200U
+
 #define XBAR_GPIO_MAX_CNT                168U
 
 #ifndef DOXYGEN_PDF_IGNORE
@@ -172,6 +176,24 @@ typedef enum
 
 //*****************************************************************************
 //
+// The following values define the trip parameter for XBAR_setCLBMuxConfig(),
+// XBAR_enableCLBMux(), and XBAR_disableCLBMux().
+//
+//*****************************************************************************
+typedef enum
+{
+    XBAR_AUXSIG0 = 0,
+    XBAR_AUXSIG1 = 2,
+    XBAR_AUXSIG2 = 4,
+    XBAR_AUXSIG3 = 6,
+    XBAR_AUXSIG4 = 8,
+    XBAR_AUXSIG5 = 10,
+    XBAR_AUXSIG6 = 12,
+    XBAR_AUXSIG7 = 14
+} XBAR_AuxSigNum;
+
+//*****************************************************************************
+//
 //! The following values define the \e input parameter for XBAR_setInputPin().
 //
 //*****************************************************************************
@@ -202,12 +224,16 @@ typedef enum
 //*****************************************************************************
 typedef enum
 {
+    //
+    //OUTPUTXBAR
+    //
     XBAR_OUT_MUX00_CMPSS1_CTRIPOUTH        = 0x0000,
     XBAR_OUT_MUX00_CMPSS1_CTRIPOUTH_OR_L   = 0x0001,
     XBAR_OUT_MUX00_ADCAEVT1                = 0x0002,
     XBAR_OUT_MUX00_ECAP1_OUT               = 0x0003,
     XBAR_OUT_MUX01_CMPSS1_CTRIPOUTL        = 0x0200,
     XBAR_OUT_MUX01_INPUTXBAR1              = 0x0201,
+    XBAR_OUT_MUX01_CLB1_OUT4               = 0x0202,
     XBAR_OUT_MUX01_ADCCEVT1                = 0x0203,
     XBAR_OUT_MUX02_CMPSS2_CTRIPOUTH        = 0x0400,
     XBAR_OUT_MUX02_CMPSS2_CTRIPOUTH_OR_L   = 0x0401,
@@ -215,6 +241,7 @@ typedef enum
     XBAR_OUT_MUX02_ECAP2_OUT               = 0x0403,
     XBAR_OUT_MUX03_CMPSS2_CTRIPOUTL        = 0x0600,
     XBAR_OUT_MUX03_INPUTXBAR2              = 0x0601,
+    XBAR_OUT_MUX03_CLB1_OUT5               = 0x0602,
     XBAR_OUT_MUX03_ADCCEVT2                = 0x0603,
     XBAR_OUT_MUX04_CMPSS3_CTRIPOUTH        = 0x0800,
     XBAR_OUT_MUX04_CMPSS3_CTRIPOUTH_OR_L   = 0x0801,
@@ -222,6 +249,7 @@ typedef enum
     XBAR_OUT_MUX04_ECAP3_OUT               = 0x0803,
     XBAR_OUT_MUX05_CMPSS3_CTRIPOUTL        = 0x0A00,
     XBAR_OUT_MUX05_INPUTXBAR3              = 0x0A01,
+    XBAR_OUT_MUX05_CLB2_OUT4               = 0x0A02,
     XBAR_OUT_MUX05_ADCCEVT3                = 0x0A03,
     XBAR_OUT_MUX06_CMPSS4_CTRIPOUTH        = 0x0C00,
     XBAR_OUT_MUX06_CMPSS4_CTRIPOUTH_OR_L   = 0x0C01,
@@ -229,6 +257,7 @@ typedef enum
     XBAR_OUT_MUX06_ECAP4_OUT               = 0x0C03,
     XBAR_OUT_MUX07_CMPSS4_CTRIPOUTL        = 0x0E00,
     XBAR_OUT_MUX07_INPUTXBAR4              = 0x0E01,
+    XBAR_OUT_MUX07_CLB2_OUT5               = 0x0E02,
     XBAR_OUT_MUX07_ADCCEVT4                = 0x0E03,
     XBAR_OUT_MUX08_CMPSS5_CTRIPOUTH        = 0x1000,
     XBAR_OUT_MUX08_CMPSS5_CTRIPOUTH_OR_L   = 0x1001,
@@ -236,6 +265,7 @@ typedef enum
     XBAR_OUT_MUX08_ECAP5_OUT               = 0x1003,
     XBAR_OUT_MUX09_CMPSS5_CTRIPOUTL        = 0x1200,
     XBAR_OUT_MUX09_INPUTXBAR5              = 0x1201,
+    XBAR_OUT_MUX09_CLB3_OUT4               = 0x1202,
     XBAR_OUT_MUX09_ADCDEVT1                = 0x1203,
     XBAR_OUT_MUX10_CMPSS6_CTRIPOUTH        = 0x1400,
     XBAR_OUT_MUX10_CMPSS6_CTRIPOUTH_OR_L   = 0x1401,
@@ -243,12 +273,14 @@ typedef enum
     XBAR_OUT_MUX10_ECAP6_OUT               = 0x1403,
     XBAR_OUT_MUX11_CMPSS6_CTRIPOUTL        = 0x1600,
     XBAR_OUT_MUX11_INPUTXBAR6              = 0x1601,
+    XBAR_OUT_MUX11_CLB3_OUT5               = 0x1602,
     XBAR_OUT_MUX11_ADCDEVT2                = 0x1603,
     XBAR_OUT_MUX12_CMPSS7_CTRIPOUTH        = 0x1800,
     XBAR_OUT_MUX12_CMPSS7_CTRIPOUTH_OR_L   = 0x1801,
     XBAR_OUT_MUX12_ADCBEVT3                = 0x1802,
     XBAR_OUT_MUX13_CMPSS7_CTRIPOUTL        = 0x1A00,
     XBAR_OUT_MUX13_ADCSOCA                 = 0x1A01,
+    XBAR_OUT_MUX13_CLB4_OUT4               = 0x1A02,
     XBAR_OUT_MUX13_ADCDEVT3                = 0x1A03,
     XBAR_OUT_MUX14_CMPSS8_CTRIPOUTH        = 0x1C00,
     XBAR_OUT_MUX14_CMPSS8_CTRIPOUTH_OR_L   = 0x1C01,
@@ -256,6 +288,7 @@ typedef enum
     XBAR_OUT_MUX14_EXTSYNCOUT              = 0x1C03,
     XBAR_OUT_MUX15_CMPSS8_CTRIPOUTL        = 0x1E00,
     XBAR_OUT_MUX15_ADCSOCB                 = 0x1E01,
+    XBAR_OUT_MUX15_CLB4_OUT5               = 0x1E02,
     XBAR_OUT_MUX15_ADCDEVT4                = 0x1E03,
     XBAR_OUT_MUX16_SD1FLT1_COMPH           = 0x2000,
     XBAR_OUT_MUX16_SD1FLT1_COMPH_OR_COMPL  = 0x2001,
@@ -297,6 +330,7 @@ typedef enum
     XBAR_EPWM_MUX00_ECAP1_OUT              = 0x0003,
     XBAR_EPWM_MUX01_CMPSS1_CTRIPL          = 0x0200,
     XBAR_EPWM_MUX01_INPUTXBAR1             = 0x0201,
+    XBAR_EPWM_MUX01_CLB1_OUT4              = 0x0202,
     XBAR_EPWM_MUX01_ADCCEVT1               = 0x0203,
     XBAR_EPWM_MUX02_CMPSS2_CTRIPH          = 0x0400,
     XBAR_EPWM_MUX02_CMPSS2_CTRIPH_OR_L     = 0x0401,
@@ -304,6 +338,7 @@ typedef enum
     XBAR_EPWM_MUX02_ECAP2_OUT              = 0x0403,
     XBAR_EPWM_MUX03_CMPSS2_CTRIPL          = 0x0600,
     XBAR_EPWM_MUX03_INPUTXBAR2             = 0x0601,
+    XBAR_EPWM_MUX03_CLB1_OUT5              = 0x0602,
     XBAR_EPWM_MUX03_ADCCEVT2               = 0x0603,
     XBAR_EPWM_MUX04_CMPSS3_CTRIPH          = 0x0800,
     XBAR_EPWM_MUX04_CMPSS3_CTRIPH_OR_L     = 0x0801,
@@ -311,6 +346,7 @@ typedef enum
     XBAR_EPWM_MUX04_ECAP3_OUT              = 0x0803,
     XBAR_EPWM_MUX05_CMPSS3_CTRIPL          = 0x0A00,
     XBAR_EPWM_MUX05_INPUTXBAR3             = 0x0A01,
+    XBAR_EPWM_MUX05_CLB2_OUT4              = 0x0A02,
     XBAR_EPWM_MUX05_ADCCEVT3               = 0x0A03,
     XBAR_EPWM_MUX06_CMPSS4_CTRIPH          = 0x0C00,
     XBAR_EPWM_MUX06_CMPSS4_CTRIPH_OR_L     = 0x0C01,
@@ -318,6 +354,7 @@ typedef enum
     XBAR_EPWM_MUX06_ECAP4_OUT              = 0x0C03,
     XBAR_EPWM_MUX07_CMPSS4_CTRIPL          = 0x0E00,
     XBAR_EPWM_MUX07_INPUTXBAR4             = 0x0E01,
+    XBAR_EPWM_MUX07_CLB2_OUT5              = 0x0E02,
     XBAR_EPWM_MUX07_ADCCEVT4               = 0x0E03,
     XBAR_EPWM_MUX08_CMPSS5_CTRIPH          = 0x1000,
     XBAR_EPWM_MUX08_CMPSS5_CTRIPH_OR_L     = 0x1001,
@@ -325,6 +362,7 @@ typedef enum
     XBAR_EPWM_MUX08_ECAP5_OUT              = 0x1003,
     XBAR_EPWM_MUX09_CMPSS5_CTRIPL          = 0x1200,
     XBAR_EPWM_MUX09_INPUTXBAR5             = 0x1201,
+    XBAR_EPWM_MUX09_CLB3_OUT4              = 0x1202,
     XBAR_EPWM_MUX09_ADCDEVT1               = 0x1203,
     XBAR_EPWM_MUX10_CMPSS6_CTRIPH          = 0x1400,
     XBAR_EPWM_MUX10_CMPSS6_CTRIPH_OR_L     = 0x1401,
@@ -332,12 +370,14 @@ typedef enum
     XBAR_EPWM_MUX10_ECAP6_OUT              = 0x1403,
     XBAR_EPWM_MUX11_CMPSS6_CTRIPL          = 0x1600,
     XBAR_EPWM_MUX11_INPUTXBAR6             = 0x1601,
+    XBAR_EPWM_MUX11_CLB3_OUT5              = 0x1602,
     XBAR_EPWM_MUX11_ADCDEVT2               = 0x1603,
     XBAR_EPWM_MUX12_CMPSS7_CTRIPH          = 0x1800,
     XBAR_EPWM_MUX12_CMPSS7_CTRIPH_OR_L     = 0x1801,
     XBAR_EPWM_MUX12_ADCBEVT3               = 0x1802,
     XBAR_EPWM_MUX13_CMPSS7_CTRIPL          = 0x1A00,
     XBAR_EPWM_MUX13_ADCSOCA                = 0x1A01,
+    XBAR_EPWM_MUX13_CLB4_OUT4              = 0x1A02,
     XBAR_EPWM_MUX13_ADCDEVT3               = 0x1A03,
     XBAR_EPWM_MUX14_CMPSS8_CTRIPH          = 0x1C00,
     XBAR_EPWM_MUX14_CMPSS8_CTRIPH_OR_L     = 0x1C01,
@@ -345,6 +385,7 @@ typedef enum
     XBAR_EPWM_MUX14_EXTSYNCOUT             = 0x1C03,
     XBAR_EPWM_MUX15_CMPSS8_CTRIPL          = 0x1E00,
     XBAR_EPWM_MUX15_ADCSOCB                = 0x1E01,
+    XBAR_EPWM_MUX15_CLB4_OUT5              = 0x1E02,
     XBAR_EPWM_MUX15_ADCDEVT4               = 0x1E03,
     XBAR_EPWM_MUX16_SD1FLT1_COMPH          = 0x2000,
     XBAR_EPWM_MUX16_SD1FLT1_COMPH_OR_COMPL = 0x2001,
@@ -374,13 +415,112 @@ typedef enum
 
 //*****************************************************************************
 //
+// The following values define the muxConfig parameter for
+// XBAR_setCLBMuxConfig().
+//
+//*****************************************************************************
+typedef enum
+{
+    XBAR_CLB_MUX00_CMPSS1_CTRIPH           = 0x0000,
+    XBAR_CLB_MUX00_CMPSS1_CTRIPH_OR_L      = 0x0001,
+    XBAR_CLB_MUX00_ADCAEVT1                = 0x0002,
+    XBAR_CLB_MUX00_ECAP1_OUT               = 0x0003,
+    XBAR_CLB_MUX01_CMPSS1_CTRIPL           = 0x0200,
+    XBAR_CLB_MUX01_INPUTXBAR1              = 0x0201,
+    XBAR_CLB_MUX01_CLB1_OUT4               = 0x0202,
+    XBAR_CLB_MUX01_ADCCEVT1                = 0x0203,
+    XBAR_CLB_MUX02_CMPSS2_CTRIPH           = 0x0400,
+    XBAR_CLB_MUX02_CMPSS2_CTRIPH_OR_L      = 0x0401,
+    XBAR_CLB_MUX02_ADCAEVT2                = 0x0402,
+    XBAR_CLB_MUX02_ECAP2_OUT               = 0x0403,
+    XBAR_CLB_MUX03_CMPSS2_CTRIPL           = 0x0600,
+    XBAR_CLB_MUX03_INPUTXBAR2              = 0x0601,
+    XBAR_CLB_MUX03_CLB1_OUT5               = 0x0602,
+    XBAR_CLB_MUX03_ADCCEVT2                = 0x0603,
+    XBAR_CLB_MUX04_CMPSS3_CTRIPH           = 0x0800,
+    XBAR_CLB_MUX04_CMPSS3_CTRIPH_OR_L      = 0x0801,
+    XBAR_CLB_MUX04_ADCAEVT3                = 0x0802,
+    XBAR_CLB_MUX04_ECAP3_OUT               = 0x0803,
+    XBAR_CLB_MUX05_CMPSS3_CTRIPL           = 0x0A00,
+    XBAR_CLB_MUX05_INPUTXBAR3              = 0x0A01,
+    XBAR_CLB_MUX05_CLB2_OUT4               = 0x0A02,
+    XBAR_CLB_MUX05_ADCCEVT3                = 0x0A03,
+    XBAR_CLB_MUX06_CMPSS4_CTRIPH           = 0x0C00,
+    XBAR_CLB_MUX06_CMPSS4_CTRIPH_OR_L      = 0x0C01,
+    XBAR_CLB_MUX06_ADCAEVT4                = 0x0C02,
+    XBAR_CLB_MUX06_ECAP4_OUT               = 0x0C03,
+    XBAR_CLB_MUX07_CMPSS4_CTRIPL           = 0x0E00,
+    XBAR_CLB_MUX07_INPUTXBAR4              = 0x0E01,
+    XBAR_CLB_MUX07_CLB2_OUT5               = 0x0E02,
+    XBAR_CLB_MUX07_ADCCEVT4                = 0x0E03,
+    XBAR_CLB_MUX08_CMPSS5_CTRIPH           = 0x1000,
+    XBAR_CLB_MUX08_CMPSS5_CTRIPH_OR_L      = 0x1001,
+    XBAR_CLB_MUX08_ADCBEVT1                = 0x1002,
+    XBAR_CLB_MUX08_ECAP5_OUT               = 0x1003,
+    XBAR_CLB_MUX09_CMPSS5_CTRIPL           = 0x1200,
+    XBAR_CLB_MUX09_INPUTXBAR5              = 0x1201,
+    XBAR_CLB_MUX09_CLB3_OUT4               = 0x1202,
+    XBAR_CLB_MUX09_ADCDEVT1                = 0x1203,
+    XBAR_CLB_MUX10_CMPSS6_CTRIPH           = 0x1400,
+    XBAR_CLB_MUX10_CMPSS6_CTRIPH_OR_L      = 0x1401,
+    XBAR_CLB_MUX10_ADCBEVT2                = 0x1402,
+    XBAR_CLB_MUX10_ECAP6_OUT               = 0x1403,
+    XBAR_CLB_MUX11_CMPSS6_CTRIPL           = 0x1600,
+    XBAR_CLB_MUX11_INPUTXBAR6              = 0x1601,
+    XBAR_CLB_MUX11_CLB3_OUT5               = 0x1602,
+    XBAR_CLB_MUX11_ADCDEVT2                = 0x1603,
+    XBAR_CLB_MUX12_CMPSS7_CTRIPH           = 0x1800,
+    XBAR_CLB_MUX12_CMPSS7_CTRIPH_OR_L      = 0x1801,
+    XBAR_CLB_MUX12_ADCBEVT3                = 0x1802,
+    XBAR_CLB_MUX13_CMPSS7_CTRIPL           = 0x1A00,
+    XBAR_CLB_MUX13_ADCSOCA                 = 0x1A01,
+    XBAR_CLB_MUX13_CLB4_OUT4               = 0x1A02,
+    XBAR_CLB_MUX13_ADCDEVT3                = 0x1A03,
+    XBAR_CLB_MUX14_CMPSS8_CTRIPH           = 0x1C00,
+    XBAR_CLB_MUX14_CMPSS8_CTRIPH_OR_L      = 0x1C01,
+    XBAR_CLB_MUX14_ADCBEVT4                = 0x1C02,
+    XBAR_CLB_MUX14_EXTSYNCOUT              = 0x1C03,
+    XBAR_CLB_MUX15_CMPSS8_CTRIPL           = 0x1E00,
+    XBAR_CLB_MUX15_ADCSOCB                 = 0x1E01,
+    XBAR_CLB_MUX15_CLB4_OUT5               = 0x1E02,
+    XBAR_CLB_MUX15_ADCDEVT4                = 0x1E03,
+    XBAR_CLB_MUX16_SD1FLT1_COMPH           = 0x2000,
+    XBAR_CLB_MUX16_SD1FLT1_COMPH_OR_COMPL  = 0x2001,
+    XBAR_CLB_MUX17_SD1FLT1_COMPL           = 0x2200,
+    XBAR_CLB_MUX18_SD1FLT2_COMPH           = 0x2400,
+    XBAR_CLB_MUX18_SD1FLT2_COMPH_OR_COMPL  = 0x2401,
+    XBAR_CLB_MUX19_SD1FLT2_COMPL           = 0x2600,
+    XBAR_CLB_MUX20_SD1FLT3_COMPH           = 0x2800,
+    XBAR_CLB_MUX20_SD1FLT3_COMPH_OR_COMPL  = 0x2801,
+    XBAR_CLB_MUX21_SD1FLT3_COMPL           = 0x2A00,
+    XBAR_CLB_MUX22_SD1FLT4_COMPH           = 0x2C00,
+    XBAR_CLB_MUX22_SD1FLT4_COMPH_OR_COMPL  = 0x2C01,
+    XBAR_CLB_MUX23_SD1FLT4_COMPL           = 0x2E00,
+    XBAR_CLB_MUX24_SD2FLT1_COMPH           = 0x3000,
+    XBAR_CLB_MUX24_SD2FLT1_COMPH_OR_COMPL  = 0x3001,
+    XBAR_CLB_MUX25_SD2FLT1_COMPL           = 0x3200,
+    XBAR_CLB_MUX26_SD2FLT2_COMPH           = 0x3400,
+    XBAR_CLB_MUX26_SD2FLT2_COMPH_OR_COMPL  = 0x3401,
+    XBAR_CLB_MUX27_SD2FLT2_COMPL           = 0x3600,
+    XBAR_CLB_MUX28_SD2FLT3_COMPH           = 0x3800,
+    XBAR_CLB_MUX28_SD2FLT3_COMPH_OR_COMPL  = 0x3801,
+    XBAR_CLB_MUX29_SD2FLT3_COMPL           = 0x3A00,
+    XBAR_CLB_MUX30_SD2FLT4_COMPH           = 0x3C00,
+    XBAR_CLB_MUX30_SD2FLT4_COMPH_OR_COMPL  = 0x3C01,
+    XBAR_CLB_MUX31_SD2FLT4_COMPL           = 0x3E00
+} XBAR_CLBMuxConfig;
+
+//*****************************************************************************
+//
 //! The following values define the \e inputFlag parameter for
 //! XBAR_getInputFlagStatus() and XBAR_clearInputFlag().
 //
 //*****************************************************************************
 typedef enum
 {
+    //
     // XBARFLG1
+    //
     XBAR_INPUT_FLG_CMPSS1_CTRIPL    = 0x0000,
     XBAR_INPUT_FLG_CMPSS1_CTRIPH    = 0x0001,
     XBAR_INPUT_FLG_CMPSS2_CTRIPL    = 0x0002,
@@ -413,7 +553,9 @@ typedef enum
     XBAR_INPUT_FLG_CMPSS7_CTRIPOUTH = 0x001D,
     XBAR_INPUT_FLG_CMPSS8_CTRIPOUTL = 0x001E,
     XBAR_INPUT_FLG_CMPSS8_CTRIPOUTH = 0x001F,
+    //
     // XBARFLG2
+    //
     XBAR_INPUT_FLG_INPUT1           = 0x0100,
     XBAR_INPUT_FLG_INPUT2           = 0x0101,
     XBAR_INPUT_FLG_INPUT3           = 0x0102,
@@ -422,6 +564,14 @@ typedef enum
     XBAR_INPUT_FLG_INPUT6           = 0x0105,
     XBAR_INPUT_FLG_ADCSOCA          = 0x0106,
     XBAR_INPUT_FLG_ADCSOCB          = 0x0107,
+    XBAR_INPUT_FLG_CLB1_OUT4        = 0x0108,
+    XBAR_INPUT_FLG_CLB1_OUT5        = 0x0109,
+    XBAR_INPUT_FLG_CLB2_OUT4        = 0x010A,
+    XBAR_INPUT_FLG_CLB2_OUT5        = 0x010B,
+    XBAR_INPUT_FLG_CLB3_OUT4        = 0x010C,
+    XBAR_INPUT_FLG_CLB3_OUT5        = 0x010D,
+    XBAR_INPUT_FLG_CLB4_OUT4        = 0x010E,
+    XBAR_INPUT_FLG_CLB4_OUT5        = 0x010F,
     XBAR_INPUT_FLG_ECAP1_OUT        = 0x0110,
     XBAR_INPUT_FLG_ECAP2_OUT        = 0x0111,
     XBAR_INPUT_FLG_ECAP3_OUT        = 0x0112,
@@ -438,7 +588,9 @@ typedef enum
     XBAR_INPUT_FLG_ADCBEVT3         = 0x011D,
     XBAR_INPUT_FLG_ADCBEVT4         = 0x011E,
     XBAR_INPUT_FLG_ADCCEVT1         = 0x011F,
+    //
     // XBARFLG3
+    //
     XBAR_INPUT_FLG_ADCCEVT2         = 0x0200,
     XBAR_INPUT_FLG_ADCCEVT3         = 0x0201,
     XBAR_INPUT_FLG_ADCCEVT4         = 0x0202,
@@ -887,6 +1039,108 @@ XBAR_lockEPWM(void)
 
 //*****************************************************************************
 //
+//! Enables the CLB X-BAR mux values to be passed to an CLB module.
+//!
+//! \param auxSignal is the X-BAR output being configured.
+//! \param muxes is a bit field of the muxes to be enabled.
+//!
+//! This function enables the mux values to be passed to the X-BAR auxSignal
+//! signal. The \e auxSignal parameter is a value \b XBAR_AUXSIGy where y is
+//! the number of the signal on the CLB.
+//!
+//! The \e muxes parameter is a bit field of the muxes being enabled where bit
+//! 0 represents mux 0, bit 1 represents mux 1 and so on. Defines are provided
+//! in the form of \b XBAR_MUXnn that can be logically OR'd together to
+//! enable several muxes on an output at the same time.
+//!
+//! \return None.
+//
+//*****************************************************************************
+static inline void
+XBAR_enableCLBMux(XBAR_AuxSigNum auxSignal, uint32_t muxes)
+{
+    //
+    // Set the enable bit.
+    //
+    EALLOW;
+
+    HWREG(XBAR_CLB_EN_REG_BASE + (uint16_t)auxSignal) |= muxes;
+
+    EDIS;
+}
+
+//*****************************************************************************
+//
+//! Disables the CLB X-BAR mux values to be passed to an CLB module.
+//!
+//! \param auxSignal is the X-BAR output being configured.
+//! \param muxes is a bit field of the muxes to be disabled.
+//!
+//! This function disables the mux values to be passed to the X-BAR auxSignal
+//! signal. The \e auxSignal parameter is a value \b XBAR_AUXSIGy where y is
+//! the number of the signal on the CLB.
+//!
+//! The \e muxes parameter is a bit field of the muxes being disabled where bit
+//! 0 represents mux 0, bit 1 represents mux 1 and so on. Defines are provided
+//! in the form of \b XBAR_MUXnn that can be logically OR'd together to
+//! disable several muxes on an output at the same time.
+//!
+//! \return None.
+//
+//*****************************************************************************
+static inline void
+XBAR_disableCLBMux(XBAR_AuxSigNum auxSignal, uint32_t muxes)
+{
+    //
+    // Clear the enable bit.
+    //
+    EALLOW;
+
+    HWREG(XBAR_CLB_EN_REG_BASE + (uint16_t)auxSignal) &= ~(muxes);
+
+    EDIS;
+}
+
+//*****************************************************************************
+//
+//! Configures the polarity of an CLB X-BAR output.
+//!
+//! \param auxSignal is the X-BAR output being configured.
+//! \param invert is a flag that determines whether the output is active-high
+//! or active-low.
+//!
+//! This function inverts the CLB X-BAR auxSignal signal if the \e invert
+//! parameter is \b true. If \e invert is \b false, the signal will be passed
+//! as is. The \e auxSignal parameter is a value \b XBAR_AUXSIGy where y is
+//! the number of the signal on the CLB X-BAR that is being configured.
+//!
+//! \return None.
+//
+//*****************************************************************************
+static inline void
+XBAR_invertCLBSignal(XBAR_AuxSigNum auxSignal, bool invert)
+{
+    //
+    // Set or clear the polarity setting bit based on the invert parameter.
+    //
+    EALLOW;
+
+    if(invert)
+    {
+        HWREGH(CLBXBAR_BASE + XBAR_O_AUXSIGOUTINV) |=
+            0x1U << ((uint16_t)auxSignal / 2U);
+    }
+    else
+    {
+        HWREGH(CLBXBAR_BASE + XBAR_O_AUXSIGOUTINV) &=
+            ~(0x1U << ((uint16_t)auxSignal / 2U));
+    }
+
+    EDIS;
+}
+
+//*****************************************************************************
+//
 //! Configures the Output X-BAR mux that determines the signals passed to an
 //! output.
 //!
@@ -907,7 +1161,7 @@ XBAR_lockEPWM(void)
 //! be logically OR'd before being passed to the output signal. This means that
 //! this function may be called, for example, with the argument
 //! \b XBAR_OUT_MUX00_ECAP1_OUT and then with the argument
-//! \b XBAR_OUT_MUX01_INPUTXBAR1, resulting in the values of MUX00 and MUX03
+//! \b XBAR_OUT_MUX01_INPUTXBAR1, resulting in the values of MUX00 and MUX01
 //! being logically OR'd if both are enabled. Calling the function twice for
 //! the same mux on the output will result in the configuration in the second
 //! call overwriting the first.
@@ -979,6 +1233,39 @@ XBAR_getInputFlagStatus(XBAR_InputFlag inputFlag);
 //*****************************************************************************
 extern void
 XBAR_clearInputFlag(XBAR_InputFlag inputFlag);
+
+//*****************************************************************************
+//
+//! Configures the CLB X-BAR mux that determines the signals passed to a
+//! CLB module.
+//!
+//! \param auxSignal is the X-BAR output being configured.
+//! \param muxConfig is mux configuration that specifies the signal.
+//!
+//! This function configures an CLB X-BAR mux. This determines which signal(s)
+//! should be passed through the X-BAR to an CLB module. The \e auxSignal
+//! parameter is a value \b XBAR_AUXSIGy where y is a the number of the
+//! signal on the CLB.
+//!
+//! The \e muxConfig parameter is the mux configuration value that specifies
+//! which signal will be passed from the mux. The values have the format of
+//! \b XBAR_CLB_MUXnn_xx where the 'xx' is the signal and nn is the mux
+//! number (0 through 31). The possible values are found in <tt>xbar.h</tt>
+//!
+//! This function may be called for each mux of an output and their values will
+//! be logically OR'd before being passed to the signal. This means that
+//! this function may be called, for example, with the argument
+//! \b XBAR_CLB_MUX00_ECAP1_OUT and then with the argument
+//! \b XBAR_CLB_MUX03_INPUTXBAR2, resulting in the values of MUX00 and MUX03
+//! being logically OR'd if both are enabled. Calling the function twice for
+//! the same mux on the output will result in the configuration in the second
+//! call overwriting the first.
+//!
+//! \return None.
+//
+//*****************************************************************************
+extern void XBAR_setCLBMuxConfig(XBAR_AuxSigNum auxSignal,
+                                 XBAR_CLBMuxConfig muxConfig);
 
 //*****************************************************************************
 //

@@ -5,10 +5,10 @@
 // TITLE:  C28x uPP driver.
 //
 //###########################################################################
-// $TI Release: F2837xD Support Library v3.05.00.00 $
-// $Release Date: Tue Jun 26 03:15:23 CDT 2018 $
+// $TI Release: F2837xD Support Library v3.07.00.00 $
+// $Release Date: Sun Sep 29 07:34:54 CDT 2019 $
 // $Copyright:
-// Copyright (C) 2013-2018 Texas Instruments Incorporated - http://www.ti.com/
+// Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
 //
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 
@@ -84,7 +84,7 @@ UPP_setDMAReadThreshold(uint32_t base, UPP_DMAChannel channel,
 //*****************************************************************************
 void
 UPP_setDMADescriptor(uint32_t base, UPP_DMAChannel channel,
-                     const UPP_DMADescriptor* const desc)
+                     const UPP_DMADescriptor * const desc)
 {
     //
     // Check the arguments.
@@ -121,7 +121,7 @@ UPP_setDMADescriptor(uint32_t base, UPP_DMAChannel channel,
 //*****************************************************************************
 void
 UPP_getDMAChannelStatus(uint32_t base, UPP_DMAChannel channel,
-                        UPP_DMAChannelStatus* const status)
+                        UPP_DMAChannelStatus * const status)
 {
     uint32_t cntStatus;
 
