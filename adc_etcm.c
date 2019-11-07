@@ -35,9 +35,3 @@ void initADCSOC(void)
 {
 
 }
-
-//send torque request to motor controller
-void requestTorque(int torque)
-{
-
-}

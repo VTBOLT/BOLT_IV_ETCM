@@ -21,13 +21,14 @@
 //#############################################################################
 
 // Included peripheral files
-#include "adc_etcm.h"
+#include "adc_etcm.c"
+#include "dac_etcm.c"
+
 
 //Function Prototypes.
 void init(void);
 void run(void);
 void initLookup(void);
-void requestTorque(int torque);
 
 void main(void)
 {
