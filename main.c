@@ -111,9 +111,12 @@ __interrupt void adcA1ISR(void)
     //Read the raw result
     sensorSample = ADC_readResult(ADCARESULT_BASE, ADC_SOC_NUMBER0);
 
+    //27.3 is the number of adc units in 1 mm of suspension travel.
     sensorPosition = 150 - (sensorSample/27.3);
 
+    //Check if the sensor is completely extended.
     wheelie = (sensorPosition == 150);
+
     //Clear interrupt flag
     ADC_clearInterruptStatus(ADCA_BASE, ADC_INT_NUMBER1);
 
