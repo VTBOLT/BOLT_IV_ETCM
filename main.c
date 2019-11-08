@@ -8,125 +8,124 @@
 #include "device.h"
 
 //Function Prototypes.
-void initADC(void);
-void initEPWM(void);
-void initADCSOC(void);
-__interrupt void adcA1ISR(void);
+void initSCI(void);
+void initSCIBFIFO(void);
+void xmitSCIB(uint16_t a);
 
-uint16_t sensorSample;
-int16_t sensorPosition;
-int16_t wheelie;
+int16_t packetCount;
+int16_t roll;
+int16_t pitch;
+int16_t yaw;
+
+
 
 //Main, calls init and run
 int main(void)
 {
+
+    packetCount = 0;
+
     //Initialize device clock and peripherals.
     Device_init();
 
     //Disable pin locks and internal pullups
     Device_initGPIO();
 
-    //Initialize PIE and disable interrupts.
+
+    // GPIO18 is the SCI Tx pin.
+    //
+    GPIO_setMasterCore(18, GPIO_CORE_CPU1);
+    GPIO_setPinConfig(GPIO_18_SCITXDB);
+    GPIO_setDirectionMode(18, GPIO_DIR_MODE_OUT);
+    GPIO_setPadConfig(18, GPIO_PIN_TYPE_STD);
+    GPIO_setQualificationMode(18, GPIO_QUAL_ASYNC);
+
+
+    // GPIO19 is the SCI Rx pin.
+    //
+    GPIO_setMasterCore(19, GPIO_CORE_CPU1);
+    GPIO_setPinConfig(GPIO_19_SCIRXDB);
+    GPIO_setDirectionMode(19, GPIO_DIR_MODE_IN);
+    GPIO_setPadConfig(19, GPIO_PIN_TYPE_STD);
+    GPIO_setQualificationMode(19, GPIO_QUAL_ASYNC);
+
+    //
+    // Initialize PIE and clear PIE registers. Disables CPU interrupts.
+    //
     Interrupt_initModule();
 
-    //Initialize the PIE vector table to the shell ISR
+    // Initialize the PIE vector table with pointers to the shell Interrupt
+    // Service Routines (ISR).
+    //
     Interrupt_initVectorTable();
 
-    //Re-map interrupts in this file to ISR functions in this file.
-    Interrupt_register(INT_ADCA1, &adcA1ISR);
+    //
+    // Enables CPU interrupts
+    //
+    Interrupt_enableMaster();
 
-    //Set up the ADC and ePWM and initialize the SOC
-    initADC();
-    initEPWM();
-    initADCSOC();
+    //
+    // Initialize SCIB
+    //
+    initSCI();
 
-    //Enable ADC interrupt
-    Interrupt_enable(INT_ADCA1);
+    //Initialize the buffer.
+    initSCIBFIFO();
 
-    //Enable Global Interrupt (INTM) and realtime interrupt (DBGM)
-    EINT;
-    ERTM;
+    uint16_t receivedChar;
 
-    //Start ePWM1, enabling SOCA and put counter in up-count
-    EPWM_enableADCTrigger(EPWM1_BASE, EPWM_SOC_A);
-    EPWM_setTimeBaseCounterMode(EPWM1_BASE, EPWM_COUNTER_MODE_UP);
+    for(;;){
 
-    //Loop forever
-    while(1)
-    {;}
 
-}
+        while(SCI_getRxFIFOStatus(SCIB_BASE) == SCI_FIFO_RX0)
+        {
+            xmitSCIB(0x42);
+                    ;
+        }
 
-//Initialize and power up the ADC
-void initADC(void)
-{
-    //Set ADC divider to /4.
-    ADC_setPrescaler(ADCA_BASE, ADC_CLK_DIV_4_0);
-
-    //Set resolution and signal mode and load the right trims.
-    ADC_setMode(ADCA_BASE, ADC_RESOLUTION_12BIT, ADC_MODE_SINGLE_ENDED);
-
-    //Set pulse position to late.
-    ADC_setInterruptPulseMode(ADCA_BASE, ADC_PULSE_END_OF_CONV);
-
-    //Power up ADC and delay for one ms.
-    ADC_enableConverter(ADCA_BASE);
-    DEVICE_DELAY_US(1000);
-}
-
-//Initialize EPWM
-void initEPWM(void)
-{
-    //Disable SOCA
-    EPWM_disableADCTrigger(EPWM1_BASE, EPWM_SOC_A);
-
-    //Configure SOC to happen on up-count event.
-    EPWM_setADCTriggerSource(EPWM1_BASE, EPWM_SOC_A, EPWM_SOC_TBCTR_U_CMPA);
-    EPWM_setADCTriggerEventPrescale(EPWM1_BASE, EPWM_SOC_A, 1);
-
-    //Set compare A value to 2048 and period to 4096.
-    EPWM_setCounterCompareValue(EPWM1_BASE, EPWM_COUNTER_COMPARE_A, 0x0800);
-    EPWM_setTimeBasePeriod(EPWM1_BASE,0x1000);
-
-    //Freeze the counter
-    EPWM_setTimeBaseCounterMode(EPWM1_BASE, EPWM_COUNTER_MODE_STOP_FREEZE);
-}
-
-//Initialize ADC SOC and configure the ADCA's SOC0 to be triggered by the ePWM1
-void initADCSOC(void)
-{
-    //Configure the SOC. The position sensor is connected to A0
-    ADC_setupSOC(ADCA_BASE, ADC_SOC_NUMBER0, ADC_TRIGGER_EPWM1_SOCA,
-                 ADC_CH_ADCIN14, 140);
-
-    //Set the SOC0 to set interrupt 1 flag. Enable interrupt and clear flag.
-    ADC_setInterruptSource(ADCA_BASE, ADC_INT_NUMBER1, ADC_SOC_NUMBER0);
-    ADC_enableInterrupt(ADCA_BASE, ADC_INT_NUMBER1);
-    ADC_clearInterruptStatus(ADCA_BASE, ADC_INT_NUMBER1);
-}
-
-//Create the interrupt for ADC A Interrupt 1
-__interrupt void adcA1ISR(void)
-{
-    //Read the raw result
-    sensorSample = ADC_readResult(ADCARESULT_BASE, ADC_SOC_NUMBER0);
-
-    //27.3 is the number of adc units in 1 mm of suspension travel.
-    sensorPosition = 150 - (sensorSample/27.3);
-
-    //Check if the sensor is completely extended.
-    wheelie = (sensorPosition == 150);
-
-    //Clear interrupt flag
-    ADC_clearInterruptStatus(ADCA_BASE, ADC_INT_NUMBER1);
-
-    //Check for overflow.
-    if(true == ADC_getInterruptOverflowStatus(ADCA_BASE, ADC_INT_NUMBER1))
-    {
-        ADC_clearInterruptOverflowStatus(ADCA_BASE, ADC_INT_NUMBER1);
-        ADC_clearInterruptStatus(ADCA_BASE, ADC_INT_NUMBER1);
+        //
+        // Get received character
+        //
+        receivedChar = SCI_readCharBlockingFIFO(SCIB_BASE);
     }
 
-    //Acknowledge the interrupt
-    Interrupt_clearACKGroup(INTERRUPT_ACK_GROUP1);
+}
+
+void initSCI(){
+
+    //8 char bits, 1 stop bit, no parity, baud of 115200.
+    SCI_setConfig(SCIB_BASE, DEVICE_LSPCLK_FREQ, 9600, (SCI_CONFIG_WLEN_8 |
+                                                          SCI_CONFIG_STOP_ONE |
+                                                          SCI_CONFIG_PAR_NONE));
+
+    //Disable the test mode where TX & RX are internally connected.
+    SCI_disableLoopback(SCIB_BASE);
+
+    SCI_enableFIFO(SCIB_BASE);
+    SCI_performSoftwareReset(SCIB_BASE);
+    SCI_disableInterrupt(SCIB_BASE, SCI_INT_RXERR);
+
+    SCI_enableInterrupt(SCIA_BASE, SCI_INT_TXRDY);
+    SCI_enableInterrupt(SCIB_BASE, SCI_INT_RXRDY_BRKDT);
+
+    //Enable the module
+    SCI_enableModule(SCIB_BASE);
+
+}
+
+void xmitSCIB(uint16_t a)
+{
+    SCI_writeCharNonBlocking(SCIB_BASE, a);
+}
+
+void initSCIBFIFO(){
+
+    SCI_clearInterruptStatus(SCIB_BASE, SCI_INT_TXFF);
+        SCI_resetTxFIFO(SCIB_BASE);
+        SCI_enableFIFO(SCIB_BASE);
+
+        SCI_setFIFOInterruptLevel(SCIB_BASE, SCI_FIFO_TX0, SCI_FIFO_RX4);
+        SCI_resetChannels(SCIB_BASE);
+
+        SCI_clearInterruptStatus(SCIB_BASE, SCI_INT_RXFF);
 }
