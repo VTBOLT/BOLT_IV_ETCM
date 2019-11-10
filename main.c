@@ -6,6 +6,7 @@
 
 #include "driverlib.h"
 #include "device.h"
+#include "string.h"
 
 //Function Prototypes.
 void initSCI(void);
@@ -13,6 +14,7 @@ void initSCIBFIFO(void);
 void xmitSCIB(uint16_t a);
 
 int16_t packetCount;
+char dataIN[35];
 int16_t roll;
 int16_t pitch;
 int16_t yaw;
@@ -24,6 +26,7 @@ int main(void)
 {
 
     packetCount = 0;
+
 
     //Initialize device clock and peripherals.
     Device_init();
@@ -72,7 +75,7 @@ int main(void)
     //Initialize the buffer.
     initSCIBFIFO();
 
-    uint16_t receivedChar;
+    uint16_t receivedNum;
 
     for(;;){
 
@@ -82,19 +85,26 @@ int main(void)
             xmitSCIB(0x42);
                     ;
         }
-
         //
         // Get received character
         //
-        receivedChar = SCI_readCharBlockingFIFO(SCIB_BASE);
+        receivedNum = SCI_readCharBlockingFIFO(SCIB_BASE);
+        char recChar = receivedNum;
+        dataIN[packetCount] = recChar;
+        packetCount = packetCount + 1;
+        if(packetCount == 34)
+        {
+            packetCount = 0;
+        }
     }
+
 
 }
 
 void initSCI(){
 
     //8 char bits, 1 stop bit, no parity, baud of 115200.
-    SCI_setConfig(SCIB_BASE, DEVICE_LSPCLK_FREQ, 9600, (SCI_CONFIG_WLEN_8 |
+    SCI_setConfig(SCIB_BASE, DEVICE_LSPCLK_FREQ, 115200, (SCI_CONFIG_WLEN_8 |
                                                           SCI_CONFIG_STOP_ONE |
                                                           SCI_CONFIG_PAR_NONE));
 
