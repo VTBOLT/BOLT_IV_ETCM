@@ -8,10 +8,18 @@
 #include "device.h"
 #include "string.h"
 
+/* Include files needed to use the UART protocol with Vn-100. */
+#include "vn/util.h"
+#include "vn/protocol/upack.h"
+#include "vn/protocol/upackf.h"
+#include "vn/int.h"
+
+
 //Function Prototypes.
 void initSCI(void);
 void initSCIBFIFO(void);
 void xmitSCIB(uint16_t a);
+void enableGPIO(void);
 
 int16_t packetCount;
 char dataIN[35];
@@ -24,6 +32,10 @@ int16_t yaw;
 //Main, calls init and run
 int main(void)
 {
+    char buffer[256];
+    size_t numOfBytes, readModelNumberSize, writeAsyncOutputFreqSize, readVpeBasicControlSize, writeVpeBasicControlSize;
+
+    char genReadVpeBasicControlBuffer[256];
 
     packetCount = 0;
 
@@ -77,14 +89,16 @@ int main(void)
 
     uint16_t receivedNum;
 
+    enableGPIO();
+
     for(;;){
 
 
+        GPIO_writePin(67,1);
         while(SCI_getRxFIFOStatus(SCIB_BASE) == SCI_FIFO_RX0)
         {
-            xmitSCIB(0x42);
-                    ;
         }
+
         //
         // Get received character
         //
@@ -98,7 +112,12 @@ int main(void)
         }
     }
 
+}
 
+void enableGPIO(){
+    GPIO_setPadConfig(67, GPIO_PIN_TYPE_PULLUP); //Enable pullup on GPIO22
+    GPIO_setPinConfig(GPIO_67_GPIO67);
+    GPIO_setDirectionMode(67, GPIO_DIR_MODE_OUT);
 }
 
 void initSCI(){
