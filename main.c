@@ -11,7 +11,7 @@
 void initADC(void);
 void initEPWM(void);
 void initADCSOC(void);
-__interrupt void adcA1ISR(void);
+__interrupt void adcB1ISR(void);
 
 uint16_t sensorSample;
 int16_t sensorPosition;
@@ -33,7 +33,7 @@ int main(void)
     Interrupt_initVectorTable();
 
     //Re-map interrupts in this file to ISR functions in this file.
-    Interrupt_register(INT_ADCA1, &adcA1ISR);
+    Interrupt_register(INT_ADCB1, &adcB1ISR);
 
     //Set up the ADC and ePWM and initialize the SOC
     initADC();
@@ -41,14 +41,14 @@ int main(void)
     initADCSOC();
 
     //Enable ADC interrupt
-    Interrupt_enable(INT_ADCA1);
+    Interrupt_enable(INT_ADCB1);
 
     //Enable Global Interrupt (INTM) and realtime interrupt (DBGM)
     EINT;
     ERTM;
 
-    //Start ePWM1, enabling SOCA and put counter in up-count
-    EPWM_enableADCTrigger(EPWM1_BASE, EPWM_SOC_A);
+    //Start ePWM1, enabling SOCB and put counter in up-count
+    EPWM_enableADCTrigger(EPWM1_BASE, EPWM_SOC_B);
     EPWM_setTimeBaseCounterMode(EPWM1_BASE, EPWM_COUNTER_MODE_UP);
 
     //Loop forever
@@ -61,16 +61,16 @@ int main(void)
 void initADC(void)
 {
     //Set ADC divider to /4.
-    ADC_setPrescaler(ADCA_BASE, ADC_CLK_DIV_4_0);
+    ADC_setPrescaler(ADCB_BASE, ADC_CLK_DIV_4_0);
 
     //Set resolution and signal mode and load the right trims.
-    ADC_setMode(ADCA_BASE, ADC_RESOLUTION_12BIT, ADC_MODE_SINGLE_ENDED);
+    ADC_setMode(ADCB_BASE, ADC_RESOLUTION_12BIT, ADC_MODE_SINGLE_ENDED);
 
     //Set pulse position to late.
-    ADC_setInterruptPulseMode(ADCA_BASE, ADC_PULSE_END_OF_CONV);
+    ADC_setInterruptPulseMode(ADCB_BASE, ADC_PULSE_END_OF_CONV);
 
     //Power up ADC and delay for one ms.
-    ADC_enableConverter(ADCA_BASE);
+    ADC_enableConverter(ADCB_BASE);
     DEVICE_DELAY_US(1000);
 }
 
@@ -78,14 +78,14 @@ void initADC(void)
 void initEPWM(void)
 {
     //Disable SOCA
-    EPWM_disableADCTrigger(EPWM1_BASE, EPWM_SOC_A);
+    EPWM_disableADCTrigger(EPWM1_BASE, EPWM_SOC_B);
 
     //Configure SOC to happen on up-count event.
-    EPWM_setADCTriggerSource(EPWM1_BASE, EPWM_SOC_A, EPWM_SOC_TBCTR_U_CMPA);
-    EPWM_setADCTriggerEventPrescale(EPWM1_BASE, EPWM_SOC_A, 1);
+    EPWM_setADCTriggerSource(EPWM1_BASE, EPWM_SOC_B, EPWM_SOC_TBCTR_U_CMPA);
+    EPWM_setADCTriggerEventPrescale(EPWM1_BASE, EPWM_SOC_B, 1);
 
     //Set compare A value to 2048 and period to 4096.
-    EPWM_setCounterCompareValue(EPWM1_BASE, EPWM_COUNTER_COMPARE_A, 0x0800);
+    EPWM_setCounterCompareValue(EPWM1_BASE, EPWM_COUNTER_COMPARE_B, 0x0800);
     EPWM_setTimeBasePeriod(EPWM1_BASE,0x1000);
 
     //Freeze the counter
@@ -96,20 +96,20 @@ void initEPWM(void)
 void initADCSOC(void)
 {
     //Configure the SOC. The position sensor is connected to A0
-    ADC_setupSOC(ADCA_BASE, ADC_SOC_NUMBER0, ADC_TRIGGER_EPWM1_SOCA,
-                 ADC_CH_ADCIN14, 140);
+    ADC_setupSOC(ADCB_BASE, ADC_SOC_NUMBER0, ADC_TRIGGER_EPWM1_SOCB,
+                 ADC_CH_ADCIN4, 140);
 
     //Set the SOC0 to set interrupt 1 flag. Enable interrupt and clear flag.
-    ADC_setInterruptSource(ADCA_BASE, ADC_INT_NUMBER1, ADC_SOC_NUMBER0);
-    ADC_enableInterrupt(ADCA_BASE, ADC_INT_NUMBER1);
-    ADC_clearInterruptStatus(ADCA_BASE, ADC_INT_NUMBER1);
+    ADC_setInterruptSource(ADCB_BASE, ADC_INT_NUMBER1, ADC_SOC_NUMBER0);
+    ADC_enableInterrupt(ADCB_BASE, ADC_INT_NUMBER1);
+    ADC_clearInterruptStatus(ADCB_BASE, ADC_INT_NUMBER1);
 }
 
 //Create the interrupt for ADC A Interrupt 1
-__interrupt void adcA1ISR(void)
+__interrupt void adcB1ISR(void)
 {
     //Read the raw result
-    sensorSample = ADC_readResult(ADCARESULT_BASE, ADC_SOC_NUMBER0);
+    sensorSample = ADC_readResult(ADCBRESULT_BASE, ADC_SOC_NUMBER0);
 
     //27.3 is the number of adc units in 1 mm of suspension travel.
     sensorPosition = 150 - (sensorSample/27.3);
@@ -121,10 +121,10 @@ __interrupt void adcA1ISR(void)
     ADC_clearInterruptStatus(ADCA_BASE, ADC_INT_NUMBER1);
 
     //Check for overflow.
-    if(true == ADC_getInterruptOverflowStatus(ADCA_BASE, ADC_INT_NUMBER1))
+    if(true == ADC_getInterruptOverflowStatus(ADCB_BASE, ADC_INT_NUMBER1))
     {
-        ADC_clearInterruptOverflowStatus(ADCA_BASE, ADC_INT_NUMBER1);
-        ADC_clearInterruptStatus(ADCA_BASE, ADC_INT_NUMBER1);
+        ADC_clearInterruptOverflowStatus(ADCB_BASE, ADC_INT_NUMBER1);
+        ADC_clearInterruptStatus(ADCB_BASE, ADC_INT_NUMBER1);
     }
 
     //Acknowledge the interrupt
