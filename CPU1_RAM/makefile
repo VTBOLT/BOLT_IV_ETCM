@@ -26,8 +26,10 @@ RMDIR := RMDIR /S/Q
 # All of the sources participating in the build are defined here
 -include sources.mk
 -include subdir_vars.mk
+-include Debug/subdir_vars.mk
 -include device/subdir_vars.mk
 -include subdir_rules.mk
+-include Debug/subdir_rules.mk
 -include device/subdir_rules.mk
 -include objects.mk
 

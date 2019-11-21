@@ -1,7 +1,7 @@
 ******************************************************************************
              TMS320C2000 Linker PC v18.12.3                    
 ******************************************************************************
->> Linked Fri Nov  1 15:47:24 2019
+>> Linked Thu Nov 21 14:50:38 2019
 
 OUTPUT FILE NAME:   <BOLT_IV_ETCM.out>
 ENTRY POINT SYMBOL: "code_start"  address: 00000000
@@ -238,7 +238,7 @@ abs   ffffffff  ___text__
 0     0000b7fc  __system_pre_init                         
 1     0000a9e2  __unlock                                  
 0     00008000  _abort                                    
-0     0000b646  _adcA1ISR                                 
+0     0000b646  _adcB1ISR                                 
 0     0000b6ae  _c_int00                                  
 0     0000b7d8  _copy_in                                  
 0     00008002  _exit                                     
@@ -291,7 +291,7 @@ page  address   name
 0     0000b549  ___error__                                
 0     0000b550  FS$$DIV                                   
 0     0000b5d8  _SysCtl_getClock                          
-0     0000b646  _adcA1ISR                                 
+0     0000b646  _adcB1ISR                                 
 0     0000b6ae  _c_int00                                  
 0     0000b704  _Interrupt_initModule                     
 0     0000b758  _SysCtl_selectOscSource                   
