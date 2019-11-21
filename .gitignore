@@ -1,7 +1,12 @@
-Debug
-Release
-*.xdchelp
-config
-.launches
+Debug/
+Release/
+*.xdchelp/
+config/
+.launches/
 CPU1_RAM/
 CPU1_FLASH/
+.settings/*
+vn/
+.ccsproject
+.cproject
+.gitignore

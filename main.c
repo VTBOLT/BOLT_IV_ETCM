@@ -8,12 +8,6 @@
 #include "device.h"
 #include "string.h"
 
-/* Include files needed to use the UART protocol with Vn-100. */
-#include "vn/util.h"
-#include "vn/protocol/upack.h"
-#include "vn/protocol/upackf.h"
-#include "vn/int.h"
-
 
 //Function Prototypes.
 void initSCI(void);
@@ -22,20 +16,16 @@ void xmitSCIB(uint16_t a);
 void enableGPIO(void);
 
 int16_t packetCount;
-char dataIN[35];
-int16_t roll;
-int16_t pitch;
-int16_t yaw;
+char dataBuffer[18];
+float roll;
+float pitch;
+float yaw;
 
 
 
 //Main, calls init and run
 int main(void)
 {
-    char buffer[256];
-    size_t numOfBytes, readModelNumberSize, writeAsyncOutputFreqSize, readVpeBasicControlSize, writeVpeBasicControlSize;
-
-    char genReadVpeBasicControlBuffer[256];
 
     packetCount = 0;
 
@@ -87,30 +77,32 @@ int main(void)
     //Initialize the buffer.
     initSCIBFIFO();
 
-    uint16_t receivedNum;
-
     enableGPIO();
 
+
+    GPIO_writePin(67,0);
     for(;;){
 
 
         GPIO_writePin(67,1);
-        while(SCI_getRxFIFOStatus(SCIB_BASE) == SCI_FIFO_RX0)
-        {
-        }
 
+
+        int i = 0;
         //
-        // Get received character
+        // Get received data
         //
-        receivedNum = SCI_readCharBlockingFIFO(SCIB_BASE);
-        char recChar = receivedNum;
-        dataIN[packetCount] = recChar;
-        packetCount = packetCount + 1;
-        if(packetCount == 34)
+        uint16_t thing = SCI_getRxStatus(SCIB_BASE);
+        uint32_t inter = SCI_getInterruptStatus(SCIB_BASE);
+        for( ; i < 16; i++)
         {
-            packetCount = 0;
+            uint16_t temp = SCI_readCharBlockingFIFO(SCIB_BASE);
+            dataBuffer[i] = temp;
         }
-    }
+        yaw = ((dataBuffer[4] << 23) || (dataBuffer[5] << 15) ||(dataBuffer[6] << 7) || dataBuffer[7]);
+        pitch = (dataBuffer[4] || dataBuffer[5]);
+        roll = (dataBuffer[6] || dataBuffer[7]);
+        GPIO_writePin(67,0);
+  }
 
 }
 
