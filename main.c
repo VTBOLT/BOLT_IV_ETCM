@@ -47,7 +47,7 @@ int main(void)
     EINT;
     ERTM;
 
-    //Start ePWM1, enabling SOCB and put counter in up-count
+    //Start ePWM1, enabling SOCA and put counter in up-count
     EPWM_enableADCTrigger(EPWM1_BASE, EPWM_SOC_B);
     EPWM_setTimeBaseCounterMode(EPWM1_BASE, EPWM_COUNTER_MODE_UP);
 
@@ -97,7 +97,7 @@ void initADCSOC(void)
 {
     //Configure the SOC. The position sensor is connected to A0
     ADC_setupSOC(ADCB_BASE, ADC_SOC_NUMBER0, ADC_TRIGGER_EPWM1_SOCB,
-                 ADC_CH_ADCIN4, 140);
+                 ADC_CH_ADCIN8, 140);
 
     //Set the SOC0 to set interrupt 1 flag. Enable interrupt and clear flag.
     ADC_setInterruptSource(ADCB_BASE, ADC_INT_NUMBER1, ADC_SOC_NUMBER0);
@@ -118,7 +118,7 @@ __interrupt void adcB1ISR(void)
     wheelie = (sensorPosition == 150);
 
     //Clear interrupt flag
-    ADC_clearInterruptStatus(ADCA_BASE, ADC_INT_NUMBER1);
+    ADC_clearInterruptStatus(ADCB_BASE, ADC_INT_NUMBER1);
 
     //Check for overflow.
     if(true == ADC_getInterruptOverflowStatus(ADCB_BASE, ADC_INT_NUMBER1))
