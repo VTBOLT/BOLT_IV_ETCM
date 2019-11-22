@@ -3,4 +3,7 @@ Release
 *.xdchelp
 config
 .launches
-/CPU1_RAM/
+CPU1_RAM/
+CPU1_FLASH/
+device/
+.settings
