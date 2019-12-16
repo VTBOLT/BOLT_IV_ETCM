@@ -8,13 +8,15 @@
 #ifndef DAC_ETCM_H_
 #define DAC_ETCM_H_
 
-#include "driverlib.h"
+#include "dac.h"
 
 #define DAC_BASE_ADDRESS DACA_BASE
+#define DAC_VREF 3.04
 
 void initDAC(void);
-void setDACVoltage(uint16_t value);
-void requestTorque(int torque);
+void setDACOutputVoltage(float value);
+void setDACOutputRaw(uint16_t request);
+void requestTorque(float torque);
 
 #endif /* DAC_ETCM_H_ */
 
