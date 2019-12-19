@@ -23,9 +23,9 @@
 // Included peripheral files
 #include "adc_etcm.h"
 #include "dac_etcm.h"
+// Temporary workaround
 #define __BSD_VISIBLE
 #include <math.h>
-
 
 //Function Prototypes.
 void init(void);
@@ -42,7 +42,7 @@ void main(void)
 
 void run(void)
 {
-    uint16_t torque_request = 0; // likely to change type
+    float torque_request = 5.0; // likely to change type
     float counter = 0;
 
     while (1)
@@ -56,9 +56,9 @@ void run(void)
         // Carry out any calculations
 
         // Send torque request to motor
-//        requestTorque(torque_request);
-        setDACOutputVoltage(sinf(counter) + 1.0);
-        counter += M_PI / 1000.0;
+        requestTorque(torque_request);
+//        setDACOutputVoltage(sinf(counter) + 1.0);
+//        counter += M_PI / 1000.0;
     }
 }
 

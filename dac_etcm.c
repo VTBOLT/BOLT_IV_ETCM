@@ -28,9 +28,6 @@ void initDAC(void)
     DEVICE_DELAY_US(10);
 }
 
-/**
- * Doesn't define
- */
 void setDACOutputRaw(uint16_t request) {
     DAC_setShadowValue(DAC_BASE_ADDRESS, request);
     DEVICE_DELAY_US(2);
@@ -46,5 +43,8 @@ void setDACOutputVoltage(float voltage) {
 //send torque request to motor controller
 void requestTorque(float torque)
 {
-    setDACOutputVoltage(torque);
+    // Scale torque -> raw DAC request
+    // Not scaling to voltage saves a few FP operations
+    uint16_t request = (torque / MAX_TORQUE) * DAC_BITS;
+    setDACOutputRaw(request);
 }
