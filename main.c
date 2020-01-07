@@ -105,7 +105,7 @@ void initADCSOC(void)
     ADC_clearInterruptStatus(ADCB_BASE, ADC_INT_NUMBER1);
 }
 
-//Create the interrupt for ADC A Interrupt 1
+//Create the interrupt for ADC B Interrupt 1
 __interrupt void adcB1ISR(void)
 {
     //Read the raw result
