@@ -34,6 +34,7 @@
 void init(void);
 void run(void);
 void initLookup(void);
+void CANtest(void);
 
 void main(void)
 {
@@ -59,6 +60,9 @@ void run(void)
 
         // Send torque request to motor
         requestTorque(torque_request);
+
+        // Send a test CANmsg
+        CANtest();
     }
 }
 
@@ -69,6 +73,7 @@ void init(void)
     initADC();
     initEPWM();
     initADCSOC();
+    initCAN();
 }
 
 //Initialize lookup tables
@@ -77,6 +82,25 @@ void initLookup(void)
     // Open file containing tables
 
     // Load tables into ROM
+}
+
+/*
+ * Send out a test message over CAN
+ * ID: 0x401
+ * TODO: Check pins
+ */
+void CANtest(void)
+{
+    uint16_t msg[8];
+    msg[0] = 0x01;
+    msg[1] = 0x23;
+    msg[2] = 0x45;
+    msg[3] = 0x67;
+    msg[4] = 0x89;
+    msg[5] = 0xAB;
+    msg[6] = 0xCD;
+    msg[7] = 0xEF;
+    CANA_transmitMsg1(msg, 8);
 }
 
 

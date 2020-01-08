@@ -79,14 +79,14 @@ a single CPU should be defined."
 //
 // CANA
 //
-#define DEVICE_GPIO_PIN_CANTXA      31U  // GPIO number for CANTXA
-#define DEVICE_GPIO_PIN_CANRXA      30U  // GPIO number for CANRXA
+#define DEVICE_GPIO_PIN_CANTXA      4U  // GPIO number for CANTXA
+#define DEVICE_GPIO_PIN_CANRXA      5U  // GPIO number for CANRXA
 
 //
 // CAN External Loopback
 //
-#define DEVICE_GPIO_CFG_CANRXA      GPIO_30_CANRXA  // "pinConfig" for CANA RX
-#define DEVICE_GPIO_CFG_CANTXA      GPIO_31_CANTXA  // "pinConfig" for CANA TX
+#define DEVICE_GPIO_CFG_CANRXA      GPIO_5_CANRXA  // "pinConfig" for CANA RX
+#define DEVICE_GPIO_CFG_CANTXA      GPIO_4_CANTXA  // "pinConfig" for CANA TX
 #define DEVICE_GPIO_CFG_CANRXB      GPIO_10_CANRXB  // "pinConfig" for CANB RX
 #define DEVICE_GPIO_CFG_CANTXB      GPIO_8_CANTXB   // "pinConfig" for CANB TX
 
