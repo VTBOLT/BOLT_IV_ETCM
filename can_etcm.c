@@ -29,6 +29,11 @@ void initCAN(void)
     Device_initGPIO();                          // this may be happening elsewhere
     GPIO_setPinConfig (DEVICE_GPIO_CFG_CANRXA);
     GPIO_setPinConfig (DEVICE_GPIO_CFG_CANTXA);
+    // configure silent pin
+    GPIO_setPinConfig (DEVICE_GPIO_CFG_CANSILENTA);
+    GPIO_setPadConfig(CANA_SILENTPIN, GPIO_PIN_TYPE_STD);
+    GPIO_writePin(CANA_SILENTPIN, 0);       // put into normal mode initially
+    GPIO_setDirectionMode(CANA_SILENTPIN, GPIO_DIR_MODE_OUT);
 
     //
     // Initialize the CAN_A controller

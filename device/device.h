@@ -81,6 +81,8 @@ a single CPU should be defined."
 //
 #define DEVICE_GPIO_PIN_CANTXA      4U  // GPIO number for CANTXA
 #define DEVICE_GPIO_PIN_CANRXA      5U  // GPIO number for CANRXA
+#define DEVICE_GPIO_CFG_CANSILENTA  GPIO_24_GPIO24  // GPIO number for CANA SILENT
+#define CANA_SILENTPIN                24
 
 //
 // CAN External Loopback
