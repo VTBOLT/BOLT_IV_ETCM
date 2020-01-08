@@ -9,6 +9,10 @@
 //  Will Campbell
 //  Quinton Miller
 //  Josh Collins
+//  Tyler Shaffer
+//#############################################################################
+// Tyler Shaffer, 1/8/2020: Imported can_etcm.h, noticed that a new version of
+// C2000ware exists also.
 //
 //#############################################################################
 //Notes:
@@ -21,8 +25,9 @@
 //#############################################################################
 
 // Included peripheral files
-#include "adc_etcm.c"
-#include "dac_etcm.c"
+#include <can_etcm.h>
+#include "adc_etcm.h"
+#include "dac_etcm.h"
 
 
 //Function Prototypes.

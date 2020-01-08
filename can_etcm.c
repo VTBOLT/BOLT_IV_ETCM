@@ -11,14 +11,7 @@
 //
 // Included Files
 //
-#include "driverlib.h"
-#include "device.h"
-#include "CAN.h"
-
-//
-// Globals
-//
-uint16_t txMsgData[8];
+#include <can_etcm.h>
 
 /**
  * CAN Init
