@@ -13,6 +13,7 @@
 //#############################################################################
 // Tyler Shaffer, 1/8/2020: Imported can_etcm.h, noticed that a new version of
 // C2000ware exists also.
+// Tyler Shaffer, 1/8/2020: Checked CAN_A pins.
 //
 //#############################################################################
 //Notes:
@@ -87,7 +88,6 @@ void initLookup(void)
 /*
  * Send out a test message over CAN
  * ID: 0x401
- * TODO: Check pins
  */
 void CANtest(void)
 {
