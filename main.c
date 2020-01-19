@@ -39,6 +39,8 @@ void CANtest(void);
 void LEDflash(void);
 void initGPIO(void);
 void getIMUdata();
+__interrupt void SCI_ISR(void);
+void initSCIinterrupts(void);
 
 void main(void)
 {
@@ -68,12 +70,12 @@ void run(void)
         //CANtest();
 
         // Flash the blue LED
-        LEDflash();
+        //LEDflash();
 
         // uart test
         //SCItest();
 
-       getIMUdata();
+       //getIMUdata();
 
     }
 }
@@ -88,6 +90,7 @@ void init(void)
     Device_init();
     initGPIO();     // do not move
 
+
     initLookup();
     //initADC();
     //initEPWM();
@@ -95,6 +98,7 @@ void init(void)
     initCAN();
     //initSCI();
     initSCIFIFO();
+    initSCIinterrupts();
 }
 
 //Initialize lookup tables
@@ -135,6 +139,8 @@ void LEDflash(void){
 /**
  * Module GPIO inits are in their respective .c file.
  */
+#define GPIO_CFG_SYNC_IN GPIO_67_GPIO67
+#define GPIO_SYNC_IN 67
 void initGPIO(void){
     // GPIOs
     Device_initGPIO();      // must be called first?
@@ -142,6 +148,12 @@ void initGPIO(void){
     GPIO_setPinConfig(GPIO_CFG_BLUE_LED);
     GPIO_setPadConfig(GPIO_BLUE_LED, GPIO_PIN_TYPE_STD);        // Push/pull
     GPIO_setDirectionMode(GPIO_BLUE_LED, GPIO_DIR_MODE_OUT);
+
+    // SYNC_IN
+    GPIO_setPinConfig(GPIO_CFG_SYNC_IN);
+    GPIO_setPadConfig(GPIO_SYNC_IN, GPIO_PIN_TYPE_STD);
+    GPIO_setDirectionMode(GPIO_SYNC_IN, GPIO_DIR_MODE_OUT);
+    GPIO_writePin(GPIO_SYNC_IN, 0); // default state
 }
 
 
@@ -167,6 +179,9 @@ void getIMUdata(){
     SCI_enableInterrupt(SCI_BASE, SCI_INT_RXFF);
 
     // strobe SYNC_IN GPIO
+    GPIO_writePin(GPIO_SYNC_IN, 1);
+    // reset SYNC_IN GPIO
+    GPIO_writePin(GPIO_SYNC_IN, 0);
 
     // wait for buffer fill (INT flag)
     while((HWREGH(SCI_BASE + SCI_O_FFRX) & SCI_FFRX_RXFFINT) != SCI_FFRX_RXFFINT);
@@ -190,6 +205,38 @@ void getIMUdata(){
         // loop again
     }
 
+
+
+}
+
+void initSCIinterrupts(void){
+    //
+    Interrupt_initModule();
+
+    Interrupt_initVectorTable();
+
+    // enable CPU interrupts
+    Interrupt_enableMaster();
+
+    // set SCI RX interrupt handler (ISR)
+    Interrupt_register(INT_SCIC_RX, &SCI_ISR);
+
+    // enable SCI RX interrupt
+    Interrupt_enable(INT_SCIC_RX);
+    EINT;
+    ERTM;
+}
+
+__interrupt void SCI_ISR(void){
+    //LEDflash();
+    GPIO_writePin(GPIO_BLUE_LED, 1);    // turn the LED off
+
+    SCI_clearInterruptStatus(SCIC_BASE, SCI_INT_RXFF);
+
+         //
+         // Issue PIE ack
+         //
+         Interrupt_clearACKGroup(INTERRUPT_ACK_GROUP9);
 
 }
 

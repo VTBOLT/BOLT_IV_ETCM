@@ -113,8 +113,12 @@ void SCIinitFIFO(void)
     SCI_clearInterruptStatus(SCI_BASE, SCI_INT_TXFF);
 
     SCI_enableFIFO(SCI_BASE);
+    // configure level at which INT flag is thrown
+    // RX1 = 1 byte in buffer
+    SCI_setFIFOInterruptLevel(SCI_BASE, SCI_FIFO_TX1, SCI_FIFO_RX1);
 
-    SCI_setFIFOInterruptLevel(SCI_BASE, SCI_FIFO_TX0, SCI_FIFO_RX4);
+    // enable RX_FIFO INT
+    SCI_enableInterrupt(SCI_BASE, SCI_INT_RXFF);
 
     SCI_clearInterruptStatus(SCIA_BASE, SCI_INT_RXFF);
 }
