@@ -29,7 +29,7 @@
 #include <can_etcm.h>
 #include "adc_etcm.h"
 #include "dac_etcm.h"
-
+#include <uart_etcm.h>
 
 //Function Prototypes.
 void init(void);
@@ -38,6 +38,7 @@ void initLookup(void);
 void CANtest(void);
 void LEDflash(void);
 void initGPIO(void);
+void getIMUdata();
 
 void main(void)
 {
@@ -50,7 +51,6 @@ void main(void)
 void run(void)
 {
     int torque_request = 0; // likely to change type
-
     while (1)
     {
         // Pull in sensor data to local variables
@@ -65,10 +65,16 @@ void run(void)
         requestTorque(torque_request);
 
         // Send a test CANmsg
-        CANtest();
+        //CANtest();
 
         // Flash the blue LED
         LEDflash();
+
+        // uart test
+        //SCItest();
+
+       getIMUdata();
+
     }
 }
 
@@ -83,10 +89,12 @@ void init(void)
     initGPIO();     // do not move
 
     initLookup();
-    initADC();
-    initEPWM();
-    initADCSOC();
+    //initADC();
+    //initEPWM();
+    //initADCSOC();
     initCAN();
+    //initSCI();
+    initSCIFIFO();
 }
 
 //Initialize lookup tables
@@ -112,7 +120,7 @@ void CANtest(void)
     msg[5] = 0xAB;
     msg[6] = 0xCD;
     msg[7] = 0xEF;
-    CANA_transmitMsg1(msg, 4);
+    CANA_transmitMsg(msg, 4, 1);
 }
 
 void LEDflash(void){
@@ -134,6 +142,55 @@ void initGPIO(void){
     GPIO_setPinConfig(GPIO_CFG_BLUE_LED);
     GPIO_setPadConfig(GPIO_BLUE_LED, GPIO_PIN_TYPE_STD);        // Push/pull
     GPIO_setDirectionMode(GPIO_BLUE_LED, GPIO_DIR_MODE_OUT);
+}
+
+
+#define IMU_FRAME_SIZE 18
+void getIMUdata(){
+    // data container
+    volatile uint8_t dataBuffer[IMU_FRAME_SIZE]; // 18 byte frames
+    volatile bool IMUframeRcvd = false;
+
+    // make sure FIFO is enabled
+    if (!SCI_isFIFOEnabled(SCI_BASE)){
+        // return error
+        return;
+    }
+    // clear RX_FIFO
+    SCI_resetRxFIFO(SCI_BASE);
+
+    // configure level at which INT flag is thrown
+    // RX1 = 1 byte in buffer
+    SCI_setFIFOInterruptLevel(SCI_BASE, SCI_FIFO_TX1, SCI_FIFO_RX1);
+
+    // enable RX_FIFO INT
+    SCI_enableInterrupt(SCI_BASE, SCI_INT_RXFF);
+
+    // strobe SYNC_IN GPIO
+
+    // wait for buffer fill (INT flag)
+    while((HWREGH(SCI_BASE + SCI_O_FFRX) & SCI_FFRX_RXFFINT) != SCI_FFRX_RXFFINT);
+
+    // get data one byte at a time
+    volatile uint8_t dataIndex = 0;
+    while(!IMUframeRcvd){
+        // check buffer
+        while(SCI_getRxFIFOStatus(SCI_BASE) == SCI_FIFO_RX0);    // wait for data (will get stuck here)
+        // grab byte
+        dataBuffer[dataIndex] = SCI_readCharNonBlocking(SCI_BASE);
+        dataIndex++;
+        // check amount of data bytes received
+        if (dataIndex >= IMU_FRAME_SIZE){
+            // send buffer data over CAN
+            CANA_transmitMsg(dataBuffer, 8, 1);
+            CANA_transmitMsg(dataBuffer+8, 8, 2);   // increment pointer
+            CANA_transmitMsg(dataBuffer+16, 2, 3);   // increment pointer
+            return;
+        }
+        // loop again
+    }
+
+
 }
 
 //

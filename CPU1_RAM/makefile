@@ -14,6 +14,7 @@ ORDERED_OBJS += \
 "./can_etcm.obj" \
 "./dac_etcm.obj" \
 "./main.obj" \
+"./uart_etcm.obj" \
 "./device/F2837xD_CodeStartBranch.obj" \
 "./device/device.obj" \
 "../2837xD_RAM_lnk_cpu1.cmd" \
@@ -162,8 +163,8 @@ empty_driverlib_project.hex: $(EXE_OUTPUTS)
 # Other Targets
 clean:
 	-$(RM) $(BIN_OUTPUTS__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "adc_etcm.obj" "can_etcm.obj" "dac_etcm.obj" "main.obj" "device\F2837xD_CodeStartBranch.obj" "device\device.obj" 
-	-$(RM) "adc_etcm.d" "can_etcm.d" "dac_etcm.d" "main.d" "device\device.d" 
+	-$(RM) "adc_etcm.obj" "can_etcm.obj" "dac_etcm.obj" "main.obj" "uart_etcm.obj" "device\F2837xD_CodeStartBranch.obj" "device\device.obj" 
+	-$(RM) "adc_etcm.d" "can_etcm.d" "dac_etcm.d" "main.d" "uart_etcm.d" "device\device.d" 
 	-$(RM) "device\F2837xD_CodeStartBranch.d" 
 	-@echo 'Finished clean'
 	-@echo ' '

@@ -15,36 +15,42 @@ C_SRCS += \
 ../adc_etcm.c \
 ../can_etcm.c \
 ../dac_etcm.c \
-../main.c 
+../main.c \
+../uart_etcm.c 
 
 C_DEPS += \
 ./adc_etcm.d \
 ./can_etcm.d \
 ./dac_etcm.d \
-./main.d 
+./main.d \
+./uart_etcm.d 
 
 OBJS += \
 ./adc_etcm.obj \
 ./can_etcm.obj \
 ./dac_etcm.obj \
-./main.obj 
+./main.obj \
+./uart_etcm.obj 
 
 OBJS__QUOTED += \
 "adc_etcm.obj" \
 "can_etcm.obj" \
 "dac_etcm.obj" \
-"main.obj" 
+"main.obj" \
+"uart_etcm.obj" 
 
 C_DEPS__QUOTED += \
 "adc_etcm.d" \
 "can_etcm.d" \
 "dac_etcm.d" \
-"main.d" 
+"main.d" \
+"uart_etcm.d" 
 
 C_SRCS__QUOTED += \
 "../adc_etcm.c" \
 "../can_etcm.c" \
 "../dac_etcm.c" \
-"../main.c" 
+"../main.c" \
+"../uart_etcm.c" 
 
 

@@ -12,9 +12,14 @@
 #include "device.h"
 
 #define CANA_BAUD 500000        // CANA baud rate in bps
+
+#define TX_MSG_OBJ_BASE_ID 0x400   // TX message object ID.
+
 #define TX_MSG_OBJ_1 1          // First TX message object. Can have up to 32 objects in total.
 #define TX_MSG_OBJ_1_ID 0x401   // First TX message object ID.
+
 #define MAILBOX1_MASK 0x0001    // Mailbox = msg object
+
 #define CAN_MODULE_BASE CANB_BASE
 #define DEFAULT_CAN_MSG_LEN 8
 
@@ -46,6 +51,8 @@
  */
 void initCAN(void);
 
-bool CANA_transmitMsg1(uint16_t *msgData, uint16_t msgLEN);
+bool CANA_transmitMsg(uint16_t *msgData, uint16_t msgLEN, uint16_t mailbox);
+//bool CANA_transmitMsg2(uint16_t *msgData, uint16_t msgLEN);
+//bool CANA_transmitMsg3(uint16_t *msgData, uint16_t msgLEN);
 
 #endif /* CAN_ETCM_H_ */
