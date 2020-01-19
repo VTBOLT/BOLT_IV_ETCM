@@ -67,7 +67,8 @@ void initCAN(void)
 }
 
 /**
- * CANA_transmitMsg1(uint16_t *msgData, uint16_t msgLEN) transmits a CAN V2.0A message onto the bus using module "A", ID 0x401
+ * CANA_transmitMsg1(uint16_t *msgData, uint16_t msgLEN, uint16_t mailbox) transmits a CAN V2.0A message
+ * onto the bus using module "A", ID 0x400 + mailbox number
  *
  * This function will return false if a bus error passive state is detected.
  * No action is taken by the code for this state. The hardware will automatically
@@ -77,34 +78,40 @@ void initCAN(void)
  *
  * @param msgData A pointer to a uint16 array containing the message data to be transmitted. Each index can not have over 8 bits of data.
  * @param msgLEN  Integer in the range of 0-8. Indicates message length in bytes.
+ * @param mailbox The mailbox number. 1-32
  *
  * @return True if no bus error (likely successful transmission).
  */
-bool CANA_transmitMsg1(uint16_t *msgData, uint16_t msgLEN)
+bool CANA_transmitMsg(uint16_t *msgData, uint16_t msgLEN, uint16_t mailbox)
 {
     //bool CANTXerror = false;
     uint32_t rxErrorCount = 0;
     uint32_t txErrorCount = 0;
 
-    // check for mailbox size change and update if needed.
+    // check for mailbox number or size change and update if needed.
     static uint16_t msgLENold = DEFAULT_CAN_MSG_LEN;
-    if (msgLEN != msgLENold)
+    static uint16_t mailboxOld = MAILBOX1_MASK;
+    if ((msgLEN != msgLENold) | (mailbox != mailboxOld))
     {
-        CAN_setupMessageObject(CAN_MODULE_BASE, TX_MSG_OBJ_1, TX_MSG_OBJ_1_ID,
+        CAN_setupMessageObject(CAN_MODULE_BASE, mailbox, (TX_MSG_OBJ_BASE_ID + mailbox),
                                CAN_MSG_FRAME_STD, CAN_MSG_OBJ_TYPE_TX, 0,
                                CAN_MSG_OBJ_NO_FLAGS,
                                msgLEN);
     }
     msgLENold = msgLEN;
+    mailboxOld = mailbox;
 
     // Ensure that message object 1 is not pending transmission. Prevents overwrite.
     // See page 2493 of tech ref manual and "driverlib/inc/hw_can.h"
-    bool mailbox1TxRqst = HWREGH(
-            CAN_MODULE_BASE + CAN_O_TXRQ_21) && MAILBOX1_MASK;
-    if (!mailbox1TxRqst)
+    /*uint32_t mailboxBit = 1;
+    if (mailbox > 1){
+        mailboxBit = mailboxBit << mailbox-1;
+    }
+    bool mailboxTxRqst = HWREGH(CAN_MODULE_BASE + CAN_O_TXRQ_21) && mailboxBit;
+    if (!mailboxTxRqst)
     {
         // message not pending transmission
-        CAN_sendMessage(CAN_MODULE_BASE, TX_MSG_OBJ_1_ID, msgLEN, msgData);
+        CAN_sendMessage(CAN_MODULE_BASE, TX_MSG_OBJ_BASE_ID + mailbox, msgLEN, msgData);
     }
     else
     {
@@ -113,6 +120,13 @@ bool CANA_transmitMsg1(uint16_t *msgData, uint16_t msgLEN)
         // Future code could possibly check all 32 mailboxes find one to use. Bear in mind
         // the descending priority.
     }
+    */
+
+    // Wait for previous mailboxes to be transmitted
+    // Can we queue??
+    while (HWREGH(CAN_MODULE_BASE + CAN_O_TXRQ_21));
+    CAN_sendMessage(CAN_MODULE_BASE, TX_MSG_OBJ_BASE_ID + mailbox, msgLEN, msgData);
+
 
     // Check for CAN bus error passive state (true). Error counts are not currently handled.
     bool CANTXerror = CAN_getErrorCount(CAN_MODULE_BASE, &rxErrorCount,
