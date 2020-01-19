@@ -12,4 +12,6 @@
 	<templateProperties value="id=empty_driverlib_project.projectspec.empty_driverlib_project"/>
 	<origin value="C:\ti\C2000Ware_2_00_00_03_Software\driverlib\f2837xd\examples\cpu1\empty_projects\CCS\empty_driverlib_project.projectspec"/>
 	<filesToOpen value=""/>
+	<connection value="common/targetdb/connections/TIXDS100v2_Connection.xml"/>
+	<isTargetManual value="false"/>
 </projectOptions>

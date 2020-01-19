@@ -36,6 +36,7 @@ void init(void);
 void run(void);
 void initLookup(void);
 void CANtest(void);
+void LEDflash(void);
 
 void main(void)
 {
@@ -64,12 +65,27 @@ void run(void)
 
         // Send a test CANmsg
         CANtest();
+
+        // Flash the blue LED
+        LEDflash();
     }
 }
 
 //Initialize, runs all initialization functions
+#define GPIO_CFG_BLUE_LED GPIO_31_GPIO31
+#define GPIO_BLUE_LED 31
+
 void init(void)
 {
+    // Initialize device clock and peripherals
+    Device_init();
+    // GPIOs
+    Device_initGPIO();      // must be called first?
+    // BLUE_LED
+    GPIO_setPinConfig(GPIO_CFG_BLUE_LED);
+    GPIO_setPadConfig(GPIO_BLUE_LED, GPIO_PIN_TYPE_STD);        // Push/pull
+    GPIO_setDirectionMode(GPIO_BLUE_LED, GPIO_DIR_MODE_OUT);
+
     initLookup();
     initADC();
     initEPWM();
@@ -103,7 +119,14 @@ void CANtest(void)
     CANA_transmitMsg1(msg, 8);
 }
 
-
+void LEDflash(void){
+    GPIO_writePin(GPIO_BLUE_LED, 1);
+    // pause for a bit
+    unsigned long index = 0; // why do I have to declare this here?
+    for (index = 0; index <= 1000000; index++);
+    GPIO_writePin(GPIO_BLUE_LED, 0);
+    for (index = 0; index <= 1000000; index++);
+}
 
 //
 // End of File

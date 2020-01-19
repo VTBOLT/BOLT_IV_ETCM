@@ -27,7 +27,7 @@ void initCAN(void)
     // Initialize GPIO and configure GPIO pins for CANTX/CANRX
     // on module A
     //
-    Device_initGPIO();                          // this may be happening elsewhere
+    //Device_initGPIO();                          // this may be happening elsewhere
     GPIO_setPinConfig (DEVICE_GPIO_CFG_CANRXA);
     GPIO_setPinConfig (DEVICE_GPIO_CFG_CANTXA);
     // configure silent pin

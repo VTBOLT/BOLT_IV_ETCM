@@ -1,1 +1,1 @@
-"./adc_etcm.obj" "./imu_etcm.obj" "./main.obj" "./device/F2837xD_CodeStartBranch.obj" "./device/device.obj" "../2837xD_RAM_lnk_cpu1.cmd" "C:/ti/C2000Ware_2_00_00_03_Software/driverlib/f2837xd/driverlib/ccs/Debug/driverlib.lib" -llibc.a 
+"./adc_etcm.obj" "./can_etcm.obj" "./dac_etcm.obj" "./main.obj" "./device/F2837xD_CodeStartBranch.obj" "./device/device.obj" "../2837xD_RAM_lnk_cpu1.cmd" "C:/ti/C2000Ware_2_01_00_00_Software/driverlib/f2837xd/driverlib/ccs/Release/driverlib.lib" -llibc.a 
