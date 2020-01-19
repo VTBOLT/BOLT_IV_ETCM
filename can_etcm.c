@@ -6,6 +6,7 @@
  *
  * Tyler Shaffer, 1/7/2020: Created R0
  * Tyler Shaffer, 1/8/2020: Added basic error and sanity checking. R0 -> R1
+ * Tyler Shaffer, 1/19/2020: Updated to use CANB for just launchpad, no PCB. Tested and working.
  *
  */
 
@@ -28,8 +29,8 @@ void initCAN(void)
     // on module A
     //
     //Device_initGPIO();                          // this may be happening elsewhere
-    GPIO_setPinConfig (DEVICE_GPIO_CFG_CANRXA);
-    GPIO_setPinConfig (DEVICE_GPIO_CFG_CANTXA);
+    GPIO_setPinConfig (DEVICE_GPIO_CFG_CANRXB);
+    GPIO_setPinConfig (DEVICE_GPIO_CFG_CANTXB);
     // configure silent pin
     GPIO_setPinConfig (DEVICE_GPIO_CFG_CANSILENTA);
     GPIO_setPadConfig(CANA_SILENTPIN, GPIO_PIN_TYPE_STD);
@@ -39,8 +40,8 @@ void initCAN(void)
     //
     // Initialize the CAN_A controller
     //
-    CAN_initModule (CANA_BASE);
-    CAN_setBitRate(CANA_BASE, DEVICE_SYSCLK_FREQ, CANA_BAUD, 16);
+    CAN_initModule (CAN_MODULE_BASE);
+    CAN_setBitRate(CAN_MODULE_BASE, DEVICE_SYSCLK_FREQ, CANA_BAUD, 16);
 
     //
     // Initialize the transmit message object used for sending CAN messages on ID 0x401.
@@ -55,14 +56,14 @@ void initCAN(void)
     //      Message Object Flags: None
     //      Message Data Length: 8
     //
-    CAN_setupMessageObject(CANA_BASE, TX_MSG_OBJ_1, TX_MSG_OBJ_1_ID,
+    CAN_setupMessageObject(CAN_MODULE_BASE, TX_MSG_OBJ_1, TX_MSG_OBJ_1_ID,
                            CAN_MSG_FRAME_STD, CAN_MSG_OBJ_TYPE_TX, 0,
                            CAN_MSG_OBJ_NO_FLAGS, 8);
 
     //
     // Start CAN module A operations
     //
-    CAN_startModule(CANA_BASE);
+    CAN_startModule(CAN_MODULE_BASE);
 }
 
 /**
@@ -87,10 +88,10 @@ bool CANA_transmitMsg1(uint16_t *msgData, uint16_t msgLEN)
 
     // Ensure that message object 1 is not pending transmission. Prevents overwrite.
     // See page 2493 of tech ref manual and "driverlib/inc/hw_can.h"
-    bool mailbox1TxRqst = HWREGH(CANA_BASE + CAN_O_TXRQ_21) && MAILBOX1_MASK;
+    bool mailbox1TxRqst = HWREGH(CAN_MODULE_BASE + CAN_O_TXRQ_21) && MAILBOX1_MASK;
     if (!mailbox1TxRqst){
         // message not pending transmission
-        CAN_sendMessage(CANA_BASE, TX_MSG_OBJ_1_ID, msgLEN, msgData);
+        CAN_sendMessage(CAN_MODULE_BASE, TX_MSG_OBJ_1_ID, msgLEN, msgData);
     } else {
         // Signal to calling that current message could not be transmitted
         // due to already pending message.
@@ -99,7 +100,7 @@ bool CANA_transmitMsg1(uint16_t *msgData, uint16_t msgLEN)
     }
 
     // Check for CAN bus error passive state (true). Error counts are not currently handled.
-    bool CANTXerror = CAN_getErrorCount(CANA_BASE, &rxErrorCount, &txErrorCount);
+    bool CANTXerror = CAN_getErrorCount(CAN_MODULE_BASE, &rxErrorCount, &txErrorCount);
 
     //
     // Poll TxOk bit in CAN_ES register to check completion of transmission
