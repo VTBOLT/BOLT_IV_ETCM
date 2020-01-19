@@ -29,7 +29,7 @@
 #include <can_etcm.h>
 #include "adc_etcm.h"
 #include "dac_etcm.h"
-
+#include <uart_etcm.h>
 
 //Function Prototypes.
 void init(void);
@@ -50,6 +50,7 @@ void main(void)
 void run(void)
 {
     int torque_request = 0; // likely to change type
+    SCI_RxFIFOLevel FIFOlength = 0;
 
     while (1)
     {
@@ -65,10 +66,29 @@ void run(void)
         requestTorque(torque_request);
 
         // Send a test CANmsg
-        CANtest();
+        //CANtest();
 
         // Flash the blue LED
         LEDflash();
+
+        // uart test
+        //SCItest();
+
+        FIFOlength = SCI_getRxFIFOStatus(SCI_BASE);
+        //uint16_t UARTdata[FIFOlength];
+        //uint16_t UART = SCI_readCharBlockingFIFO(SCI_BASE);
+
+        if (FIFOlength >= SCI_FIFO_RX7){
+            uint16_t UARTdata[8];
+            SCIreadFifo(UARTdata, 8);
+            requestTorque(torque_request);  // dummy debug
+            CANA_transmitMsg1(UARTdata, 8);
+        }
+        //uint16_t rcvd = SCI_readCharBlockingFIFO(SCI_BASE);
+        bool FIFOstat = SCI_isFIFOEnabled(SCI_BASE);
+        // echo back
+        //SCI_writeCharBlockingNonFIFO(SCI_BASE, rcvd);
+
     }
 }
 
@@ -83,10 +103,12 @@ void init(void)
     initGPIO();     // do not move
 
     initLookup();
-    initADC();
-    initEPWM();
-    initADCSOC();
+    //initADC();
+    //initEPWM();
+    //initADCSOC();
     initCAN();
+    //initSCI();
+    initSCIFIFO();
 }
 
 //Initialize lookup tables
