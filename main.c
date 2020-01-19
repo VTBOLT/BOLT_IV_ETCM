@@ -1,5 +1,3 @@
-
-
 /**
  * main.c
  */
@@ -8,21 +6,16 @@
 #include "device.h"
 #include "string.h"
 
-
 //Function Prototypes.
-__interrupt void scibRXFIFOISR(void);
+
 __interrupt void scibTXFIFOISR(void);
+__interrupt void readIMUData(void);
 void initSCIBFIFO(void);
-void error(void);
+void toggleSyncIn(void);
+void enableGPIO(void);
 
-//send data
-uint16_t sDataB[2];
-
-//receive data
-uint16_t rDataB[2];
-
-//check the received data;
-uint16_t rDataPointB;
+float yaw;
+float pitch;
 
 
 
@@ -30,33 +23,29 @@ uint16_t rDataPointB;
 int main(void)
 {
 
-    packetCount = 0;
-
-
     //Initialize device clock and peripherals.
     Device_init();
 
     //Disable pin locks and internal pullups
     Device_initGPIO();
 
-
     // GPIO18 is the SCI Rx pin.
     //
     GPIO_setMasterCore(18, GPIO_CORE_CPU1);
-    GPIO_setPinConfig(GPIO_18_SCIRXDB);
-    GPIO_setDirectionMode(18, GPIO_DIR_MODE_IN);
+    GPIO_setPinConfig(GPIO_18_SCITXDB);
+    GPIO_setDirectionMode(18, GPIO_DIR_MODE_OUT);
     GPIO_setPadConfig(18, GPIO_PIN_TYPE_STD);
     GPIO_setQualificationMode(18, GPIO_QUAL_ASYNC);
-
 
     // GPIO19 is the SCI Tx pin.
     //
     GPIO_setMasterCore(19, GPIO_CORE_CPU1);
-    GPIO_setPinConfig(GPIO_19_SCITXDB);
-    GPIO_setDirectionMode(19, GPIO_DIR_MODE_OUT);
+    GPIO_setPinConfig(GPIO_19_SCIRXDB);
+    GPIO_setDirectionMode(19, GPIO_DIR_MODE_IN);
     GPIO_setPadConfig(19, GPIO_PIN_TYPE_STD);
     GPIO_setQualificationMode(19, GPIO_QUAL_ASYNC);
 
+    enableGPIO();
     //
     // Initialize PIE and clear PIE registers. Disables CPU interrupts.
     //
@@ -71,83 +60,51 @@ int main(void)
     // Enables CPU interrupts
     //
 
-    Interrupt_register(INT_SCIB_RX, scibRXFIFOISR);
-    Interrupt_register(INT_SCIB_TX, scibTXFIFOISR);
+    Interrupt_register(INT_SCIB_RX, readIMUData);
 
-
-
-    //Initialize device peripherals.
+    //Initialize the buffer.
     initSCIBFIFO();
-
-    for(i = 0; i < 2; i++)
-    {
-        sDataB[i] = i;
-    }
-
-    rDataPointB = sDataB[0];
 
 
     Interrupt_enable(INT_SCIB_RX);
-    Interrupt_enable(INT_SCIB_TX);
 
-    Interrupt_clearACKGroup(INTERRUPT_ACK_GROUP9)
+    Interrupt_clearACKGroup(INTERRUPT_ACK_GROUP9);
 
-    //Enable global interrupt and realtime interrupt
+    //
+    // Enable Global Interrupt (INTM) and realtime interrupt (DBGM)
+    //
     EINT;
     ERTM;
 
-    for(;;);
-
-}
-void error(void)
-{
-    Example_Fail = 1;
-    asm("     ESTOP0"); // Test failed!! Stop!
-    for (;;);
-}
-
-//Transmit ISR
-__interrupt void scibTXFIFOISR(void);
-{
-    uint16_t i;
-
-    SCI_writeCharArray(SCIB_BASE, sDataB, 2);
-
     //
-    // Increment send data for next cycle
+    // IDLE loop. Just sit and loop forever (optional):
     //
-    for(i = 0; i < 2; i++)
+
+    uint16_t IMUDataFrame[18];
+    for (;;)
     {
-        sDataB[i] = (sDataB[i] + 1) & 0x00FF;
+        toggleSyncIn();
+
+
+        SCI_readCharArray(SCIB_BASE, IMUDataFrame, 18);
     }
-
-    SCI_clearInterruptStatus(SCIB_BASE, SCI_INT_TXFF);
-
-    //
-    // Issue PIE ACK
-    //
-    Interrupt_clearACKGroup(INTERRUPT_ACK_GROUP9);
 }
 
-//Receive ISR
-__interrupt void sciaRXFIFOISR(void)
+void toggleSyncIn(void){
+    GPIO_writePin(67, 1);
+    GPIO_writePin(67, 0);
+}
+
+//Read the data that was received from the IMU
+__interrupt void readIMUData(void)
 {
-    uint16_t i;
 
-    SCI_readCharArray(SCIB_BASE, rDataB, 2);
+    //Variable to store a data frame.
+    uint16_t IMUDataFrame[18];
 
-    //
-    // Check received data
-    //
-    for(i = 0; i < 2; i++)
-    {
-        if(rDataB[i] != ((rDataPointB + i) & 0x00FF))
-        {
-            error();
-        }
-    }
+    SCI_readCharArray(SCIB_BASE, IMUDataFrame, 4);
 
-    rDataPointB = (rDataPointB + 1) & 0x00FF;
+
 
     SCI_clearOverflowStatus(SCIB_BASE);
 
@@ -160,16 +117,23 @@ __interrupt void sciaRXFIFOISR(void)
 
 }
 
-void initSCIBFIFO(){
+void enableGPIO()
+{
+    GPIO_setPadConfig(67, GPIO_PIN_TYPE_PULLUP); //Enable pullup on GPIO67
+    GPIO_setPinConfig(GPIO_67_GPIO67);
+    GPIO_setDirectionMode(67, GPIO_DIR_MODE_OUT);
+}
 
+void initSCIBFIFO()
+{
     //
-    // 8 char bits, 1 stop bit, no parity. Baud rate is 9600.
+    // 8 char bits, 1 stop bit, no parity. Baud rate is 115200.
     //
     SCI_setConfig(SCIB_BASE, DEVICE_LSPCLK_FREQ, 115200, (SCI_CONFIG_WLEN_8 |
-                                                        SCI_CONFIG_STOP_ONE |
-                                                        SCI_CONFIG_PAR_NONE));
+    SCI_CONFIG_STOP_ONE | SCI_CONFIG_PAR_NONE));
+
     SCI_enableModule(SCIB_BASE);
-    SCI_enableLoopback(SCIB_BASE);
+    //SCI_enableLoopback(SCIB_BASE);
     SCI_resetChannels(SCIB_BASE);
     SCI_enableFIFO(SCIB_BASE);
 
@@ -179,19 +143,17 @@ void initSCIBFIFO(){
     SCI_enableInterrupt(SCIB_BASE, (SCI_INT_RXFF | SCI_INT_TXFF));
     SCI_disableInterrupt(SCIB_BASE, SCI_INT_RXERR);
 
-    SCI_setFIFOInterruptLevel(SCBA_BASE, SCI_FIFO_TX2, SCI_FIFO_RX2);
+    SCI_setFIFOInterruptLevel(SCIB_BASE, SCI_FIFO_TX2, SCI_FIFO_RX4);
     SCI_performSoftwareReset(SCIB_BASE);
 
     SCI_resetTxFIFO(SCIB_BASE);
     SCI_resetRxFIFO(SCIB_BASE);
 
 #ifdef AUTOBAUD
-    //
-    // Perform an autobaud lock.
-    // SCI expects an 'a' or 'A' to lock the baud rate.
-    //
+//
+// Perform an autobaud lock.
+// SCI expects an 'a' or 'A' to lock the baud rate.
+//
     SCI_lockAutobaud(SCIB_BASE);
 #endif
-
-
 }
