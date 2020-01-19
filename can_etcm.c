@@ -58,7 +58,7 @@ void initCAN(void)
     //
     CAN_setupMessageObject(CAN_MODULE_BASE, TX_MSG_OBJ_1, TX_MSG_OBJ_1_ID,
                            CAN_MSG_FRAME_STD, CAN_MSG_OBJ_TYPE_TX, 0,
-                           CAN_MSG_OBJ_NO_FLAGS, 8);
+                           CAN_MSG_OBJ_NO_FLAGS, DEFAULT_CAN_MSG_LEN);
 
     //
     // Start CAN module A operations
@@ -67,13 +67,13 @@ void initCAN(void)
 }
 
 /**
- * CANA_transmitMsg1 transmits a CAN V2.0A message onto the bus using module "A", ID 0x401
+ * CANA_transmitMsg1(uint16_t *msgData, uint16_t msgLEN) transmits a CAN V2.0A message onto the bus using module "A", ID 0x401
  *
  * This function will return false if a bus error passive state is detected.
  * No action is taken by the code for this state. The hardware will automatically
  * handle an active error state by disabling the CAN TX/RX (bus off).
  *
- * Automatic retransmission in enabled by default.
+ * Automatic retransmission is enabled by default.
  *
  * @param msgData A pointer to a uint16 array containing the message data to be transmitted. Each index can not have over 8 bits of data.
  * @param msgLEN  Integer in the range of 0-8. Indicates message length in bytes.
@@ -86,13 +86,28 @@ bool CANA_transmitMsg1(uint16_t *msgData, uint16_t msgLEN)
     uint32_t rxErrorCount = 0;
     uint32_t txErrorCount = 0;
 
+    // check for mailbox size change and update if needed.
+    static uint16_t msgLENold = DEFAULT_CAN_MSG_LEN;
+    if (msgLEN != msgLENold)
+    {
+        CAN_setupMessageObject(CAN_MODULE_BASE, TX_MSG_OBJ_1, TX_MSG_OBJ_1_ID,
+                               CAN_MSG_FRAME_STD, CAN_MSG_OBJ_TYPE_TX, 0,
+                               CAN_MSG_OBJ_NO_FLAGS,
+                               msgLEN);
+    }
+    msgLENold = msgLEN;
+
     // Ensure that message object 1 is not pending transmission. Prevents overwrite.
     // See page 2493 of tech ref manual and "driverlib/inc/hw_can.h"
-    bool mailbox1TxRqst = HWREGH(CAN_MODULE_BASE + CAN_O_TXRQ_21) && MAILBOX1_MASK;
-    if (!mailbox1TxRqst){
+    bool mailbox1TxRqst = HWREGH(
+            CAN_MODULE_BASE + CAN_O_TXRQ_21) && MAILBOX1_MASK;
+    if (!mailbox1TxRqst)
+    {
         // message not pending transmission
         CAN_sendMessage(CAN_MODULE_BASE, TX_MSG_OBJ_1_ID, msgLEN, msgData);
-    } else {
+    }
+    else
+    {
         // Signal to calling that current message could not be transmitted
         // due to already pending message.
         // Future code could possibly check all 32 mailboxes find one to use. Bear in mind
@@ -100,15 +115,17 @@ bool CANA_transmitMsg1(uint16_t *msgData, uint16_t msgLEN)
     }
 
     // Check for CAN bus error passive state (true). Error counts are not currently handled.
-    bool CANTXerror = CAN_getErrorCount(CAN_MODULE_BASE, &rxErrorCount, &txErrorCount);
+    bool CANTXerror = CAN_getErrorCount(CAN_MODULE_BASE, &rxErrorCount,
+                                        &txErrorCount);
 
     //
     // Poll TxOk bit in CAN_ES register to check completion of transmission
     //
     /* while (((HWREGH(CANA_BASE + CAN_O_ES) & CAN_ES_TXOK)) != CAN_ES_TXOK)
-    {
-    }
-    */
+     {
+     }
+     */
+
 
     return !CANTXerror;
 }

@@ -16,6 +16,7 @@
 #define TX_MSG_OBJ_1_ID 0x401   // First TX message object ID.
 #define MAILBOX1_MASK 0x0001    // Mailbox = msg object
 #define CAN_MODULE_BASE CANB_BASE
+#define DEFAULT_CAN_MSG_LEN 8
 
 //
 // CANA

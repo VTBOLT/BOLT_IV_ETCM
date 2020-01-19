@@ -37,6 +37,7 @@ void run(void);
 void initLookup(void);
 void CANtest(void);
 void LEDflash(void);
+void initGPIO(void);
 
 void main(void)
 {
@@ -79,12 +80,7 @@ void init(void)
 {
     // Initialize device clock and peripherals
     Device_init();
-    // GPIOs
-    Device_initGPIO();      // must be called first?
-    // BLUE_LED
-    GPIO_setPinConfig(GPIO_CFG_BLUE_LED);
-    GPIO_setPadConfig(GPIO_BLUE_LED, GPIO_PIN_TYPE_STD);        // Push/pull
-    GPIO_setDirectionMode(GPIO_BLUE_LED, GPIO_DIR_MODE_OUT);
+    initGPIO();     // do not move
 
     initLookup();
     initADC();
@@ -116,7 +112,7 @@ void CANtest(void)
     msg[5] = 0xAB;
     msg[6] = 0xCD;
     msg[7] = 0xEF;
-    CANA_transmitMsg1(msg, 8);
+    CANA_transmitMsg1(msg, 4);
 }
 
 void LEDflash(void){
@@ -126,6 +122,18 @@ void LEDflash(void){
     for (index = 0; index <= 1000000; index++);
     GPIO_writePin(GPIO_BLUE_LED, 0);
     for (index = 0; index <= 1000000; index++);
+}
+
+/**
+ * Module GPIO inits are in their respective .c file.
+ */
+void initGPIO(void){
+    // GPIOs
+    Device_initGPIO();      // must be called first?
+    // BLUE_LED
+    GPIO_setPinConfig(GPIO_CFG_BLUE_LED);
+    GPIO_setPadConfig(GPIO_BLUE_LED, GPIO_PIN_TYPE_STD);        // Push/pull
+    GPIO_setDirectionMode(GPIO_BLUE_LED, GPIO_DIR_MODE_OUT);
 }
 
 //
