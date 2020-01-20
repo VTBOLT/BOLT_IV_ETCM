@@ -38,7 +38,7 @@ void initSCI(void){
     SCI_enableModule(SCI_BASE);
 }
 
-void initSCIFIFO(void){
+void initSCIwithFIFO(void){
 
     // FIFO
     //SCIinitFIFO();
@@ -57,26 +57,18 @@ void initSCIFIFO(void){
     GPIO_setDirectionMode(GPIO_SCIRX, GPIO_DIR_MODE_IN);
     GPIO_setQualificationMode(GPIO_SCIRX, GPIO_QUAL_ASYNC);
 
-    Interrupt_initModule();
-    Interrupt_initVectorTable();
-
-    SCI_performSoftwareReset(SCI_BASE);
-
 
     // configure module
     // 8N1
     SCI_setConfig(SCI_BASE, DEVICE_LSPCLK_FREQ, SCI_BAUD, (SCI_CONFIG_WLEN_8 |SCI_CONFIG_STOP_ONE |SCI_CONFIG_PAR_NONE));
+    SCI_enableModule(SCI_BASE);
 
     SCI_resetChannels(SCI_BASE);
-    SCI_resetRxFIFO(SCI_BASE);
-    SCI_resetTxFIFO(SCI_BASE);
-    SCI_clearInterruptStatus(SCI_BASE, SCI_INT_TXFF | SCI_INT_RXFF);
-    //SCI_disableLoopback(SCI_BASE);
     SCI_enableFIFO(SCI_BASE);
 
-    SCI_enableModule(SCI_BASE);
-    SCI_performSoftwareReset(SCI_BASE);
+
 }
+
 
 void SCItest(void){
     SCI_writeCharBlockingNonFIFO(SCI_BASE, (uint16_t)'F');
@@ -107,18 +99,3 @@ void SCIreadFifo(uint16_t *dataBuf, uint8_t FIFOlength)
     //SCI_writeCharBlockingFIFO(SCI_BASE, )
 }
 
-
-void SCIinitFIFO(void)
-{
-    SCI_clearInterruptStatus(SCI_BASE, SCI_INT_TXFF);
-
-    SCI_enableFIFO(SCI_BASE);
-    // configure level at which INT flag is thrown
-    // RX1 = 1 byte in buffer
-    SCI_setFIFOInterruptLevel(SCI_BASE, SCI_FIFO_TX1, SCI_FIFO_RX1);
-
-    // enable RX_FIFO INT
-    SCI_enableInterrupt(SCI_BASE, SCI_INT_RXFF);
-
-    SCI_clearInterruptStatus(SCIA_BASE, SCI_INT_RXFF);
-}
