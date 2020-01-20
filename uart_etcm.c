@@ -7,6 +7,10 @@
 
 #include <uart_etcm.h>
 
+/**
+ * initSCI(void) initializes the SCI module for use without
+ * the FIFO buffer.
+ */
 void initSCI(void){
     // GPIO TX
     //GPIO_setMasterCore(GPIO_SCITX, GPIO_CORE_CPU1);
@@ -38,11 +42,12 @@ void initSCI(void){
     SCI_enableModule(SCI_BASE);
 }
 
+
+/**
+ * initSCIwithFIFO(void) initializes the SCI module for use with
+ * the FIFO buffer.
+ */
 void initSCIwithFIFO(void){
-
-    // FIFO
-    //SCIinitFIFO();
-
     // GPIO TX
     GPIO_setMasterCore(GPIO_SCITX, GPIO_CORE_CPU1);
     GPIO_setPinConfig (GPIO_CFG_SCITX);
@@ -57,16 +62,14 @@ void initSCIwithFIFO(void){
     GPIO_setDirectionMode(GPIO_SCIRX, GPIO_DIR_MODE_IN);
     GPIO_setQualificationMode(GPIO_SCIRX, GPIO_QUAL_ASYNC);
 
-
     // configure module
     // 8N1
     SCI_setConfig(SCI_BASE, DEVICE_LSPCLK_FREQ, SCI_BAUD, (SCI_CONFIG_WLEN_8 |SCI_CONFIG_STOP_ONE |SCI_CONFIG_PAR_NONE));
     SCI_enableModule(SCI_BASE);
 
     SCI_resetChannels(SCI_BASE);
+
     SCI_enableFIFO(SCI_BASE);
-
-
 }
 
 
@@ -84,6 +87,9 @@ uint8_t SCIgetFifoLength(void){
     return SCI_getRxFIFOStatus(SCI_BASE);
 }
 
+/**
+ * Not used
+ */
 void SCIreadFifo(uint16_t *dataBuf, uint8_t FIFOlength)
 {
     //dataBuf[1] = 0;

@@ -21,14 +21,10 @@
  * Call once to initialize CAN A module.
  *
  */
-
 void initCAN(void)
 {
-    //
     // Initialize GPIO and configure GPIO pins for CANTX/CANRX
     // on module A
-    //
-    //Device_initGPIO();                          // this may be happening elsewhere
     GPIO_setPinConfig (DEVICE_GPIO_CFG_CANRXB);
     GPIO_setPinConfig (DEVICE_GPIO_CFG_CANTXB);
     // configure silent pin
@@ -37,9 +33,7 @@ void initCAN(void)
     GPIO_writePin(CANA_SILENTPIN, 0);       // put into normal mode initially
     GPIO_setDirectionMode(CANA_SILENTPIN, GPIO_DIR_MODE_OUT);
 
-    //
     // Initialize the CAN_A controller
-    //
     CAN_initModule (CAN_MODULE_BASE);
     CAN_setBitRate(CAN_MODULE_BASE, DEVICE_SYSCLK_FREQ, CANA_BAUD, 16);
 
@@ -48,26 +42,24 @@ void initCAN(void)
     // Object ID number 1 has the highest priority, 32 is the lowest.
     // Message Object Parameters:
     //      CAN Module: A
-    //      Message Object ID Number: 1
-    //      Message Identifier: 0x401
+    //      Message Object ID Number: User
+    //      Message Identifier: 0x400 + mailbox
     //      Message Frame: Standard
     //      Message Type: Transmit
     //      Message ID Mask: 0x0
     //      Message Object Flags: None
-    //      Message Data Length: 8
+    //      Message Data Length: User
     //
     CAN_setupMessageObject(CAN_MODULE_BASE, TX_MSG_OBJ_1, TX_MSG_OBJ_1_ID,
                            CAN_MSG_FRAME_STD, CAN_MSG_OBJ_TYPE_TX, 0,
                            CAN_MSG_OBJ_NO_FLAGS, DEFAULT_CAN_MSG_LEN);
 
-    //
     // Start CAN module A operations
-    //
     CAN_startModule(CAN_MODULE_BASE);
 }
 
 /**
- * CANA_transmitMsg1(uint16_t *msgData, uint16_t msgLEN, uint16_t mailbox) transmits a CAN V2.0A message
+ * CANA_transmitMsg(uint16_t *msgData, uint16_t msgLEN, uint16_t mailbox) transmits a CAN V2.0A message
  * onto the bus using module "A", ID 0x400 + mailbox number
  *
  * This function will return false if a bus error passive state is detected.
@@ -129,8 +121,7 @@ bool CANA_transmitMsg(uint16_t *msgData, uint16_t msgLEN, uint16_t mailbox)
 
 
     // Check for CAN bus error passive state (true). Error counts are not currently handled.
-    bool CANTXerror = CAN_getErrorCount(CAN_MODULE_BASE, &rxErrorCount,
-                                        &txErrorCount);
+    bool CANTXerror = CAN_getErrorCount(CAN_MODULE_BASE, &rxErrorCount, &txErrorCount);
 
     //
     // Poll TxOk bit in CAN_ES register to check completion of transmission
@@ -140,7 +131,5 @@ bool CANA_transmitMsg(uint16_t *msgData, uint16_t msgLEN, uint16_t mailbox)
      }
      */
 
-
     return !CANTXerror;
 }
-

@@ -52,7 +52,6 @@
 void initCAN(void);
 
 bool CANA_transmitMsg(uint16_t *msgData, uint16_t msgLEN, uint16_t mailbox);
-//bool CANA_transmitMsg2(uint16_t *msgData, uint16_t msgLEN);
-//bool CANA_transmitMsg3(uint16_t *msgData, uint16_t msgLEN);
+
 
 #endif /* CAN_ETCM_H_ */

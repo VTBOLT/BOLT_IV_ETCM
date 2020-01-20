@@ -31,6 +31,9 @@
 #include "dac_etcm.h"
 #include <uart_etcm.h>
 
+//****************
+// Defines
+//****************
 #define GPIO_CFG_BLUE_LED GPIO_31_GPIO31
 #define GPIO_BLUE_LED 31
 #define GPIO_CFG_RED_LED GPIO_34_GPIO34
@@ -39,7 +42,9 @@
 #define GPIO_SYNC_IN 67
 #define IMU_FRAME_SIZE 18
 
-//Function Prototypes.
+//***********************
+// Function Prototypes
+//***********************
 void init(void);
 void run(void);
 void initLookup(void);
@@ -55,6 +60,9 @@ void getIMUdataINT(void);
 void updateIMUbuffer(void);
 void displayIMU_CAN(void);
 
+//**********
+// Globals
+//**********
 volatile uint8_t IMUdataBuffer[IMU_FRAME_SIZE]; // 18 byte frames
 volatile bool IMUframeRcvd = false;
 
@@ -101,7 +109,6 @@ void run(void)
 }
 
 //Initialize, runs all initialization functions
-
 void init(void)
 {
     // Initialize device clock and peripherals
@@ -122,11 +129,10 @@ void init(void)
 void initLookup(void)
 {
     // Open file containing tables
-
     // Load tables into ROM
 }
 
-/*
+/**
  * Send out a test message over CAN
  * ID: 0x401
  */
@@ -157,10 +163,12 @@ void LEDflash(void){
  * Module GPIO inits are in their respective .c file.
  */
 void initGPIO(void){
+    Device_initGPIO();      // must be called first?
+
     //********
     // GPIOs
-    //********
-    Device_initGPIO();      // must be called first?
+    //--------
+
     // BLUE_LED
     GPIO_setPinConfig(GPIO_CFG_BLUE_LED);
     GPIO_setPadConfig(GPIO_BLUE_LED, GPIO_PIN_TYPE_STD);        // Push/pull
@@ -177,12 +185,15 @@ void initGPIO(void){
     GPIO_setDirectionMode(GPIO_SYNC_IN, GPIO_DIR_MODE_OUT);
     GPIO_writePin(GPIO_SYNC_IN, 0); // default state
 
+    //********
 
 }
 
 /**
- * getIMUdata() grabs an 18 byte IMU frame from the SCI_RX buffer
- * and puts it out over CAN. No CPU interrupts are used.
+ * getIMUdata(void) grabs an 18 byte IMU frame from the SCI_RX buffer
+ * and puts it out over CAN.
+ *
+ * No CPU interrupts are used.
  */
 
 void getIMUdata(){
@@ -269,7 +280,7 @@ void displayIMU_CAN(void){
 
 /**
  * SCI_FIFO_RX will throw an interrupt every time there is at least
- * one byte in the buffer. This function is called by the SCI_ISR
+ * one byte in the buffer. This function is called by the SCI_ISR()
  * to fetch the data and store it in a global container.
  *
  * TODO: Verify frame integrity (start-of-header, checksum)
@@ -358,7 +369,7 @@ void initInterrupts(void){
 }
 
 void initIMUinterrupt(void){
-    // set SCI RX interrupt handler (ISR)
+    // set SCI RX interrupt handler (ISR) in vector table
     Interrupt_register(INT_SCIC_RX, SCI_ISR);
 
     // enable SCI FIFO interrupts
@@ -376,6 +387,7 @@ void initIMUinterrupt(void){
     Interrupt_enable(INT_SCIC_RX);
 
     // clear PIEACK
+    // see table 3-2 on pg.102 in tech. ref. manual for groups
     Interrupt_clearACKGroup(INTERRUPT_ACK_GROUP8);
 }
 
@@ -385,6 +397,13 @@ void toggleLED(){
     toggleBit = ~toggleBit;
 }
 
+/**
+ * SCI_ISR(void) is the interrupt handler for SCI_RX CPU interrupt.
+ * Registered in vector table by initIMUinterrupt()
+ *
+ * Interrupt fires when a data byte has been received in the
+ * SCI RX FIFO buffer.
+ */
 __interrupt void SCI_ISR(void){
 
     //*****************
