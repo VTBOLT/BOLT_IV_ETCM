@@ -1,7 +1,7 @@
 ******************************************************************************
-             TMS320C2000 Linker PC v18.12.4                    
+             TMS320C2000 Linker PC v18.12.3                    
 ******************************************************************************
->> Linked Mon Jan 20 00:52:36 2020
+>> Linked Mon Jan 20 16:31:07 2020
 
 OUTPUT FILE NAME:   <empty_driverlib_project.out>
 ENTRY POINT SYMBOL: "code_start"  address: 00000000
@@ -178,7 +178,7 @@ MODULE SUMMARY
     +--+-----------------------------+------+---------+---------+
        Total:                        1440   0         0      
                                                              
-    C:\ti\ccs930\ccs\tools\compiler\ti-cgt-c2000_18.12.4.LTS\lib\rts2800_fpu32_eabi.lib
+    C:\ti\ccs920\ccs\tools\compiler\ti-cgt-c2000_18.12.3.LTS\lib\rts2800_fpu32_eabi.lib
        fs_div28.asm.obj              136    0         0      
        copy_decompress_lzss.c.obj    49     0         0      
        exit.c.obj                    41     0         6      

@@ -370,7 +370,7 @@ void initInterrupts(void){
 
 void initIMUinterrupt(void){
     // set SCI RX interrupt handler (ISR) in vector table
-    Interrupt_register(INT_SCIC_RX, SCI_ISR);
+    Interrupt_register(INT_SCIB_RX, SCI_ISR);
 
     // enable SCI FIFO interrupts
     SCI_enableInterrupt(SCI_BASE, SCI_INT_RXFF);
@@ -384,7 +384,7 @@ void initIMUinterrupt(void){
     SCI_resetRxFIFO(SCI_BASE);
 
     // enable SCI_RX PIE interrupt
-    Interrupt_enable(INT_SCIC_RX);
+    Interrupt_enable(INT_SCIB_RX);
 
     // clear PIEACK
     // see table 3-2 on pg.102 in tech. ref. manual for groups
@@ -421,7 +421,7 @@ __interrupt void SCI_ISR(void){
     SCI_clearInterruptStatus(SCI_BASE, SCI_INT_RXFF);
 
     // Issue PIE ack
-    Interrupt_clearACKGroup(INTERRUPT_ACK_GROUP8);
+    Interrupt_clearACKGroup(INTERRUPT_ACK_GROUP9);
 
 }
 
