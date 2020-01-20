@@ -8,6 +8,9 @@
  * Tyler Shaffer, 1/8/2020: Added basic error and sanity checking. R0 -> R1
  * Tyler Shaffer, 1/19/2020: Updated to use CANB for just launchpad, no PCB. Tested and working.
  *
+ * Known issues:
+ * This will halt code upon error.
+ *
  */
 
 //
