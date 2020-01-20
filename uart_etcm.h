@@ -16,7 +16,7 @@
 #define GPIO_SCITX      56U
 #define GPIO_SCIRX      139U
 #define SCI_BASE        SCIC_BASE
-#define SCI_BAUD        9600U
+#define SCI_BAUD        115200U
 
 void initSCI(void);
 void SCItest(void);
