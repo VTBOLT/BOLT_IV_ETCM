@@ -30,14 +30,15 @@
 #include "adc_etcm.h"
 #include "dac_etcm.h"
 #include <uart_etcm.h>
+#include <timer_etcm.h>
+#include <leds_etcm.h>
 
 //****************
 // Defines
 //****************
 #define GPIO_CFG_BLUE_LED GPIO_31_GPIO31
 #define GPIO_BLUE_LED 31
-#define GPIO_CFG_RED_LED GPIO_34_GPIO34
-#define GPIO_RED_LED 34
+
 #define GPIO_CFG_SYNC_IN GPIO_67_GPIO67
 #define GPIO_SYNC_IN 67
 #define IMU_FRAME_SIZE 18
@@ -79,6 +80,8 @@ void main(void)
 void run(void)
 {
     int torque_request = 0; // likely to change type
+    // start the timer
+    startTimer0();
     while (1)
     {
         // Pull in sensor data to local variables
@@ -104,6 +107,11 @@ void run(void)
         //getIMUdata();
         displayIMU_CAN();
 
+        // after 5 seconds, reduce period to 500mS
+            if (cpuTimer0IntCount >= 5){
+                reloadTimer0(500);
+            }
+
 
     }
 }
@@ -114,12 +122,14 @@ void init(void)
     // Initialize device clock and peripherals
     Device_init();
     initGPIO();     // do not move
+    initLEDS();
 
     //initLookup();
     //initADC();
     //initEPWM();
     //initADCSOC();
     initCAN();
+    initTimer0();
     //initSCI();
     initSCIwithFIFO();
     initInterrupts();
@@ -174,10 +184,7 @@ void initGPIO(void){
     GPIO_setPadConfig(GPIO_BLUE_LED, GPIO_PIN_TYPE_STD);        // Push/pull
     GPIO_setDirectionMode(GPIO_BLUE_LED, GPIO_DIR_MODE_OUT);
 
-    // RED_LED
-    GPIO_setPinConfig(GPIO_CFG_RED_LED);
-    GPIO_setPadConfig(GPIO_RED_LED, GPIO_PIN_TYPE_STD);        // Push/pull
-    GPIO_setDirectionMode(GPIO_RED_LED, GPIO_DIR_MODE_OUT);
+
 
     // SYNC_IN
     GPIO_setPinConfig(GPIO_CFG_SYNC_IN);
@@ -357,6 +364,7 @@ void initInterrupts(void){
     // Interrupt init calls go here
     //-------------------------------
     initIMUinterrupt();
+    initTimer0Interrupt();
 
     //*******************************
 
@@ -391,11 +399,7 @@ void initIMUinterrupt(void){
     Interrupt_clearACKGroup(INTERRUPT_ACK_GROUP8);
 }
 
-void toggleLED(){
-    static uint8_t toggleBit = 1;
-    GPIO_writePin(GPIO_RED_LED, (toggleBit&0x01));
-    toggleBit = ~toggleBit;
-}
+
 
 /**
  * SCI_ISR(void) is the interrupt handler for SCI_RX CPU interrupt.
@@ -409,7 +413,7 @@ __interrupt void SCI_ISR(void){
     //*****************
     // do stuff here
     //-----------------
-    toggleLED();
+    toggleRedLED();
     getIMUdataINT();
     //****************
 

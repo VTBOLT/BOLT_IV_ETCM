@@ -1,7 +1,7 @@
 ******************************************************************************
-             TMS320C2000 Linker PC v18.12.3                    
+             TMS320C2000 Linker PC v18.12.4                    
 ******************************************************************************
->> Linked Mon Jan 20 16:31:07 2020
+>> Linked Tue Jan 21 18:53:19 2020
 
 OUTPUT FILE NAME:   <empty_driverlib_project.out>
 ENTRY POINT SYMBOL: "code_start"  address: 00000000
@@ -14,8 +14,8 @@ MEMORY CONFIGURATION
 PAGE 0:
   BEGIN                 00000000   00000002  00000002  00000000  RWIX
   RAMM0                 00000122   000002de  00000024  000002ba  RWIX
-  RAMLS0                00008000   00000800  00000701  000000ff  RWIX
-  RAMLS1                00008800   00000800  00000000  00000800  RWIX
+  RAMLS0                00008000   00000800  00000800  00000000  RWIX
+  RAMLS1                00008800   00000800  0000018b  00000675  RWIX
   RAMLS2                00009000   00000800  00000000  00000800  RWIX
   RAMLS3                00009800   00000800  00000000  00000800  RWIX
   RAMLS4                0000a000   00000800  00000000  00000800  RWIX
@@ -25,7 +25,7 @@ PAGE 0:
 PAGE 1:
   BOOT_RSVD             00000002   00000120  00000000  00000120  RWIX
   RAMM1                 00000400   00000400  00000100  00000300  RWIX
-  RAMLS5                0000a800   00000800  0000019d  00000663  RWIX
+  RAMLS5                0000a800   00000800  00000231  000005cf  RWIX
   RAMD1                 0000b800   00000800  00000000  00000800  RWIX
   RAMGS0                0000c000   00001000  00000000  00001000  RWIX
   RAMGS1                0000d000   00001000  00000000  00001000  RWIX
@@ -70,27 +70,32 @@ codestart
 .stack     1    00000400    00000100     UNINITIALIZED
                   00000400    00000100     --HOLE--
 
-.bss       1    0000a98c    00000012     UNINITIALIZED
-                  0000a98c    00000012     main.obj (.bss:IMUdataBuffer)
+.bss       1    0000aa1f    00000013     UNINITIALIZED
+                  0000aa1f    00000012     main.obj (.bss:IMUdataBuffer)
+                  0000aa31    00000001     timer_etcm.obj (.bss)
 
 .init_array 
 *          0    00000122    00000000     UNINITIALIZED
 
-.const     1    0000a800    00000175     
+.const     1    0000a800    00000209     
                   0000a800    0000008e     main.obj (.const:.string)
                   0000a88e    0000008d     can_etcm.obj (.const:.string)
                   0000a91b    00000001     --HOLE-- [fill = 0]
-                  0000a91c    00000046     uart_etcm.obj (.const:.string)
-                  0000a962    00000013     device.obj (.const:.string)
+                  0000a91c    0000004b     timer_etcm.obj (.const:.string)
+                  0000a967    00000001     --HOLE-- [fill = 0]
+                  0000a968    00000047     leds_etcm.obj (.const:.string)
+                  0000a9af    00000001     --HOLE-- [fill = 0]
+                  0000a9b0    00000046     uart_etcm.obj (.const:.string)
+                  0000a9f6    00000013     device.obj (.const:.string)
 
-.data      1    0000a976    00000016     UNINITIALIZED
-                  0000a976    00000006     device.obj (.data)
-                  0000a97c    00000003     main.obj (.data)
-                  0000a97f    00000001     --HOLE--
-                  0000a980    00000006     rts2800_fpu32_eabi.lib : exit.c.obj (.data)
-                  0000a986    00000002                            : _lock.c.obj (.data:_lock)
-                  0000a988    00000002                            : _lock.c.obj (.data:_unlock)
-                  0000a98a    00000002     can_etcm.obj (.data)
+.data      1    0000aa0a    00000015     UNINITIALIZED
+                  0000aa0a    00000006     device.obj (.data)
+                  0000aa10    00000006     rts2800_fpu32_eabi.lib : exit.c.obj (.data)
+                  0000aa16    00000002                            : _lock.c.obj (.data:_lock)
+                  0000aa18    00000002                            : _lock.c.obj (.data:_unlock)
+                  0000aa1a    00000002     can_etcm.obj (.data)
+                  0000aa1c    00000002     main.obj (.data)
+                  0000aa1e    00000001     leds_etcm.obj (.data)
 
 .TI.ramfunc 
 *          0    00000122    00000004     
@@ -105,63 +110,73 @@ GETWRITEIDX
 PUTREADIDX 
 *          0    0003f800    00000000     DSECT
 
-.text.1    0    00008000    00000701     
-                  00008000    000001d5     uart_etcm.obj (.text)
-                  000081d5    0000009e     driverlib_eabi.lib : can.obj (.text:CAN_setupMessageObject)
-                  00008273    00000088     rts2800_fpu32_eabi.lib : fs_div28.asm.obj (.text)
-                  000082fb    00000046     driverlib_eabi.lib : sysctl.obj (.text:SysCtl_getClock)
-                  00008341    00000041                        : interrupt.obj (.text:Interrupt_initModule)
-                  00008382    00000040     main.obj (.text:retain)
-                  000083c2    0000003f     driverlib_eabi.lib : gpio.obj (.text:GPIO_setPadConfig)
-                  00008401    0000003b                        : can.obj (.text:CAN_sendMessage)
-                  0000843c    00000032                        : sysctl.obj (.text:SysCtl_selectOscSource)
-                  0000846e    00000031                        : can.obj (.text:CAN_setBitRate)
-                  0000849f    00000031     rts2800_fpu32_eabi.lib : copy_decompress_lzss.c.obj (.text:decompress:lzss)
-                  000084d0    00000030     driverlib_eabi.lib : gpio.obj (.text:GPIO_setPinConfig)
-                  00008500    0000002d                        : can.obj (.text:CAN_setBitTiming)
-                  0000852d    0000002b     rts2800_fpu32_eabi.lib : autoinit.c.obj (.text:__TI_auto_init_nobinit_nopinit)
-                  00008558    00000029                            : exit.c.obj (.text)
-                  00008581    00000022     driverlib_eabi.lib : gpio.obj (.text:GPIO_setMasterCore)
-                  000085a3    00000022                        : gpio.obj (.text:GPIO_setQualificationMode)
-                  000085c5    00000021                        : sci.obj (.text:SCI_setConfig)
-                  000085e6    00000020                        : gpio.obj (.text:GPIO_setDirectionMode)
-                  00008606    0000001d     rts2800_fpu32_eabi.lib : memcpy.c.obj (.text)
-                  00008623    0000001c     driverlib_eabi.lib : sci.obj (.text:SCI_clearInterruptStatus)
-                  0000863f    0000001a                        : sci.obj (.text:SCI_disableInterrupt)
-                  00008659    0000001a                        : sci.obj (.text:SCI_enableInterrupt)
-                  00008673    00000017                        : can.obj (.text:CAN_initModule)
-                  0000868a    00000017                        : interrupt.obj (.text:Interrupt_initVectorTable)
-                  000086a1    00000017     rts2800_fpu32_eabi.lib : boot28.asm.obj (.text)
-                  000086b8    00000015     driverlib_eabi.lib : sysctl.obj (.text:SysCtl_getLowSpeedClock)
-                  000086cd    0000000d     rts2800_fpu32_eabi.lib : copy_zero_init.c.obj (.text:decompress:ZI:__TI_zero_init_nomemset)
-                  000086da    0000000c                            : args_main.c.obj (.text)
-                  000086e6    00000009                            : _lock.c.obj (.text)
-                  000086ef    00000008                            : copy_decompress_none.c.obj (.text:decompress:none)
-                  000086f7    00000004     driverlib_eabi.lib : interrupt.obj (.text:Interrupt_defaultHandler)
-                  000086fb    00000002                        : interrupt.obj (.text:Interrupt_illegalOperationHandler)
-                  000086fd    00000002                        : interrupt.obj (.text:Interrupt_nmiHandler)
-                  000086ff    00000002     rts2800_fpu32_eabi.lib : pre_init.c.obj (.text)
+.text.1    0    00008000    00000800     
+                  00008000    000001d3     uart_etcm.obj (.text)
+                  000081d3    00000132     can_etcm.obj (.text)
+                  00008305    0000009e     driverlib_eabi.lib : can.obj (.text:CAN_setupMessageObject)
+                  000083a3    00000088     rts2800_fpu32_eabi.lib : fs_div28.asm.obj (.text)
+                  0000842b    0000007a     driverlib_eabi.lib : interrupt.obj (.text:Interrupt_clearIFR)
+                  000084a5    00000057     leds_etcm.obj (.text)
+                  000084fc    00000048     driverlib_eabi.lib : interrupt.obj (.text:Interrupt_disable)
+                  00008544    00000046                        : sysctl.obj (.text:SysCtl_getClock)
+                  0000858a    00000041                        : interrupt.obj (.text:Interrupt_initModule)
+                  000085cb    00000041     main.obj (.text:retain)
+                  0000860c    0000003f     driverlib_eabi.lib : gpio.obj (.text:GPIO_setPadConfig)
+                  0000864b    0000003b                        : can.obj (.text:CAN_sendMessage)
+                  00008686    00000034                        : interrupt.obj (.text:Interrupt_enable)
+                  000086ba    00000032                        : sysctl.obj (.text:SysCtl_selectOscSource)
+                  000086ec    00000031                        : can.obj (.text:CAN_setBitRate)
+                  0000871d    00000031     rts2800_fpu32_eabi.lib : copy_decompress_lzss.c.obj (.text:decompress:lzss)
+                  0000874e    00000030     driverlib_eabi.lib : gpio.obj (.text:GPIO_setPinConfig)
+                  0000877e    0000002d                        : can.obj (.text:CAN_setBitTiming)
+                  000087ab    0000002b     rts2800_fpu32_eabi.lib : autoinit.c.obj (.text:__TI_auto_init_nobinit_nopinit)
+                  000087d6    00000029                            : exit.c.obj (.text)
+                  000087ff    00000001                            : startup.c.obj (.text)
 
-.text.2    0    0000b000    00000800     
-                  0000b000    000002c6     main.obj (.text)
-                  0000b2c6    000001e9     driverlib_eabi.lib : sysctl.obj (.text:SysCtl_setClock)
-                  0000b4af    000001e3     device.obj (.text)
-                  0000b692    00000134     can_etcm.obj (.text)
-                  0000b7c6    00000034     driverlib_eabi.lib : interrupt.obj (.text:Interrupt_enable)
-                  0000b7fa    00000005     dac_etcm.obj (.text)
-                  0000b7ff    00000001     rts2800_fpu32_eabi.lib : startup.c.obj (.text)
+.text.2    0    00008800    0000018b     
+                  00008800    00000022     driverlib_eabi.lib : gpio.obj (.text:GPIO_setMasterCore)
+                  00008822    00000022                        : gpio.obj (.text:GPIO_setQualificationMode)
+                  00008844    00000021                        : sci.obj (.text:SCI_setConfig)
+                  00008865    00000020                        : gpio.obj (.text:GPIO_setDirectionMode)
+                  00008885    0000001d     rts2800_fpu32_eabi.lib : memcpy.c.obj (.text)
+                  000088a2    0000001c     driverlib_eabi.lib : sci.obj (.text:SCI_clearInterruptStatus)
+                  000088be    0000001a                        : sci.obj (.text:SCI_disableInterrupt)
+                  000088d8    0000001a                        : sci.obj (.text:SCI_enableInterrupt)
+                  000088f2    00000017                        : can.obj (.text:CAN_initModule)
+                  00008909    00000017                        : interrupt.obj (.text:Interrupt_initVectorTable)
+                  00008920    00000017     rts2800_fpu32_eabi.lib : boot28.asm.obj (.text)
+                  00008937    00000015     driverlib_eabi.lib : sysctl.obj (.text:SysCtl_getLowSpeedClock)
+                  0000894c    0000000d     rts2800_fpu32_eabi.lib : copy_zero_init.c.obj (.text:decompress:ZI:__TI_zero_init_nomemset)
+                  00008959    0000000c                            : args_main.c.obj (.text)
+                  00008965    00000009                            : _lock.c.obj (.text)
+                  0000896e    00000008                            : copy_decompress_none.c.obj (.text:decompress:none)
+                  00008976    00000006     driverlib_eabi.lib : cputimer.obj (.text:CPUTimer_setEmulationMode)
+                  0000897c    00000005     dac_etcm.obj (.text)
+                  00008981    00000004     driverlib_eabi.lib : interrupt.obj (.text:Interrupt_defaultHandler)
+                  00008985    00000002                        : interrupt.obj (.text:Interrupt_illegalOperationHandler)
+                  00008987    00000002                        : interrupt.obj (.text:Interrupt_nmiHandler)
+                  00008989    00000002     rts2800_fpu32_eabi.lib : pre_init.c.obj (.text)
+
+.text.3    0    0000b000    00000800     
+                  0000b000    000002b9     main.obj (.text)
+                  0000b2b9    000001e9     driverlib_eabi.lib : sysctl.obj (.text:SysCtl_setClock)
+                  0000b4a2    000001e3     device.obj (.text)
+                  0000b685    00000148     timer_etcm.obj (.text)
+                  0000b7cd    00000033     timer_etcm.obj (.text:retain)
 
 MODULE SUMMARY
 
        Module                        code   ro data   rw data
        ------                        ----   -------   -------
     .\
-       main.obj                      774    142       21     
-       uart_etcm.obj                 469    70        0      
-       can_etcm.obj                  308    141       2      
+       main.obj                      762    142       20     
+       uart_etcm.obj                 467    70        0      
+       timer_etcm.obj                379    75        1      
+       can_etcm.obj                  306    141       2      
+       leds_etcm.obj                 87     71        1      
        dac_etcm.obj                  5      0         0      
     +--+-----------------------------+------+---------+---------+
-       Total:                        1556   353       23     
+       Total:                        2006   499       24     
                                                              
     .\device\
        device.obj                    483    19        6      
@@ -171,14 +186,15 @@ MODULE SUMMARY
                                                              
     C:\ti\C2000Ware_2_01_00_00_Software\driverlib\f2837xd\driverlib\ccs\Release\driverlib_eabi.lib
        sysctl.obj                    634    0         0      
+       interrupt.obj                 342    0         0      
        can.obj                       334    0         0      
        gpio.obj                      211    0         0      
-       interrupt.obj                 148    0         0      
        sci.obj                       113    0         0      
+       cputimer.obj                  6      0         0      
     +--+-----------------------------+------+---------+---------+
-       Total:                        1440   0         0      
+       Total:                        1640   0         0      
                                                              
-    C:\ti\ccs920\ccs\tools\compiler\ti-cgt-c2000_18.12.3.LTS\lib\rts2800_fpu32_eabi.lib
+    C:\ti\ccs930\ccs\tools\compiler\ti-cgt-c2000_18.12.4.LTS\lib\rts2800_fpu32_eabi.lib
        fs_div28.asm.obj              136    0         0      
        copy_decompress_lzss.c.obj    49     0         0      
        exit.c.obj                    41     0         6      
@@ -197,14 +213,14 @@ MODULE SUMMARY
        Stack:                        0      0         256    
        Linker Generated:             0      30        0      
     +--+-----------------------------+------+---------+---------+
-       Grand Total:                  3847   402       295    
+       Grand Total:                  4497   548       296    
 
 
 LINKER GENERATED COPY TABLES
 
 __TI_cinit_table @ 00000140 records: 2, size/record: 4, table size: 8
-	.data: load addr=00000128, load size=0000000c bytes, run addr=0000a976, run size=00000016 bytes, compression=lzss
-	.bss: load addr=0000013a, load size=00000004 bytes, run addr=0000a98c, run size=00000012 bytes, compression=zero_init
+	.data: load addr=00000128, load size=0000000c bytes, run addr=0000aa0a, run size=00000015 bytes, compression=lzss
+	.bss: load addr=0000013a, load size=00000004 bytes, run addr=0000aa1f, run size=00000013 bytes, compression=zero_init
 
 
 LINKER GENERATED HANDLER TABLE
@@ -221,117 +237,128 @@ address     data page           name
 --------    ----------------    ----
 00000400      10 (00000400)     __stack
 
-0000a976     2a5 (0000a940)     Example_Result
-0000a978     2a5 (0000a940)     Example_PassCount
-0000a97a     2a5 (0000a940)     Example_Fail
-0000a97c     2a5 (0000a940)     IMUframeRcvd
-
-0000a980     2a6 (0000a980)     __TI_enable_exit_profile_output
-0000a982     2a6 (0000a980)     __TI_cleanup_ptr
-0000a984     2a6 (0000a980)     __TI_dtors_ptr
-0000a986     2a6 (0000a980)     _lock
-0000a988     2a6 (0000a980)     _unlock
-0000a98c     2a6 (0000a980)     IMUdataBuffer
+0000aa0a     2a8 (0000aa00)     Example_Result
+0000aa0c     2a8 (0000aa00)     Example_PassCount
+0000aa0e     2a8 (0000aa00)     Example_Fail
+0000aa10     2a8 (0000aa00)     __TI_enable_exit_profile_output
+0000aa12     2a8 (0000aa00)     __TI_cleanup_ptr
+0000aa14     2a8 (0000aa00)     __TI_dtors_ptr
+0000aa16     2a8 (0000aa00)     _lock
+0000aa18     2a8 (0000aa00)     _unlock
+0000aa1c     2a8 (0000aa00)     IMUframeRcvd
+0000aa1f     2a8 (0000aa00)     IMUdataBuffer
+0000aa31     2a8 (0000aa00)     cpuTimer0IntCount
 
 
 GLOBAL SYMBOLS: SORTED ALPHABETICALLY BY Name 
 
 page  address   name                                     
 ----  -------   ----                                     
-0     00008558  C$$EXIT                                  
-0     0000b765  CANA_transmitMsg                         
-0     00008673  CAN_initModule                           
-0     00008401  CAN_sendMessage                          
-0     0000846e  CAN_setBitRate                           
-0     00008500  CAN_setBitTiming                         
-0     000081d5  CAN_setupMessageObject                   
-0     0000b148  CANtest                                  
-0     0000b524  Device_enableAllPeripherals              
-0     0000b66a  Device_enableUnbondedGPIOPullups         
-0     0000b647  Device_enableUnbondedGPIOPullupsFor100Pin
-0     0000b630  Device_enableUnbondedGPIOPullupsFor176Pin
-0     0000b4f1  Device_init                              
-0     0000b60f  Device_initGPIO                          
-1     0000a97a  Example_Fail                             
-1     0000a978  Example_PassCount                        
-1     0000a976  Example_Result                           
-0     0000b691  Example_done                             
-0     0000b68c  Example_setResultFail                    
-0     0000b687  Example_setResultPass                    
-0     000085e6  GPIO_setDirectionMode                    
-0     00008581  GPIO_setMasterCore                       
-0     000083c2  GPIO_setPadConfig                        
-0     000084d0  GPIO_setPinConfig                        
-0     000085a3  GPIO_setQualificationMode                
-1     0000a98c  IMUdataBuffer                            
-1     0000a97c  IMUframeRcvd                             
-0     0000b7c6  Interrupt_enable                         
-0     00008341  Interrupt_initModule                     
-0     0000868a  Interrupt_initVectorTable                
-0     0000b162  LEDflash                                 
-0     00008382  SCI_ISR                                  
-0     00008623  SCI_clearInterruptStatus                 
-0     0000863f  SCI_disableInterrupt                     
-0     00008659  SCI_enableInterrupt                      
-0     000085c5  SCI_setConfig                            
-0     000081ba  SCIgetFifoLength                         
-0     000081c0  SCIreadFifo                              
-0     00008191  SCItest                                  
+0     000087d6  C$$EXIT                                  
+0     000082a6  CANA_transmitMsg                         
+0     000088f2  CAN_initModule                           
+0     0000864b  CAN_sendMessage                          
+0     000086ec  CAN_setBitRate                           
+0     0000877e  CAN_setBitTiming                         
+0     00008305  CAN_setupMessageObject                   
+0     0000b157  CANtest                                  
+0     00008976  CPUTimer_setEmulationMode                
+0     0000b517  Device_enableAllPeripherals              
+0     0000b65d  Device_enableUnbondedGPIOPullups         
+0     0000b63a  Device_enableUnbondedGPIOPullupsFor100Pin
+0     0000b623  Device_enableUnbondedGPIOPullupsFor176Pin
+0     0000b4e4  Device_init                              
+0     0000b602  Device_initGPIO                          
+1     0000aa0e  Example_Fail                             
+1     0000aa0c  Example_PassCount                        
+1     0000aa0a  Example_Result                           
+0     0000b684  Example_done                             
+0     0000b67f  Example_setResultFail                    
+0     0000b67a  Example_setResultPass                    
+0     00008865  GPIO_setDirectionMode                    
+0     00008800  GPIO_setMasterCore                       
+0     0000860c  GPIO_setPadConfig                        
+0     0000874e  GPIO_setPinConfig                        
+0     00008822  GPIO_setQualificationMode                
+1     0000aa1f  IMUdataBuffer                            
+1     0000aa1c  IMUframeRcvd                             
+0     000084fc  Interrupt_disable                        
+0     00008686  Interrupt_enable                         
+0     0000858a  Interrupt_initModule                     
+0     00008909  Interrupt_initVectorTable                
+0     0000b171  LEDflash                                 
+0     000085cb  SCI_ISR                                  
+0     000088a2  SCI_clearInterruptStatus                 
+0     000088be  SCI_disableInterrupt                     
+0     000088d8  SCI_enableInterrupt                      
+0     00008844  SCI_setConfig                            
+0     000081b8  SCIgetFifoLength                         
+0     000081be  SCIreadFifo                              
+0     0000818f  SCItest                                  
 0     00000122  SysCtl_delay                             
-0     000082fb  SysCtl_getClock                          
-0     000086b8  SysCtl_getLowSpeedClock                  
-0     0000843c  SysCtl_selectOscSource                   
-0     0000b2c6  SysCtl_setClock                          
+0     00008544  SysCtl_getClock                          
+0     00008937  SysCtl_getLowSpeedClock                  
+0     000086ba  SysCtl_selectOscSource                   
+0     0000b2b9  SysCtl_setClock                          
 0     00000140  __TI_CINIT_Base                          
 0     00000148  __TI_CINIT_Limit                         
 0     00000134  __TI_Handler_Table_Base                  
 0     0000013a  __TI_Handler_Table_Limit                 
 1     00000500  __TI_STACK_END                           
 abs   00000100  __TI_STACK_SIZE                          
-0     0000852d  __TI_auto_init_nobinit_nopinit           
-1     0000a982  __TI_cleanup_ptr                         
-0     0000849f  __TI_decompress_lzss                     
-0     000086ef  __TI_decompress_none                     
-1     0000a984  __TI_dtors_ptr                           
-1     0000a980  __TI_enable_exit_profile_output          
+0     000087ab  __TI_auto_init_nobinit_nopinit           
+1     0000aa12  __TI_cleanup_ptr                         
+0     0000871d  __TI_decompress_lzss                     
+0     0000896e  __TI_decompress_none                     
+1     0000aa14  __TI_dtors_ptr                           
+1     0000aa10  __TI_enable_exit_profile_output          
 abs   ffffffff  __TI_pprof_out_hndl                      
 abs   ffffffff  __TI_prof_data_size                      
 abs   ffffffff  __TI_prof_data_start                     
-0     000086cd  __TI_zero_init_nomemset                  
-0     00008273  __c28xabi_divf                           
+0     0000894c  __TI_zero_init_nomemset                  
+0     000083a3  __c28xabi_divf                           
 n/a   UNDEFED   __c_args__                               
-0     0000b680  __error__                                
+0     0000b673  __error__                                
 1     00000400  __stack                                  
-0     000086da  _args_main                               
-0     000086a1  _c_int00                                 
-1     0000a986  _lock                                    
-0     000086ee  _nop                                     
-0     000086ea  _register_lock                           
-0     000086e6  _register_unlock                         
-0     0000b7ff  _system_post_cinit                       
-0     000086ff  _system_pre_init                         
-1     0000a988  _unlock                                  
-0     00008558  abort                                    
+0     00008959  _args_main                               
+0     00008920  _c_int00                                 
+1     0000aa16  _lock                                    
+0     0000896d  _nop                                     
+0     00008969  _register_lock                           
+0     00008965  _register_unlock                         
+0     000087ff  _system_post_cinit                       
+0     00008989  _system_pre_init                         
+1     0000aa18  _unlock                                  
+0     000087d6  abort                                    
 0     00000000  code_start                               
-0     0000b233  displayIMU_CAN                           
-0     0000855a  exit                                     
-0     0000b1bb  getIMUdata                               
-0     0000b24c  getIMUdataINT                            
-0     0000b13c  init                                     
-0     0000b71b  initCAN                                  
-0     0000b7fa  initDAC                                  
-0     0000b189  initGPIO                                 
-0     0000b284  initIMUinterrupt                         
-0     0000b27b  initInterrupts                           
-0     0000b147  initLookup                               
+0     0000b79b  configCPUTimer                           
+0     0000b7cd  cpuTimer0ISR                             
+1     0000aa31  cpuTimer0IntCount                        
+0     0000b235  displayIMU_CAN                           
+0     000087d8  exit                                     
+0     0000b1bd  getIMUdata                               
+0     0000b24e  getIMUdataINT                            
+0     0000b147  init                                     
+0     0000825c  initCAN                                  
+0     0000897c  initDAC                                  
+0     0000b198  initGPIO                                 
+0     0000b288  initIMUinterrupt                         
+0     0000b27d  initInterrupts                           
+0     000084db  initLEDS                                 
+0     0000b156  initLookup                               
 0     00008100  initSCI                                  
-0     00008143  initSCIwithFIFO                          
+0     00008142  initSCIwithFIFO                          
+0     0000b73f  initTimer0                               
+0     0000b764  initTimer0Interrupt                      
 0     0000b12d  main                                     
-0     00008606  memcpy                                   
-0     0000b7fb  requestTorque                            
+0     00008885  memcpy                                   
+0     0000b791  reloadTimer0                             
+0     0000897d  requestTorque                            
 0     0000b132  run                                      
-0     0000b2b5  toggleLED                                
-0     0000b217  updateIMUbuffer                          
+0     0000b77b  startTimer0                              
+0     0000b786  stopTimer0                               
+0     000084eb  toggleRedLED                             
+0     0000b219  updateIMUbuffer                          
 
 
 GLOBAL SYMBOLS: SORTED BY Symbol Address 
@@ -345,92 +372,103 @@ page  address   name
 0     00000140  __TI_CINIT_Base                          
 0     00000148  __TI_CINIT_Limit                         
 0     00008100  initSCI                                  
-0     00008143  initSCIwithFIFO                          
-0     00008191  SCItest                                  
-0     000081ba  SCIgetFifoLength                         
-0     000081c0  SCIreadFifo                              
-0     000081d5  CAN_setupMessageObject                   
-0     00008273  __c28xabi_divf                           
-0     000082fb  SysCtl_getClock                          
-0     00008341  Interrupt_initModule                     
-0     00008382  SCI_ISR                                  
-0     000083c2  GPIO_setPadConfig                        
-0     00008401  CAN_sendMessage                          
-0     0000843c  SysCtl_selectOscSource                   
-0     0000846e  CAN_setBitRate                           
-0     0000849f  __TI_decompress_lzss                     
-0     000084d0  GPIO_setPinConfig                        
-0     00008500  CAN_setBitTiming                         
-0     0000852d  __TI_auto_init_nobinit_nopinit           
-0     00008558  C$$EXIT                                  
-0     00008558  abort                                    
-0     0000855a  exit                                     
-0     00008581  GPIO_setMasterCore                       
-0     000085a3  GPIO_setQualificationMode                
-0     000085c5  SCI_setConfig                            
-0     000085e6  GPIO_setDirectionMode                    
-0     00008606  memcpy                                   
-0     00008623  SCI_clearInterruptStatus                 
-0     0000863f  SCI_disableInterrupt                     
-0     00008659  SCI_enableInterrupt                      
-0     00008673  CAN_initModule                           
-0     0000868a  Interrupt_initVectorTable                
-0     000086a1  _c_int00                                 
-0     000086b8  SysCtl_getLowSpeedClock                  
-0     000086cd  __TI_zero_init_nomemset                  
-0     000086da  _args_main                               
-0     000086e6  _register_unlock                         
-0     000086ea  _register_lock                           
-0     000086ee  _nop                                     
-0     000086ef  __TI_decompress_none                     
-0     000086ff  _system_pre_init                         
+0     00008142  initSCIwithFIFO                          
+0     0000818f  SCItest                                  
+0     000081b8  SCIgetFifoLength                         
+0     000081be  SCIreadFifo                              
+0     0000825c  initCAN                                  
+0     000082a6  CANA_transmitMsg                         
+0     00008305  CAN_setupMessageObject                   
+0     000083a3  __c28xabi_divf                           
+0     000084db  initLEDS                                 
+0     000084eb  toggleRedLED                             
+0     000084fc  Interrupt_disable                        
+0     00008544  SysCtl_getClock                          
+0     0000858a  Interrupt_initModule                     
+0     000085cb  SCI_ISR                                  
+0     0000860c  GPIO_setPadConfig                        
+0     0000864b  CAN_sendMessage                          
+0     00008686  Interrupt_enable                         
+0     000086ba  SysCtl_selectOscSource                   
+0     000086ec  CAN_setBitRate                           
+0     0000871d  __TI_decompress_lzss                     
+0     0000874e  GPIO_setPinConfig                        
+0     0000877e  CAN_setBitTiming                         
+0     000087ab  __TI_auto_init_nobinit_nopinit           
+0     000087d6  C$$EXIT                                  
+0     000087d6  abort                                    
+0     000087d8  exit                                     
+0     000087ff  _system_post_cinit                       
+0     00008800  GPIO_setMasterCore                       
+0     00008822  GPIO_setQualificationMode                
+0     00008844  SCI_setConfig                            
+0     00008865  GPIO_setDirectionMode                    
+0     00008885  memcpy                                   
+0     000088a2  SCI_clearInterruptStatus                 
+0     000088be  SCI_disableInterrupt                     
+0     000088d8  SCI_enableInterrupt                      
+0     000088f2  CAN_initModule                           
+0     00008909  Interrupt_initVectorTable                
+0     00008920  _c_int00                                 
+0     00008937  SysCtl_getLowSpeedClock                  
+0     0000894c  __TI_zero_init_nomemset                  
+0     00008959  _args_main                               
+0     00008965  _register_unlock                         
+0     00008969  _register_lock                           
+0     0000896d  _nop                                     
+0     0000896e  __TI_decompress_none                     
+0     00008976  CPUTimer_setEmulationMode                
+0     0000897c  initDAC                                  
+0     0000897d  requestTorque                            
+0     00008989  _system_pre_init                         
 0     0000b12d  main                                     
 0     0000b132  run                                      
-0     0000b13c  init                                     
-0     0000b147  initLookup                               
-0     0000b148  CANtest                                  
-0     0000b162  LEDflash                                 
-0     0000b189  initGPIO                                 
-0     0000b1bb  getIMUdata                               
-0     0000b217  updateIMUbuffer                          
-0     0000b233  displayIMU_CAN                           
-0     0000b24c  getIMUdataINT                            
-0     0000b27b  initInterrupts                           
-0     0000b284  initIMUinterrupt                         
-0     0000b2b5  toggleLED                                
-0     0000b2c6  SysCtl_setClock                          
-0     0000b4f1  Device_init                              
-0     0000b524  Device_enableAllPeripherals              
-0     0000b60f  Device_initGPIO                          
-0     0000b630  Device_enableUnbondedGPIOPullupsFor176Pin
-0     0000b647  Device_enableUnbondedGPIOPullupsFor100Pin
-0     0000b66a  Device_enableUnbondedGPIOPullups         
-0     0000b680  __error__                                
-0     0000b687  Example_setResultPass                    
-0     0000b68c  Example_setResultFail                    
-0     0000b691  Example_done                             
-0     0000b71b  initCAN                                  
-0     0000b765  CANA_transmitMsg                         
-0     0000b7c6  Interrupt_enable                         
-0     0000b7fa  initDAC                                  
-0     0000b7fb  requestTorque                            
-0     0000b7ff  _system_post_cinit                       
+0     0000b147  init                                     
+0     0000b156  initLookup                               
+0     0000b157  CANtest                                  
+0     0000b171  LEDflash                                 
+0     0000b198  initGPIO                                 
+0     0000b1bd  getIMUdata                               
+0     0000b219  updateIMUbuffer                          
+0     0000b235  displayIMU_CAN                           
+0     0000b24e  getIMUdataINT                            
+0     0000b27d  initInterrupts                           
+0     0000b288  initIMUinterrupt                         
+0     0000b2b9  SysCtl_setClock                          
+0     0000b4e4  Device_init                              
+0     0000b517  Device_enableAllPeripherals              
+0     0000b602  Device_initGPIO                          
+0     0000b623  Device_enableUnbondedGPIOPullupsFor176Pin
+0     0000b63a  Device_enableUnbondedGPIOPullupsFor100Pin
+0     0000b65d  Device_enableUnbondedGPIOPullups         
+0     0000b673  __error__                                
+0     0000b67a  Example_setResultPass                    
+0     0000b67f  Example_setResultFail                    
+0     0000b684  Example_done                             
+0     0000b73f  initTimer0                               
+0     0000b764  initTimer0Interrupt                      
+0     0000b77b  startTimer0                              
+0     0000b786  stopTimer0                               
+0     0000b791  reloadTimer0                             
+0     0000b79b  configCPUTimer                           
+0     0000b7cd  cpuTimer0ISR                             
 1     00000400  __stack                                  
 1     00000500  __TI_STACK_END                           
-1     0000a976  Example_Result                           
-1     0000a978  Example_PassCount                        
-1     0000a97a  Example_Fail                             
-1     0000a97c  IMUframeRcvd                             
-1     0000a980  __TI_enable_exit_profile_output          
-1     0000a982  __TI_cleanup_ptr                         
-1     0000a984  __TI_dtors_ptr                           
-1     0000a986  _lock                                    
-1     0000a988  _unlock                                  
-1     0000a98c  IMUdataBuffer                            
+1     0000aa0a  Example_Result                           
+1     0000aa0c  Example_PassCount                        
+1     0000aa0e  Example_Fail                             
+1     0000aa10  __TI_enable_exit_profile_output          
+1     0000aa12  __TI_cleanup_ptr                         
+1     0000aa14  __TI_dtors_ptr                           
+1     0000aa16  _lock                                    
+1     0000aa18  _unlock                                  
+1     0000aa1c  IMUframeRcvd                             
+1     0000aa1f  IMUdataBuffer                            
+1     0000aa31  cpuTimer0IntCount                        
 abs   00000100  __TI_STACK_SIZE                          
 abs   ffffffff  __TI_pprof_out_hndl                      
 abs   ffffffff  __TI_prof_data_size                      
 abs   ffffffff  __TI_prof_data_start                     
 n/a   UNDEFED   __c_args__                               
 
-[94 symbols]
+[105 symbols]
