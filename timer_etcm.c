@@ -81,6 +81,12 @@ void stopTimer0(void){
     CPUTimer_stopTimer(CPUTIMER0_BASE);
 }
 
+/**
+ * reloadTimer0(float period) reloads the timer with a user specified
+ * The application must restart the timer.
+ *
+ * @param period Period value in mili-seconds
+ */
 void reloadTimer0(float period){
     configCPUTimer(CPUTIMER0_BASE, period);
 }
