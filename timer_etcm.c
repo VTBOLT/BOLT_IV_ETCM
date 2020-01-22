@@ -19,6 +19,13 @@
 //
 uint16_t cpuTimer0IntCount;
 
+/**
+ * If timer does not seem to expire at expected interval, check
+ * the clock pre-scaler value.
+ *
+ * TODO: automatic calculation of pre-scale value based
+ * on desired period.
+ */
 void initTimer0(void){
     // Initialize timer period to maximum
     //
@@ -43,8 +50,6 @@ void initTimer0(void){
 
     // Load timer with default value
     configCPUTimer(CPUTIMER0_BASE, TIMER0_DEFAULT_PERIOD);
-
-
 }
 
 /**
