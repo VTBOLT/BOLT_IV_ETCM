@@ -12,6 +12,11 @@ void initLEDS(void){
     GPIO_setPinConfig(GPIO_CFG_RED_LED);
     GPIO_setPadConfig(GPIO_RED_LED, GPIO_PIN_TYPE_STD);        // Push/pull
     GPIO_setDirectionMode(GPIO_RED_LED, GPIO_DIR_MODE_OUT);
+
+    // BLUE_LED
+    GPIO_setPinConfig(GPIO_CFG_BLUE_LED);
+    GPIO_setPadConfig(GPIO_BLUE_LED, GPIO_PIN_TYPE_STD);        // Push/pull
+    GPIO_setDirectionMode(GPIO_BLUE_LED, GPIO_DIR_MODE_OUT);
 }
 
 void toggleRedLED(){

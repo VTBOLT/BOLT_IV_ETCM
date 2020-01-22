@@ -36,9 +36,6 @@
 //****************
 // Defines
 //****************
-#define GPIO_CFG_BLUE_LED GPIO_31_GPIO31
-#define GPIO_BLUE_LED 31
-
 #define GPIO_CFG_SYNC_IN GPIO_67_GPIO67
 #define GPIO_SYNC_IN 67
 #define IMU_FRAME_SIZE 18
@@ -178,13 +175,6 @@ void initGPIO(void){
     //********
     // GPIOs
     //--------
-
-    // BLUE_LED
-    GPIO_setPinConfig(GPIO_CFG_BLUE_LED);
-    GPIO_setPadConfig(GPIO_BLUE_LED, GPIO_PIN_TYPE_STD);        // Push/pull
-    GPIO_setDirectionMode(GPIO_BLUE_LED, GPIO_DIR_MODE_OUT);
-
-
 
     // SYNC_IN
     GPIO_setPinConfig(GPIO_CFG_SYNC_IN);
