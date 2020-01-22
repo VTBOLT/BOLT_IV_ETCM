@@ -144,9 +144,12 @@ void configCPUTimer(uint32_t cpuTimer, float period)
 //    }
 }
 
-//
-// cpuTimer0ISR - Counter for CpuTimer0
-//
+/**
+ * Interrupt handler for Timer0.
+ * Called every period.
+ *
+ * TODO: Implement software timers
+ */
 __interrupt void cpuTimer0ISR(void)
 {
     cpuTimer0IntCount++;
