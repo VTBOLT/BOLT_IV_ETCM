@@ -1,122 +1,107 @@
+/*
+ * IMU.c
+ *
+ *  Created on: Jan 19, 2020
+ *      Author: Tyler
+ */
+
 #include <IMU.h>
 
-void pulseSyncIn(void){
-    GPIO_writePin(67, 1);
-    GPIO_writePin(67, 0);
-}
+/**
+ * initSCI(void) initializes the SCI module for use without
+ * the FIFO buffer.
+ */
+void initSCI(void){
+    // GPIO TX
+    //GPIO_setMasterCore(GPIO_SCITX, GPIO_CORE_CPU1);
+    GPIO_setPinConfig (GPIO_CFG_SCITX);
+    GPIO_setPadConfig(GPIO_SCITX, GPIO_PIN_TYPE_STD);
+    GPIO_setDirectionMode(GPIO_SCITX, GPIO_DIR_MODE_OUT);
+    //GPIO_setQualificationMode(GPIO_SCITX, GPIO_QUAL_ASYNC);
 
-void initSCI()
-{
-    
-    // SCI Rx pin.
-    //
-    GPIO_setMasterCore(GPIO_SCIRX, GPIO_CORE_CPU1);
-    GPIO_setPinConfig(GPIO_CFG_SCIRX);
+    //GPIO RX
+    //GPIO_setMasterCore(GPIO_SCIRX, GPIO_CORE_CPU1);
+    GPIO_setPinConfig (GPIO_CFG_SCIRX);
     GPIO_setPadConfig(GPIO_SCIRX, GPIO_PIN_TYPE_STD);
     GPIO_setDirectionMode(GPIO_SCIRX, GPIO_DIR_MODE_IN);
-    GPIO_setQualificationMode(GPIO_SCIRX, GPIO_QUAL_ASYNC);
+    //GPIO_setQualificationMode(GPIO_SCIRX, GPIO_QUAL_ASYNC);
 
-    //SCI Tx pin.
-    //
+    // configure module
+    // 8N1
+    SCI_setConfig(SCI_BASE, DEVICE_LSPCLK_FREQ, SCI_BAUD, (SCI_CONFIG_WLEN_8 |SCI_CONFIG_STOP_ONE |SCI_CONFIG_PAR_NONE));
+    SCI_disableLoopback(SCI_BASE);
+    SCI_performSoftwareReset(SCI_BASE);
+
+    // FIFO
+    SCI_disableFIFO(SCI_BASE);
+
+    //SCI_disableInterrupt(SCI_BASE, SCI_INT_RXERR);
+
+    //SCI_resetChannels(SCI_BASE);
+
+    SCI_enableModule(SCI_BASE);
+}
+
+
+/**
+ * initSCIwithFIFO(void) initializes the SCI module for use with
+ * the FIFO buffer.
+ */
+void initSCIwithFIFO(void){
+    // GPIO TX
     GPIO_setMasterCore(GPIO_SCITX, GPIO_CORE_CPU1);
-    GPIO_setPinConfig(GPIO_CFG_SCITX);
+    GPIO_setPinConfig (GPIO_CFG_SCITX);
     GPIO_setPadConfig(GPIO_SCITX, GPIO_PIN_TYPE_STD);
     GPIO_setDirectionMode(GPIO_SCITX, GPIO_DIR_MODE_OUT);
     GPIO_setQualificationMode(GPIO_SCITX, GPIO_QUAL_ASYNC);
 
-    // 8 char bits, 1 stop bit, no parity. Baud rate is 115200.
-    SCI_setConfig(SCI_BASE, DEVICE_LSPCLK_FREQ, SCI_BAUD, (SCI_CONFIG_WLEN_8 |
-                  SCI_CONFIG_STOP_ONE | SCI_CONFIG_PAR_NONE));
-    
-    
-    SCI_enableModule(SCIB_BASE);
+    //GPIO RX
+    GPIO_setMasterCore(GPIO_SCIRX, GPIO_CORE_CPU1);
+    GPIO_setPinConfig (GPIO_CFG_SCIRX);
+    GPIO_setPadConfig(GPIO_SCIRX, GPIO_PIN_TYPE_STD);
+    GPIO_setDirectionMode(GPIO_SCIRX, GPIO_DIR_MODE_IN);
+    GPIO_setQualificationMode(GPIO_SCIRX, GPIO_QUAL_ASYNC);
 
-    SCI_resetChannels(SCIB_BASE);
-    SCI_enableFIFO(SCIB_BASE);
+    // configure module
+    // 8N1
+    SCI_setConfig(SCI_BASE, DEVICE_LSPCLK_FREQ, SCI_BAUD, (SCI_CONFIG_WLEN_8 |SCI_CONFIG_STOP_ONE |SCI_CONFIG_PAR_NONE));
+    SCI_enableModule(SCI_BASE);
 
-    //Initialize the IMU Interrupts.
-    initIMUInterrupt();
+    SCI_resetChannels(SCI_BASE);
 
+    SCI_enableFIFO(SCI_BASE);
 }
 
-void initIMUInterrupt(void)
-{
-     
-    //Set the RX interrupt handler.
-    Interrupt_register(INT_SCIB_RX, readIMUDataISR);
 
-    //enable FIFO Interrupts
-    SCI_enableInterrupt(SCI_BASE, SCI_INT_RXFF);
-    SCI_disableInterrupts(SCI_BASE,(SCI_INT_RXERR | SCI_FIFO_RX1));
+void SCItest(void){
+    SCI_writeCharBlockingNonFIFO(SCI_BASE, (uint16_t)'F');
+    uint32_t index = 0;
+    for (index = 0; index <= 1000000; index++);
+    SCI_writeCharBlockingNonFIFO(SCI_BASE, (uint16_t)'\n');
+    for (index = 0; index <= 1000000; index++);
 
-    //set the point where the FIFO_RX flag is fired.
-    SCI_setFIFOInterruptLevel(SCI_BASE, SCI_FIFO_TX2, SCI_FIFO_RX1);
-    SCI_performSoftwareReset(SCI_BASE)
-
-    //clear buffer
-    SCI_resetRxFIFO(SCI_BASE);
-
-    //enable SCI_RX PIE interrupt.
-    Interrupt_enable(INT_SCIB_RX);
-
-    //clear PIEACK
-    Interrupt_clearACKGroup(INTERRUPT_ACK_GROUP9);
+    //uint16_t rcvd = SCI_readCharBlockingNonFIFO(SCI_BASE);
 }
 
-//Read the data that was received from the IMU
-__interrupt void readIMUDataISR(void)
+uint8_t SCIgetFifoLength(void){
+    return SCI_getRxFIFOStatus(SCI_BASE);
+}
+
+/**
+ * Not used
+ */
+void SCIreadFifo(uint16_t *dataBuf, uint8_t FIFOlength)
 {
-
-    uint16_t i = 0;
-
-    //Variable to store a data frame.
-    uint16_t IMUDataFrame[18];
-
-
-    for(; i < 18; i++)
+    //dataBuf[1] = 0;
+    // get data
+    uint8_t index = 0;
+    for (index = 0; index < FIFOlength; index++)
     {
-        IMUDataFrame[i] = SCI_readCharNonBlocking(SCI_BASE)
+        dataBuf[index] = SCI_readCharNonBlocking(SCI_BASE);
     }
 
 
 
-    SCI_clearOverflowStatus(SCIB_BASE);
-
-    SCI_clearInterruptStatus(SCIB_BASE, SCI_INT_RXFF);
-
-    //
-    // Issue PIE ack
-    //
-    Interrupt_clearACKGroup(INTERRUPT_ACK_GROUP9);
-
+    //SCI_writeCharBlockingFIFO(SCI_BASE, )
 }
 
-void enableGPIO()
-{
-    GPIO_setPadConfig(67, GPIO_PIN_TYPE_PULLUP); //Enable pullup on GPIO67
-    GPIO_setPinConfig(GPIO_67_GPIO67);
-    GPIO_setDirectionMode(67, GPIO_DIR_MODE_OUT);
-}
-
-void initSCIBFIFO()
-{
-    //
-    //
-    
-
-    //SCI_enableLoopback(SCIB_BASE);
-
-
-    //
-    // RX and TX FIFO Interrupts Enabled
-    //
-    SCI_enableInterrupt(SCIB_BASE, (SCI_INT_RXFF | SCI_INT_TXFF));
-    SCI_disableInterrupt(SCIB_BASE, SCI_INT_RXERR);
-
-    SCI_setFIFOInterruptLevel(SCIB_BASE, SCI_FIFO_TX2, SCI_FIFO_RX1);
-    SCI_performSoftwareReset(SCIB_BASE);
-
-    SCI_resetTxFIFO(SCIB_BASE);
-    SCI_resetRxFIFO(SCIB_BASE);
-
-}

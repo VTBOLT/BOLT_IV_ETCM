@@ -1,26 +1,29 @@
+/*
+ * IMU.h
+ *
+ *  Created on: Jan 19, 2020
+ *      Author: Tyler
+ */
 
 #ifndef IMU_H_
 #define IMU_H_
 
+#include "device.h"
+#include "driverlib.h"
+
 #define GPIO_CFG_SCITX  GPIO_18_SCITXDB
-#define GPIO_CFG_SCIRX  GPIO_18_SCIRXDB
+#define GPIO_CFG_SCIRX  GPIO_19_SCIRXDB
 #define GPIO_SCITX      18U
 #define GPIO_SCIRX      19U
 
-#define SCIB_BASE       SCIB_BASE
+#define SCI_BASE        SCIB_BASE
 #define SCI_BAUD        115200U
 
-
-//Function Prototypes.
-
-__interrupt void readIMUDataISR(void);
-void initSCIBFIFO(void);
-void pulseSyncIn(void);
-void enableGPIO(void);
-void initIMUInterrupt(void);
+void initSCI(void);
+void SCItest(void);
+void SCIreadFifo(uint16_t *dataBuf, uint8_t FIFOlength);
+uint8_t SCIgetFifoLength(void);
+void initSCIwithFIFO(void);
 
 
-float yaw;
-float pitch;
-
-#endif 
+#endif /* IMU_H_ */
