@@ -26,8 +26,8 @@
 //#############################################################################
 
 // Included peripheral files
-
 #include <IMU.h>
+#include <leds_etcm.h>
 
 //****************
 // Defines
@@ -42,6 +42,7 @@
 void init(void);
 void run(void);
 void initLookup(void);
+void CANtest(void);
 void LEDflash(void);
 void initGPIO(void);
 void getIMUdata();
@@ -51,6 +52,7 @@ void initInterrupts(void);
 void initIMUinterrupt(void);
 void getIMUdataINT(void);
 void updateIMUbuffer(void);
+void displayIMU_CAN(void);
 
 //**********
 // Globals
@@ -70,9 +72,9 @@ void main(void)
 
 void run(void)
 {
-    int torque_request = 0; // likely to change type
+ //   int torque_request = 0; // likely to change type
     // start the timer
-    startTimer0();
+ //   startTimer0();
     while (1)
     {
         // Pull in sensor data to local variables
@@ -84,7 +86,7 @@ void run(void)
         // Carry out any calculations
 
         // Send torque request to motor
-        requestTorque(torque_request);
+ //       requestTorque(torque_request);
 
         // Send a test CANmsg
         //CANtest();
@@ -92,10 +94,16 @@ void run(void)
         // Flash the blue LED
         LEDflash();
 
+        // uart test
+        //SCItest();
+
+        //getIMUdata();
+        displayIMU_CAN();
+
         // after 5 seconds, reduce period to 500mS
-            if (cpuTimer0IntCount >= 5){
-                reloadTimer0(500);
-            }
+        //    if (cpuTimer0IntCount >= 5){
+          //      reloadTimer0(500);
+            //}
 
 
     }
@@ -113,8 +121,8 @@ void init(void)
     //initADC();
     //initEPWM();
     //initADCSOC();
-    initCAN();
-    initTimer0();
+    //initCAN();
+  //  initTimer0();
     //initSCI();
     initSCIwithFIFO();
     initInterrupts();
@@ -130,7 +138,7 @@ void initLookup(void)
 /**
  * Send out a test message over CAN
  * ID: 0x401
- */
+
 void CANtest(void)
 {
     uint16_t msg[8];
@@ -142,8 +150,9 @@ void CANtest(void)
     msg[5] = 0xAB;
     msg[6] = 0xCD;
     msg[7] = 0xEF;
-    CANA_transmitMsg(msg, 4, 1);
+//    CANA_transmitMsg(msg, 4, 1);
 }
+*/
 
 void LEDflash(void){
     GPIO_writePin(GPIO_BLUE_LED, 1);
@@ -220,9 +229,9 @@ void getIMUdata(){
         // check amount of data bytes received
         if (dataIndex >= IMU_FRAME_SIZE){
             // send buffer data over CAN
-            CANA_transmitMsg(dataBuffer, 8, 1);
-            CANA_transmitMsg(dataBuffer+8, 8, 2);   // increment pointer
-            CANA_transmitMsg(dataBuffer+16, 2, 3);   // increment pointer
+ //           CANA_transmitMsg(dataBuffer, 8, 1);
+   //         CANA_transmitMsg(dataBuffer+8, 8, 2);   // increment pointer
+     //       CANA_transmitMsg(dataBuffer+16, 2, 3);   // increment pointer
             return;
         }
         // loop again
@@ -257,9 +266,9 @@ void displayIMU_CAN(void){
     while (!IMUframeRcvd);
 
     // put data on CAN bus
-    CANA_transmitMsg(IMUdataBuffer, 8, 1);
-    CANA_transmitMsg(IMUdataBuffer + 8, 8, 2);   // increment pointer
-    CANA_transmitMsg(IMUdataBuffer + 16, 2, 3);   // increment pointer
+//    CANA_transmitMsg(IMUdataBuffer, 8, 1);
+  //  CANA_transmitMsg(IMUdataBuffer + 8, 8, 2);   // increment pointer
+    //CANA_transmitMsg(IMUdataBuffer + 16, 2, 3);   // increment pointer
 
 }
 
@@ -294,6 +303,22 @@ void getIMUdataINT(void){
         IMUframeRcvd = true;
         dataIndexPrev = 0;
     }
+    uint16_t temp[4];
+
+    float pitch;
+    float roll;
+
+    temp[0] = IMUdataBuffer[8];
+    temp[1] = IMUdataBuffer[9];
+    temp[2] = IMUdataBuffer[10];
+    temp[3] = IMUdataBuffer[11];
+    memcpy(&pitch, &temp, 4);
+
+    temp[0] = IMUdataBuffer[12];
+    temp[1] = IMUdataBuffer[13];
+    temp[2] = IMUdataBuffer[14];
+    temp[3] = IMUdataBuffer[15];
+    memcpy(&roll, &temp, 4);
 }
 
 //void getIMUdataINT(void){
@@ -342,7 +367,7 @@ void initInterrupts(void){
     // Interrupt init calls go here
     //-------------------------------
     initIMUinterrupt();
-    initTimer0Interrupt();
+//    initTimer0Interrupt();
 
     //*******************************
 
