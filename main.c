@@ -60,7 +60,11 @@ void displayIMU_CAN(void);
 volatile uint8_t IMUdataBuffer[IMU_FRAME_SIZE]; // 18 byte frames
 volatile bool IMUframeRcvd = false;
 
+float pitchFloat;
+float rollFloat;
 
+int pitchInt;
+int rollInt;
 
 void main(void)
 {
@@ -72,13 +76,18 @@ void main(void)
 
 void run(void)
 {
- //   int torque_request = 0; // likely to change type
+    //   int torque_request = 0; // likely to change type
     // start the timer
- //   startTimer0();
+    //   startTimer0();
     while (1)
     {
         // Pull in sensor data to local variables
         // This will use getters inside the peripheral .h/.c files
+
+        // strobe SYNC_IN GPIO
+        //GPIO_writePin(GPIO_SYNC_IN, 1);
+        // reset SYNC_IN GPIO
+        //GPIO_writePin(GPIO_SYNC_IN, 0);
 
         // Follow lookup table logic
         // Specific logic TBD
@@ -86,7 +95,7 @@ void run(void)
         // Carry out any calculations
 
         // Send torque request to motor
- //       requestTorque(torque_request);
+        //       requestTorque(torque_request);
 
         // Send a test CANmsg
         //CANtest();
@@ -97,14 +106,13 @@ void run(void)
         // uart test
         //SCItest();
 
-        //getIMUdata();
-        displayIMU_CAN();
+        getIMUdata();
+        //displayIMU_CAN();
 
         // after 5 seconds, reduce period to 500mS
         //    if (cpuTimer0IntCount >= 5){
-          //      reloadTimer0(500);
-            //}
-
+        //      reloadTimer0(500);
+        //}
 
     }
 }
@@ -122,7 +130,7 @@ void init(void)
     //initEPWM();
     //initADCSOC();
     //initCAN();
-  //  initTimer0();
+    //  initTimer0();
     //initSCI();
     initSCIwithFIFO();
     initInterrupts();
@@ -139,34 +147,38 @@ void initLookup(void)
  * Send out a test message over CAN
  * ID: 0x401
 
-void CANtest(void)
-{
-    uint16_t msg[8];
-    msg[0] = 0x01;
-    msg[1] = 0x23;
-    msg[2] = 0x45;
-    msg[3] = 0x67;
-    msg[4] = 0x89;
-    msg[5] = 0xAB;
-    msg[6] = 0xCD;
-    msg[7] = 0xEF;
-//    CANA_transmitMsg(msg, 4, 1);
-}
-*/
+ void CANtest(void)
+ {
+ uint16_t msg[8];
+ msg[0] = 0x01;
+ msg[1] = 0x23;
+ msg[2] = 0x45;
+ msg[3] = 0x67;
+ msg[4] = 0x89;
+ msg[5] = 0xAB;
+ msg[6] = 0xCD;
+ msg[7] = 0xEF;
+ //    CANA_transmitMsg(msg, 4, 1);
+ }
+ */
 
-void LEDflash(void){
+void LEDflash(void)
+{
     GPIO_writePin(GPIO_BLUE_LED, 1);
     // pause for a bit
     unsigned long index = 0; // why do I have to declare this here?
-    for (index = 0; index <= 1000000; index++);
+    for (index = 0; index <= 1000000; index++)
+        ;
     GPIO_writePin(GPIO_BLUE_LED, 0);
-    for (index = 0; index <= 1000000; index++);
+    for (index = 0; index <= 1000000; index++)
+        ;
 }
 
 /**
  * Module GPIO inits are in their respective .c file.
  */
-void initGPIO(void){
+void initGPIO(void)
+{
     Device_initGPIO();      // must be called first?
 
     //********
@@ -190,13 +202,15 @@ void initGPIO(void){
  * No CPU interrupts are used.
  */
 
-void getIMUdata(){
+void getIMUdata()
+{
     // data container
     volatile uint8_t dataBuffer[IMU_FRAME_SIZE]; // 18 byte frames
     volatile bool IMUframeRcvd = false;
 
     // make sure FIFO is enabled
-    if (!SCI_isFIFOEnabled(SCI_BASE)){
+    if (!SCI_isFIFOEnabled(SCI_BASE))
+    {
         // return error
         return;
     }
@@ -216,26 +230,47 @@ void getIMUdata(){
     GPIO_writePin(GPIO_SYNC_IN, 0);
 
     // wait for buffer fill (INT flag)
-    while((HWREGH(SCI_BASE + SCI_O_FFRX) & SCI_FFRX_RXFFINT) != SCI_FFRX_RXFFINT);
+    while ((HWREGH(SCI_BASE + SCI_O_FFRX) & SCI_FFRX_RXFFINT)
+            != SCI_FFRX_RXFFINT)
+        ;
 
     // get data one byte at a time
     volatile uint8_t dataIndex = 0;
-    while(!IMUframeRcvd){
+    while (!IMUframeRcvd)
+    {
         // check buffer
-        while(SCI_getRxFIFOStatus(SCI_BASE) == SCI_FIFO_RX0);    // wait for data (will get stuck here)
+        while (SCI_getRxFIFOStatus(SCI_BASE) == SCI_FIFO_RX0)
+            ;    // wait for data (will get stuck here)
         // grab byte
         dataBuffer[dataIndex] = SCI_readCharNonBlocking(SCI_BASE);
         dataIndex++;
         // check amount of data bytes received
-        if (dataIndex >= IMU_FRAME_SIZE){
+        if (dataIndex >= IMU_FRAME_SIZE)
+        {
             // send buffer data over CAN
- //           CANA_transmitMsg(dataBuffer, 8, 1);
-   //         CANA_transmitMsg(dataBuffer+8, 8, 2);   // increment pointer
-     //       CANA_transmitMsg(dataBuffer+16, 2, 3);   // increment pointer
+            //           CANA_transmitMsg(dataBuffer, 8, 1);
+            //         CANA_transmitMsg(dataBuffer+8, 8, 2);   // increment pointer
+            //       CANA_transmitMsg(dataBuffer+16, 2, 3);   // increment pointer
             return;
         }
         // loop again
     }
+
+    uint16_t temp[4];
+
+    temp[0] = IMUdataBuffer[8];
+    temp[1] = IMUdataBuffer[9];
+    temp[2] = IMUdataBuffer[10];
+    temp[3] = IMUdataBuffer[11];
+    memcpy(&pitchFloat, &temp, 4);
+    pitchInt = (int) pitchFloat;
+
+    temp[0] = IMUdataBuffer[12];
+    temp[1] = IMUdataBuffer[13];
+    temp[2] = IMUdataBuffer[14];
+    temp[3] = IMUdataBuffer[15];
+    memcpy(&rollFloat, &temp, 4);
+    rollInt = (int) rollFloat;
 
 }
 
@@ -243,11 +278,13 @@ void getIMUdata(){
  * This will start the IMU buffer update process.
  * Interrupt handled.
  */
-void updateIMUbuffer(void){
+void updateIMUbuffer(void)
+{
     // clear data buffer and flag
     IMUframeRcvd = false;
     uint8_t dataIndex = 0;
-    for(; dataIndex < IMU_FRAME_SIZE; dataIndex++){
+    for (; dataIndex < IMU_FRAME_SIZE; dataIndex++)
+    {
         IMUdataBuffer[dataIndex] = 0;
     }
     // strobe SYNC_IN GPIO
@@ -258,16 +295,18 @@ void updateIMUbuffer(void){
 
 }
 
-void displayIMU_CAN(void){
+void displayIMU_CAN(void)
+{
     // fetch new IMU data frame
     updateIMUbuffer();
 
     // wait for new frame
-    while (!IMUframeRcvd);
+    while (!IMUframeRcvd)
+        ;
 
     // put data on CAN bus
 //    CANA_transmitMsg(IMUdataBuffer, 8, 1);
-  //  CANA_transmitMsg(IMUdataBuffer + 8, 8, 2);   // increment pointer
+    //  CANA_transmitMsg(IMUdataBuffer + 8, 8, 2);   // increment pointer
     //CANA_transmitMsg(IMUdataBuffer + 16, 2, 3);   // increment pointer
 
 }
@@ -279,7 +318,8 @@ void displayIMU_CAN(void){
  *
  * TODO: Verify frame integrity (start-of-header, checksum)
  */
-void getIMUdataINT(void){
+void getIMUdataINT(void)
+{
     // get current amount of data in FIFO
     uint8_t FIFOdebug = HWREGH(SCI_BASE + SCI_O_FFRX);
     uint8_t FIFOsize = SCI_getRxFIFOStatus(SCI_BASE);
@@ -288,37 +328,41 @@ void getIMUdataINT(void){
     uint8_t dataIndex = 0;
     static uint8_t dataIndexPrev = 0;   // used to append data to IMU buffer
 
-    if ((dataIndexPrev + FIFOsize) > IMU_FRAME_SIZE){
+    if ((dataIndexPrev + FIFOsize) > IMU_FRAME_SIZE)
+    {
         // error
         dataIndexPrev = 0;
         return;
     }
 
-    for (; dataIndex < FIFOsize; dataIndex++){
-        IMUdataBuffer[dataIndex + dataIndexPrev] = SCI_readCharNonBlocking(SCI_BASE);
+    for (; dataIndex < FIFOsize; dataIndex++)
+    {
+        IMUdataBuffer[dataIndex + dataIndexPrev] = SCI_readCharNonBlocking(
+                SCI_BASE);
     }
     dataIndexPrev = dataIndexPrev + dataIndex;
     // complete packet received
-    if (dataIndexPrev >= (IMU_FRAME_SIZE)){
+    if (dataIndexPrev >= (IMU_FRAME_SIZE))
+    {
         IMUframeRcvd = true;
         dataIndexPrev = 0;
     }
     uint16_t temp[4];
 
-    float pitch;
-    float roll;
-
     temp[0] = IMUdataBuffer[8];
     temp[1] = IMUdataBuffer[9];
     temp[2] = IMUdataBuffer[10];
     temp[3] = IMUdataBuffer[11];
-    memcpy(&pitch, &temp, 4);
+    memcpy(&pitchFloat, &temp, 4);
+    pitchInt = (int) pitchFloat;
 
     temp[0] = IMUdataBuffer[12];
     temp[1] = IMUdataBuffer[13];
     temp[2] = IMUdataBuffer[14];
     temp[3] = IMUdataBuffer[15];
-    memcpy(&roll, &temp, 4);
+    memcpy(&rollFloat, &temp, 4);
+    rollInt = (int) rollFloat;
+
 }
 
 //void getIMUdataINT(void){
@@ -356,12 +400,12 @@ void getIMUdataINT(void){
 //    }
 //}
 
-void initInterrupts(void){
+void initInterrupts(void)
+{
     // Initialize PIE and clear PIE registers. Disables CPU interrupts.
     Interrupt_initModule();
     // Initialize the PIE vector table with pointers to the shell Interrupt
     Interrupt_initVectorTable();
-
 
     //*******************************
     // Interrupt init calls go here
@@ -379,7 +423,8 @@ void initInterrupts(void){
     //ERTM;
 }
 
-void initIMUinterrupt(void){
+void initIMUinterrupt(void)
+{
     // set SCI RX interrupt handler (ISR) in vector table
     Interrupt_register(INT_SCIB_RX, SCI_ISR);
 
@@ -399,10 +444,8 @@ void initIMUinterrupt(void){
 
     // clear PIEACK
     // see table 3-2 on pg.102 in tech. ref. manual for groups
-    Interrupt_clearACKGroup(INTERRUPT_ACK_GROUP8);
+    Interrupt_clearACKGroup(INTERRUPT_ACK_GROUP9);
 }
-
-
 
 /**
  * SCI_ISR(void) is the interrupt handler for SCI_RX CPU interrupt.
@@ -411,7 +454,8 @@ void initIMUinterrupt(void){
  * Interrupt fires when a data byte has been received in the
  * SCI RX FIFO buffer.
  */
-__interrupt void SCI_ISR(void){
+__interrupt void SCI_ISR(void)
+{
 
     //*****************
     // do stuff here
