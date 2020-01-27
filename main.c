@@ -386,7 +386,7 @@ void initIMUinterrupt(void){
 
     // clear PIEACK
     // see table 3-2 on pg.102 in tech. ref. manual for groups
-    Interrupt_clearACKGroup(INTERRUPT_ACK_GROUP8);
+    Interrupt_clearACKGroup(INTERRUPT_ACK_GROUP9);
 }
 
 
