@@ -259,6 +259,7 @@ void updateIMUbuffer(void){
     // reset SYNC_IN GPIO
     GPIO_writePin(GPIO_SYNC_IN, 0);
 
+    // buffer will start to fill as interrupt happens
 }
 
 void displayIMU_CAN(void){
@@ -386,7 +387,7 @@ void initIMUinterrupt(void){
 
     // clear PIEACK
     // see table 3-2 on pg.102 in tech. ref. manual for groups
-    Interrupt_clearACKGroup(INTERRUPT_ACK_GROUP8);
+    Interrupt_clearACKGroup(INTERRUPT_ACK_GROUP9);
 }
 
 
