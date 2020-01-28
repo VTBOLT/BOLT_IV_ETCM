@@ -1,12 +1,12 @@
 /*
- * IMU.h
+ * uart_etcm.h
  *
  *  Created on: Jan 19, 2020
  *      Author: Tyler
  */
 
-#ifndef IMU_H_
-#define IMU_H_
+#ifndef UART_ETCM_H_
+#define UART_ETCM_H_
 
 #include "device.h"
 #include "driverlib.h"
@@ -26,4 +26,4 @@ uint8_t SCIgetFifoLength(void);
 void initSCIwithFIFO(void);
 
 
-#endif /* IMU_H_ */
+#endif /* UART_ETCM_H_ */

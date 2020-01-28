@@ -1,11 +1,11 @@
 /*
- * IMU.c
+ * uart.c
  *
  *  Created on: Jan 19, 2020
  *      Author: Tyler
  */
 
-#include <IMU.h>
+#include <uart_etcm.h>
 
 /**
  * initSCI(void) initializes the SCI module for use without
