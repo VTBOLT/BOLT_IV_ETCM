@@ -76,19 +76,7 @@ a single CPU should be defined."
 #define DEVICE_GPIO_CFG_SCIRXDA     GPIO_28_SCIRXDA // "pinConfig" for SCI RX
 #define DEVICE_GPIO_CFG_SCITXDA     GPIO_29_SCITXDA // "pinConfig" for SCI TX
 
-//
-// CANA
-//
-#define DEVICE_GPIO_PIN_CANTXA      31U  // GPIO number for CANTXA
-#define DEVICE_GPIO_PIN_CANRXA      30U  // GPIO number for CANRXA
 
-//
-// CAN External Loopback
-//
-#define DEVICE_GPIO_CFG_CANRXA      GPIO_30_CANRXA  // "pinConfig" for CANA RX
-#define DEVICE_GPIO_CFG_CANTXA      GPIO_31_CANTXA  // "pinConfig" for CANA TX
-#define DEVICE_GPIO_CFG_CANRXB      GPIO_10_CANRXB  // "pinConfig" for CANB RX
-#define DEVICE_GPIO_CFG_CANTXB      GPIO_8_CANTXB   // "pinConfig" for CANB TX
 
 //*****************************************************************************
 //
