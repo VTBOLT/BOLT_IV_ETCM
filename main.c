@@ -27,8 +27,8 @@
 
 // Included peripheral files
 #include <can_etcm.h>
-//#include "adc_etcm.h"
-//#include "dac_etcm.h"
+#include "adc_etcm.h"
+#include "dac_etcm.h"
 #include <uart_etcm.h>
 #include <timer_etcm.h>
 #include <leds_etcm.h>
@@ -90,7 +90,7 @@ void run(void)
         // Carry out any calculations
 
         // Send torque request to motor
-        //requestTorque(torque_request);
+        requestTorque(torque_request);
 
         // Send a test CANmsg
         //CANtest();
@@ -259,7 +259,6 @@ void updateIMUbuffer(void){
     // reset SYNC_IN GPIO
     GPIO_writePin(GPIO_SYNC_IN, 0);
 
-    // buffer will start to fill as interrupt happens
 }
 
 void displayIMU_CAN(void){

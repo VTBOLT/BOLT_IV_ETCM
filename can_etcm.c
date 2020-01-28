@@ -117,12 +117,11 @@ bool CANA_transmitMsg(uint16_t *msgData, uint16_t msgLEN, uint16_t mailbox)
     }
     */
 
-
-    // Wait for transmitter to become free
+    // Drop data if transmitter busy
     // Can we queue??
-    while (HWREGH(CAN_MODULE_BASE + CAN_O_TXRQ_21)){
+    if (!HWREGH(CAN_MODULE_BASE + CAN_O_TXRQ_21)){
+        CAN_sendMessage(CAN_MODULE_BASE, TX_MSG_OBJ_BASE_ID + mailbox, msgLEN, msgData);
     }
-    CAN_sendMessage(CAN_MODULE_BASE, TX_MSG_OBJ_BASE_ID + mailbox, msgLEN, msgData);
 
 
     // Check for CAN bus error passive state (true). Error counts are not currently handled.
