@@ -7,6 +7,10 @@
 
 #include <uart_etcm.h>
 
+/**
+ * initSCI(void) initializes the SCI module for use without
+ * the FIFO buffer.
+ */
 void initSCI(void){
     // GPIO TX
     //GPIO_setMasterCore(GPIO_SCITX, GPIO_CORE_CPU1);
@@ -38,11 +42,12 @@ void initSCI(void){
     SCI_enableModule(SCI_BASE);
 }
 
-void initSCIFIFO(void){
 
-    // FIFO
-    //SCIinitFIFO();
-
+/**
+ * initSCIwithFIFO(void) initializes the SCI module for use with
+ * the FIFO buffer.
+ */
+void initSCIwithFIFO(void){
     // GPIO TX
     GPIO_setMasterCore(GPIO_SCITX, GPIO_CORE_CPU1);
     GPIO_setPinConfig (GPIO_CFG_SCITX);
@@ -57,26 +62,16 @@ void initSCIFIFO(void){
     GPIO_setDirectionMode(GPIO_SCIRX, GPIO_DIR_MODE_IN);
     GPIO_setQualificationMode(GPIO_SCIRX, GPIO_QUAL_ASYNC);
 
-    Interrupt_initModule();
-    Interrupt_initVectorTable();
-
-    SCI_performSoftwareReset(SCI_BASE);
-
-
     // configure module
     // 8N1
     SCI_setConfig(SCI_BASE, DEVICE_LSPCLK_FREQ, SCI_BAUD, (SCI_CONFIG_WLEN_8 |SCI_CONFIG_STOP_ONE |SCI_CONFIG_PAR_NONE));
+    SCI_enableModule(SCI_BASE);
 
     SCI_resetChannels(SCI_BASE);
-    SCI_resetRxFIFO(SCI_BASE);
-    SCI_resetTxFIFO(SCI_BASE);
-    SCI_clearInterruptStatus(SCI_BASE, SCI_INT_TXFF | SCI_INT_RXFF);
-    //SCI_disableLoopback(SCI_BASE);
-    SCI_enableFIFO(SCI_BASE);
 
-    SCI_enableModule(SCI_BASE);
-    SCI_performSoftwareReset(SCI_BASE);
+    SCI_enableFIFO(SCI_BASE);
 }
+
 
 void SCItest(void){
     SCI_writeCharBlockingNonFIFO(SCI_BASE, (uint16_t)'F');
@@ -92,6 +87,9 @@ uint8_t SCIgetFifoLength(void){
     return SCI_getRxFIFOStatus(SCI_BASE);
 }
 
+/**
+ * Not used
+ */
 void SCIreadFifo(uint16_t *dataBuf, uint8_t FIFOlength)
 {
     //dataBuf[1] = 0;
@@ -107,14 +105,3 @@ void SCIreadFifo(uint16_t *dataBuf, uint8_t FIFOlength)
     //SCI_writeCharBlockingFIFO(SCI_BASE, )
 }
 
-
-void SCIinitFIFO(void)
-{
-    SCI_clearInterruptStatus(SCI_BASE, SCI_INT_TXFF);
-
-    SCI_enableFIFO(SCI_BASE);
-
-    SCI_setFIFOInterruptLevel(SCI_BASE, SCI_FIFO_TX0, SCI_FIFO_RX4);
-
-    SCI_clearInterruptStatus(SCIA_BASE, SCI_INT_RXFF);
-}
