@@ -4,11 +4,6 @@ uint16_t sensorSample;
 volatile int16_t sensorPosition;
 volatile bool wheelie;
 
-void initADC(void);
-void initEPWM(void);
-void initADCSOC(void);
-__interrupt void frontSuspensionISR(void);
-
 //Initialize and power up the ADC
 void initADC(void)
 {
@@ -47,9 +42,9 @@ void initEPWM(void)
 //Initialize ADC SOC and configure the ADCA's SOC0 to be triggered by the ePWM1
 void initADCSOC(void)
 {
-    //Configure the SOC. The position sensor is connected to A0
+    //Configure the SOC. The position sensor is connected to B4
     ADC_setupSOC(ADCB_BASE, ADC_SOC_NUMBER0, ADC_TRIGGER_EPWM1_SOCB,
-                 ADC_CH_ADCIN8, 140);
+                 ADC_CH_ADCIN6, 15);
 
     //Set the SOC0 to set interrupt 1 flag. Enable interrupt and clear flag.
     ADC_setInterruptSource(ADCB_BASE, ADC_INT_NUMBER1, ADC_SOC_NUMBER0);
