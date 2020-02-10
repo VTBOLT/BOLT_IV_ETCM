@@ -50,7 +50,7 @@ void main(void)
 
 void run(void)
 {
-    int torque_request = 0; // likely to change type
+    float torque_request = 0.0; // likely to change type
     while (1)
     {
         // Pull in sensor data to local variables
@@ -95,6 +95,7 @@ void init(void)
     initCAN();
     //initSCI();
     initSCIFIFO();
+    initDAC();
 }
 
 //Initialize lookup tables
