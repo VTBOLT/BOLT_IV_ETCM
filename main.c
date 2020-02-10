@@ -10,6 +10,7 @@
 //  Quinton Miller
 //  Josh Collins
 //  Tyler Shaffer
+//  Stephen Welch
 //#############################################################################
 // Tyler Shaffer, 1/8/2020: Imported can_etcm.h, noticed that a new version of
 // C2000ware exists also.
@@ -30,10 +31,13 @@
 #include "adc_etcm.h"
 #include "dac_etcm.h"
 #include <uart_etcm.h>
+#include "fpu_math.h"
+#include "math.h"
 
 //Function Prototypes.
 void init(void);
 void run(void);
+void initMath(void);
 void initLookup(void);
 void CANtest(void);
 void LEDflash(void);
@@ -87,7 +91,7 @@ void init(void)
     // Initialize device clock and peripherals
     Device_init();
     initGPIO();     // do not move
-
+    initMath();
     initLookup();
     //initADC();
     //initEPWM();
@@ -96,6 +100,21 @@ void init(void)
     //initSCI();
     initSCIFIFO();
     initDAC();
+}
+
+void initMath(void)
+{
+    #ifdef FLASH
+        EALLOW;
+        Flash0EccRegs.ECC_ENABLE.bit.ENABLE = 0;
+        memcpy((uint32_t *)&RamfuncsRunStart, (uint32_t *)&RamfuncsLoadStart,
+                (uint32_t)&RamfuncsLoadSize );
+        FPU_initFlash();
+    #endif //FLASH
+
+    FPU_initSystemClocks();
+
+    FPU_initEpie();
 }
 
 //Initialize lookup tables
