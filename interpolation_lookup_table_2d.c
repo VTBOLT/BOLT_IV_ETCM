@@ -14,7 +14,7 @@ void init(const lookup_table_2d_t& table) {
     float max_value = 0;
     for(int i = 0; i < LOOKUP_TABLE_2D_SIZE; i++) {
         float current = table.values[i];
-        min_value = fmaxf(current, min_value);
+        min_value = fminf(current, min_value);
         max_value = fmaxf(current, max_value);
     }
     table.min_value = min_value;
