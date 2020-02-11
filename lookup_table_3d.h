@@ -18,6 +18,10 @@ typedef struct {
 } lookup_table_3d_t;
 
 /**
+ * Interpolates between a start value and end value based on an amount from 0-1.
+ */
+float interpolate(float start, float end, float amount);
+/**
  * Performs any initialization needed to perform lookups. Typically this will
  * entail finding the largest and smallest values in the table.
  */
