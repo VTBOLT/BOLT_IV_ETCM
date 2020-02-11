@@ -5,3 +5,4 @@ config
 .launches
 /CPU1_RAM/
 /CPU1_FLASH/
+/main.c

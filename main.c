@@ -77,6 +77,8 @@ void main(void)
 void run(void)
 {
     int torque_request = 0; // likely to change type
+    uint16_t throttleADC = 0;
+
     // start the timer
     startTimer0();
     while (1)
@@ -90,7 +92,7 @@ void run(void)
         // Carry out any calculations
 
         // Send torque request to motor
-        requestTorque(torque_request);
+        //requestTorque(torque_request);
 
         // Send a test CANmsg
         //CANtest();
@@ -102,13 +104,15 @@ void run(void)
         //SCItest();
 
         //getIMUdata();
-        displayIMU_CAN();
+        //displayIMU_CAN();
+
+        // grab a throttle ADC value
+        throttleADC = getThrottleADC();
 
         // after 5 seconds, reduce period to 500mS
             if (cpuTimer0IntCount >= 5){
                 reloadTimer0(500);
             }
-
 
     }
 }
@@ -122,9 +126,8 @@ void init(void)
     initLEDS();
 
     //initLookup();
-    //initADC();
+    initADC();
     //initEPWM();
-    //initADCSOC();
     initCAN();
     initTimer0();
     //initSCI();
