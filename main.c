@@ -32,6 +32,7 @@
 #include <uart_etcm.h>
 #include <timer_etcm.h>
 #include <leds_etcm.h>
+#include <ecap_etcm.h>
 
 //****************
 // Defines
@@ -57,6 +58,7 @@ void initIMUinterrupt(void);
 void getIMUdataINT(void);
 void updateIMUbuffer(void);
 void displayIMU_CAN(void);
+extern void sendCAN(void);
 
 //**********
 // Globals
@@ -83,16 +85,6 @@ void run(void)
     startTimer0();
     while (1)
     {
-        // Pull in sensor data to local variables
-        // This will use getters inside the peripheral .h/.c files
-
-        // Follow lookup table logic
-        // Specific logic TBD
-
-        // Carry out any calculations
-
-        // Send torque request to motor
-        //requestTorque(torque_request);
 
         // Send a test CANmsg
         //CANtest();
@@ -104,7 +96,7 @@ void run(void)
         //SCItest();
 
         //getIMUdata();
-        //displayIMU_CAN();
+        displayIMU_CAN();
 
         // grab a throttle ADC value
         throttleADC = getThrottleADC();
@@ -127,11 +119,13 @@ void init(void)
 
     //initLookup();
     initADC();
-    //initEPWM();
+
     initCAN();
     initTimer0();
     //initSCI();
     initSCIwithFIFO();
+    initECAP();
+
     initInterrupts();
 }
 
@@ -272,10 +266,7 @@ void displayIMU_CAN(void){
     // wait for new frame
     while (!IMUframeRcvd);
 
-    // put data on CAN bus
-    CANA_transmitMsg(IMUdataBuffer, 8, 1);
-    CANA_transmitMsg(IMUdataBuffer + 8, 8, 2);   // increment pointer
-    CANA_transmitMsg(IMUdataBuffer + 16, 2, 3);   // increment pointer
+    // data is sent out over CAN via a timer INT
 
 }
 
@@ -360,6 +351,8 @@ void initInterrupts(void){
     initIMUinterrupt();
     initTimer0Interrupt();
 
+    Interrupt_register(INT_ECAP1, &ecap1ISR);
+    Interrupt_enable(INT_ECAP1);
     //*******************************
 
     // enable CPU interrupts
@@ -369,6 +362,7 @@ void initInterrupts(void){
     //EINT;
     //ERTM;
 }
+
 
 void initIMUinterrupt(void){
     // set SCI RX interrupt handler (ISR) in vector table
@@ -421,6 +415,18 @@ __interrupt void SCI_ISR(void){
     // Issue PIE ack
     Interrupt_clearACKGroup(INTERRUPT_ACK_GROUP9);
 
+}
+
+void sendCAN(void){
+    // put IMU data
+    CANA_transmitMsg(IMUdataBuffer, 8, 1);
+    CANA_transmitMsg(IMUdataBuffer + 8, 8, 2);   // increment pointer
+    CANA_transmitMsg(IMUdataBuffer + 16, 2, 3);   // increment pointer
+
+    // half assed typecasting
+    uint16_t signalFreqInteger = (uint16_t)signalFreq;
+    // put wheel speed (ecap)
+    CANA_transmitMsg(&signalFreqInteger, 1, 4);     // will truncate to integer!
 }
 
 //

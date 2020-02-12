@@ -155,6 +155,9 @@ __interrupt void cpuTimer0ISR(void)
     cpuTimer0IntCount++;
     toggleRedLED();
 
+    // send CAN data
+    sendCAN();
+
     //
     // Acknowledge this interrupt to receive more interrupts from group 1
     //
