@@ -28,6 +28,7 @@ void initEPWM(void);
 void initADCSOC(void);
 __interrupt void adcA0ISR(void);
 uint16_t getThrottleADC(void);
+float getThrottlePercent(uint16_t throttleADCraw);
 
 
 #endif /* ADC_ETCM_H_ */

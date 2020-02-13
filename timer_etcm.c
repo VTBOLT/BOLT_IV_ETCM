@@ -152,7 +152,10 @@ void configCPUTimer(uint32_t cpuTimer, float period)
  */
 __interrupt void cpuTimer0ISR(void)
 {
-    cpuTimer0IntCount++;
+    // prevent other interrupt jumps
+    Interrupt_disableMaster();
+
+    //cpuTimer0IntCount++;
     toggleRedLED();
 
     // send CAN data
@@ -162,4 +165,6 @@ __interrupt void cpuTimer0ISR(void)
     // Acknowledge this interrupt to receive more interrupts from group 1
     //
     Interrupt_clearACKGroup(INTERRUPT_ACK_GROUP1);
+
+    Interrupt_enableMaster();
 }

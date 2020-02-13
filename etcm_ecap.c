@@ -101,6 +101,8 @@ void initECAP()
     ECAP_enableInterrupt(ECAP1_BASE, ECAP_ISR_SOURCE_CAPTURE_EVENT_2);
 }
 
+
+
 //
 // eCAP 1 ISR
 //

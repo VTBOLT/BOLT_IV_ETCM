@@ -43,7 +43,7 @@ void initEPWM(void)
  * ADCIN4 -> Rear suspension travel
  *
  * ADC_A
- * ADCIN4 -> Handgrip throttle
+ * ADCIN4 -> Handgrip throttle (pin 69)
  */
 void initADCSOC(void)
 {
@@ -75,4 +75,20 @@ uint16_t getThrottleADC(void){
 
     // return results
     return ADC_readResult(ADCARESULT_BASE, ADC_SOC_THROTTLE);
+}
+
+#define ADC_RESOLUTION_BITS 4095
+#define ADC_REF_VOLTAGE     3
+
+float getThrottlePercent(uint16_t throttleADCraw){
+    // grab throttle ADC value
+    //uint16_t throttleADCraw = getThrottleADC();
+
+    // find percentage
+    uint16_t throttlePercent = (throttleADCraw / (float)ADC_RESOLUTION_BITS) * 100;
+
+    // error check and bound
+
+    // return with value
+    return throttlePercent;
 }

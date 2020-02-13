@@ -34,12 +34,31 @@
 #include <leds_etcm.h>
 #include <ecap_etcm.h>
 
+#include "string.h"     // efficiency?
+
 //****************
 // Defines
 //****************
 #define GPIO_CFG_SYNC_IN GPIO_67_GPIO67
 #define GPIO_SYNC_IN 67
 #define IMU_FRAME_SIZE 18
+
+//***********
+// Typedefs, ...
+//***********
+typedef struct SensorData
+{
+    float wheelSpeedFront;
+    float wheelSpeedRear;
+    float throttlePosition;
+    uint16_t throttlePositionRaw;
+
+}vehicleSensorData_t;
+
+// Strings
+const char* ETCM_START = "ETCM_START\r\n";
+const char* THROTTLE_POS = "Throttle Position: ";
+const char* WHEEL_SPEED = "Wheel Speed: ";
 
 //***********************
 // Function Prototypes
@@ -59,6 +78,12 @@ void getIMUdataINT(void);
 void updateIMUbuffer(void);
 void displayIMU_CAN(void);
 extern void sendCAN(void);
+void getVehicleSensorData(vehicleSensorData_t *vehicleSensorData);
+void sendCAN_nonINT(vehicleSensorData_t vehicleSensorData);
+void make_5digit_NumString(unsigned int num, uint16_t *string);
+void debugPrint(vehicleSensorData_t vehicleSensorData);
+
+
 
 //**********
 // Globals
@@ -78,6 +103,9 @@ void main(void)
 
 void run(void)
 {
+    // container for vehicle sensor data
+    vehicleSensorData_t vehicleSensorData = {0,0,0,0};
+
     int torque_request = 0; // likely to change type
     uint16_t throttleADC = 0;
 
@@ -85,6 +113,11 @@ void run(void)
     startTimer0();
     while (1)
     {
+        // Get vehicle sensor current values
+        getVehicleSensorData(&vehicleSensorData);
+
+        // Send that data over CAN for debug
+        sendCAN_nonINT(vehicleSensorData);
 
         // Send a test CANmsg
         //CANtest();
@@ -92,19 +125,19 @@ void run(void)
         // Flash the blue LED
         LEDflash();
 
+        debugPrint(vehicleSensorData);
+
+
+
         // uart test
         //SCItest();
 
         //getIMUdata();
-        displayIMU_CAN();
+        //displayIMU_CAN();
 
         // grab a throttle ADC value
-        throttleADC = getThrottleADC();
+        //throttleADC = getThrottleADC();
 
-        // after 5 seconds, reduce period to 500mS
-            if (cpuTimer0IntCount >= 5){
-                reloadTimer0(500);
-            }
 
     }
 }
@@ -117,16 +150,52 @@ void init(void)
     initGPIO();     // do not move
     initLEDS();
 
-    //initLookup();
     initADC();
 
     initCAN();
     initTimer0();
-    //initSCI();
-    initSCIwithFIFO();
+    initSCI();
     initECAP();
 
     initInterrupts();
+}
+
+void make_5digit_NumString(unsigned int num, uint16_t *string)
+{
+    string[0]= (num  / 10000) +'0';
+    string[1]= ((num%10000) / 1000) +'0';
+    string[2]= ((num%1000) / 100) +'0';
+    string[3]= ((num%100) / 10) +'0';
+    string[4]= ((num%10) / 1) +'0';
+    string[5]= 0;
+}
+
+void debugPrint(vehicleSensorData_t vehicleSensorData){
+    uint16_t throttleString[5];
+    uint16_t freqString[5];
+
+    // convert throttle ADC value to ASCII
+    make_5digit_NumString(vehicleSensorData.throttlePositionRaw, throttleString);
+
+    // convert wheel speed freq to ASCII
+    uint16_t wheelSpeedFreqInt = (signalFreq*100);
+    make_5digit_NumString(wheelSpeedFreqInt, freqString);
+
+    // return cursor to top
+    SCIwrite(SCI_DEBUG_BASE, "\033[2J", 8);      // clear
+    SCIwrite(SCI_DEBUG_BASE, "\033[0;0H", 8);    // home
+    SCIwrite(SCI_DEBUG_BASE, "\033[?25l", 8);    // hide cursor
+
+    // print data
+    SCIwrite(SCI_DEBUG_BASE, ETCM_START, strlen(ETCM_START));
+    SCIwrite(SCI_DEBUG_BASE, THROTTLE_POS, strlen(THROTTLE_POS));
+    SCIwrite(SCI_DEBUG_BASE, throttleString, 5);
+
+    SCIwrite(SCI_DEBUG_BASE, "\r\n", strlen("\r\n"));
+    SCIwrite(SCI_DEBUG_BASE, WHEEL_SPEED, strlen(WHEEL_SPEED));
+    SCIwrite(SCI_DEBUG_BASE, freqString, 5);
+
+
 }
 
 //Initialize lookup tables
@@ -135,6 +204,13 @@ void initLookup(void)
     // Open file containing tables
     // Load tables into ROM
 }
+
+
+void getVehicleSensorData(vehicleSensorData_t *vehicleSensorData){
+    vehicleSensorData->throttlePositionRaw = getThrottleADC();
+    vehicleSensorData->throttlePosition = getThrottlePercent(vehicleSensorData->throttlePositionRaw);
+}
+
 
 /**
  * Send out a test message over CAN
@@ -196,19 +272,19 @@ void getIMUdata(){
     volatile bool IMUframeRcvd = false;
 
     // make sure FIFO is enabled
-    if (!SCI_isFIFOEnabled(SCI_BASE)){
+    if (!SCI_isFIFOEnabled(SCI_IMU_BASE)){
         // return error
         return;
     }
     // clear RX_FIFO
-    SCI_resetRxFIFO(SCI_BASE);
+    SCI_resetRxFIFO(SCI_IMU_BASE);
 
     // configure level at which INT flag is thrown
     // RX1 = 1 byte in buffer
-    SCI_setFIFOInterruptLevel(SCI_BASE, SCI_FIFO_TX1, SCI_FIFO_RX1);
+    SCI_setFIFOInterruptLevel(SCI_IMU_BASE, SCI_FIFO_TX1, SCI_FIFO_RX1);
 
     // enable RX_FIFO INT
-    SCI_enableInterrupt(SCI_BASE, SCI_INT_RXFF);
+    SCI_enableInterrupt(SCI_IMU_BASE, SCI_INT_RXFF);
 
     // strobe SYNC_IN GPIO
     GPIO_writePin(GPIO_SYNC_IN, 1);
@@ -216,15 +292,15 @@ void getIMUdata(){
     GPIO_writePin(GPIO_SYNC_IN, 0);
 
     // wait for buffer fill (INT flag)
-    while((HWREGH(SCI_BASE + SCI_O_FFRX) & SCI_FFRX_RXFFINT) != SCI_FFRX_RXFFINT);
+    while((HWREGH(SCI_IMU_BASE + SCI_O_FFRX) & SCI_FFRX_RXFFINT) != SCI_FFRX_RXFFINT);
 
     // get data one byte at a time
     volatile uint8_t dataIndex = 0;
     while(!IMUframeRcvd){
         // check buffer
-        while(SCI_getRxFIFOStatus(SCI_BASE) == SCI_FIFO_RX0);    // wait for data (will get stuck here)
+        while(SCI_getRxFIFOStatus(SCI_IMU_BASE) == SCI_FIFO_RX0);    // wait for data (will get stuck here)
         // grab byte
-        dataBuffer[dataIndex] = SCI_readCharNonBlocking(SCI_BASE);
+        dataBuffer[dataIndex] = SCI_readCharNonBlocking(SCI_IMU_BASE);
         dataIndex++;
         // check amount of data bytes received
         if (dataIndex >= IMU_FRAME_SIZE){
@@ -279,8 +355,8 @@ void displayIMU_CAN(void){
  */
 void getIMUdataINT(void){
     // get current amount of data in FIFO
-    uint8_t FIFOdebug = HWREGH(SCI_BASE + SCI_O_FFRX);
-    uint8_t FIFOsize = SCI_getRxFIFOStatus(SCI_BASE);
+    uint8_t FIFOdebug = HWREGH(SCI_IMU_BASE + SCI_O_FFRX);
+    uint8_t FIFOsize = SCI_getRxFIFOStatus(SCI_IMU_BASE);
 
     // get the data from the FIFO
     uint8_t dataIndex = 0;
@@ -293,7 +369,7 @@ void getIMUdataINT(void){
     }
 
     for (; dataIndex < FIFOsize; dataIndex++){
-        IMUdataBuffer[dataIndex + dataIndexPrev] = SCI_readCharNonBlocking(SCI_BASE);
+        IMUdataBuffer[dataIndex + dataIndexPrev] = SCI_readCharNonBlocking(SCI_IMU_BASE);
     }
     dataIndexPrev = dataIndexPrev + dataIndex;
     // complete packet received
@@ -307,15 +383,15 @@ void getIMUdataINT(void){
 //    if (IMUframeRcvd){
 //        // something is wrong, should not be here
 //        // clear buffer and return
-//        SCI_resetRxFIFO(SCI_BASE);
-//        //uint8_t FIFOsize = SCI_getRxFIFOStatus(SCI_BASE);
-//        //FIFOsize = SCI_getRxFIFOStatus(SCI_BASE);
+//        SCI_resetRxFIFO(SCI_IMU_BASE);
+//        //uint8_t FIFOsize = SCI_getRxFIFOStatus(SCI_IMU_BASE);
+//        //FIFOsize = SCI_getRxFIFOStatus(SCI_IMU_BASE);
 //        return;
 //    }
 //
 //    // get current amount of data in FIFO
-//    uint8_t FIFOdebug = HWREGH(SCI_BASE + SCI_O_FFRX);
-//    uint8_t FIFOsize = SCI_getRxFIFOStatus(SCI_BASE);
+//    uint8_t FIFOdebug = HWREGH(SCI_IMU_BASE + SCI_O_FFRX);
+//    uint8_t FIFOsize = SCI_getRxFIFOStatus(SCI_IMU_BASE);
 //
 //    // get the data from the FIFO
 //    uint8_t dataIndex = 0;
@@ -329,7 +405,7 @@ void getIMUdataINT(void){
 //
 //    for (; dataIndex < FIFOsize; dataIndex++){
 //        IMUdataBuffer[dataIndex + dataIndexPrev] = SCI_readCharNonBlocking(
-//        SCI_BASE);
+//        SCI_IMU_BASE);
 //    }
 //    dataIndexPrev = dataIndexPrev + dataIndex;
 //    if (dataIndexPrev >= (IMU_FRAME_SIZE)){
@@ -369,15 +445,15 @@ void initIMUinterrupt(void){
     Interrupt_register(INT_SCIB_RX, SCI_ISR);
 
     // enable SCI FIFO interrupts
-    SCI_enableInterrupt(SCI_BASE, SCI_INT_RXFF);
-    SCI_disableInterrupt(SCI_BASE, (SCI_INT_RXERR | SCI_INT_TXFF));
+    SCI_enableInterrupt(SCI_IMU_BASE, SCI_INT_RXFF);
+    SCI_disableInterrupt(SCI_IMU_BASE, (SCI_INT_RXERR | SCI_INT_TXFF));
 
     // set the level at which the FIFO_RX flag is thrown
-    SCI_setFIFOInterruptLevel(SCI_BASE, SCI_FIFO_TX2, SCI_FIFO_RX1);
-    SCI_performSoftwareReset(SCI_BASE);
+    SCI_setFIFOInterruptLevel(SCI_IMU_BASE, SCI_FIFO_TX2, SCI_FIFO_RX1);
+    SCI_performSoftwareReset(SCI_IMU_BASE);
 
     // clear buffer
-    SCI_resetRxFIFO(SCI_BASE);
+    SCI_resetRxFIFO(SCI_IMU_BASE);
 
     // enable SCI_RX PIE interrupt
     Interrupt_enable(INT_SCIB_RX);
@@ -407,21 +483,31 @@ __interrupt void SCI_ISR(void){
 
     // clear buffer to prevent another interrupt
     // Do not do this. FIFO is automatically cleared as data is removed.
-    // SCI_resetRxFIFO(SCI_BASE);
+    // SCI_resetRxFIFO(SCI_IMU_BASE);
 
-    SCI_clearOverflowStatus(SCI_BASE);
-    SCI_clearInterruptStatus(SCI_BASE, SCI_INT_RXFF);
+    SCI_clearOverflowStatus(SCI_IMU_BASE);
+    SCI_clearInterruptStatus(SCI_IMU_BASE, SCI_INT_RXFF);
 
     // Issue PIE ack
     Interrupt_clearACKGroup(INTERRUPT_ACK_GROUP9);
 
 }
 
+
+void sendCAN_nonINT(vehicleSensorData_t vehicleSensorData){
+    uint16_t dataMSG[2];
+    dataMSG[0] = vehicleSensorData.throttlePositionRaw;
+    dataMSG[1] = (uint16_t)vehicleSensorData.wheelSpeedFront;
+
+    CANA_transmitMsg(dataMSG, 2, 1);
+
+}
+
 void sendCAN(void){
     // put IMU data
-    CANA_transmitMsg(IMUdataBuffer, 8, 1);
-    CANA_transmitMsg(IMUdataBuffer + 8, 8, 2);   // increment pointer
-    CANA_transmitMsg(IMUdataBuffer + 16, 2, 3);   // increment pointer
+    //CANA_transmitMsg(IMUdataBuffer, 8, 1);
+    //CANA_transmitMsg(IMUdataBuffer + 8, 8, 2);   // increment pointer
+    //CANA_transmitMsg(IMUdataBuffer + 16, 2, 3);   // increment pointer
 
     // half assed typecasting
     uint16_t signalFreqInteger = (uint16_t)signalFreq;
