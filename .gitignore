@@ -1,6 +1,7 @@
-Debug
-Release
+/Debug
+/Release
 *.xdchelp
-config
-.launches
-/CPU1_RAM/
+.config/
+.launches/
+CPU1_RAM/
+targetConfigs/
