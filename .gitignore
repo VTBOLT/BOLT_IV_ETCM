@@ -39,3 +39,4 @@ Release/
 .config/
 .launches/
 CPU1_RAM/makefile
+/CPU1_RAM/
