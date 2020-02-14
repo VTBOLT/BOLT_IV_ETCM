@@ -29,11 +29,6 @@ int main(void)
 
     initFrontSuspensionSensor();
 
-
-    //Enable Global Interrupt (INTM) and realtime interrupt (DBGM)
-    EINT;
-    ERTM;
-
     //Loop forever
     while(1)
     {;}

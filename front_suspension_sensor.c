@@ -25,15 +25,15 @@ void initADC(void)
 void initEPWM(void)
 {
     //Disable SOCA
-    EPWM_disableADCTrigger(EPWM1_BASE, EPWM_SOC_B);
+    EPWM_disableADCTrigger(EPWM1_BASE, EPWM_SOC_A);
 
     //Configure SOC to happen on up-count event.
-    EPWM_setADCTriggerSource(EPWM1_BASE, EPWM_SOC_B, EPWM_SOC_TBCTR_U_CMPA);
-    EPWM_setADCTriggerEventPrescale(EPWM1_BASE, EPWM_SOC_B, 1);
+    EPWM_setADCTriggerSource(EPWM1_BASE, EPWM_SOC_A, EPWM_SOC_TBCTR_U_CMPA);
+    EPWM_setADCTriggerEventPrescale(EPWM1_BASE, EPWM_SOC_A, 1);
 
     //Set compare A value to 2048 and period to 4096.
-    EPWM_setCounterCompareValue(EPWM1_BASE, EPWM_COUNTER_COMPARE_B, 0x0800);
-    EPWM_setTimeBasePeriod(EPWM1_BASE,0x1000);
+    EPWM_setCounterCompareValue(EPWM1_BASE, EPWM_COUNTER_COMPARE_A, 0x0800);
+    EPWM_setTimeBasePeriod(EPWM1_BASE, 0x1000);
 
     //Freeze the counter
     EPWM_setTimeBaseCounterMode(EPWM1_BASE, EPWM_COUNTER_MODE_STOP_FREEZE);
@@ -43,8 +43,8 @@ void initEPWM(void)
 void initADCSOC(void)
 {
     //Configure the SOC. The position sensor is connected to B4
-    ADC_setupSOC(ADCB_BASE, ADC_SOC_NUMBER0, ADC_TRIGGER_EPWM1_SOCB,
-                 ADC_CH_ADCIN6, 15);
+    ADC_setupSOC(ADCB_BASE, ADC_SOC_NUMBER0, ADC_TRIGGER_EPWM1_SOCA,
+                 ADC_CH_ADCIN8, 270e-9 * DEVICE_SYSCLK_FREQ);
 
     //Set the SOC0 to set interrupt 1 flag. Enable interrupt and clear flag.
     ADC_setInterruptSource(ADCB_BASE, ADC_INT_NUMBER1, ADC_SOC_NUMBER0);
@@ -59,7 +59,7 @@ __interrupt void frontSuspensionISR(void)
     sensorSample = ADC_readResult(ADCBRESULT_BASE, ADC_SOC_NUMBER0);
 
     //27.3 is the number of adc units in 1 mm of suspension travel.
-    sensorPosition = 150 - (sensorSample/27.3);
+    sensorPosition = 150 - (sensorSample / 27.3);
 
     //Check if the sensor is completely extended.
     wheelie = (sensorPosition == 150);
@@ -68,7 +68,7 @@ __interrupt void frontSuspensionISR(void)
     ADC_clearInterruptStatus(ADCB_BASE, ADC_INT_NUMBER1);
 
     //Check for overflow.
-    if(true == ADC_getInterruptOverflowStatus(ADCB_BASE, ADC_INT_NUMBER1))
+    if (true == ADC_getInterruptOverflowStatus(ADCB_BASE, ADC_INT_NUMBER1))
     {
         ADC_clearInterruptOverflowStatus(ADCB_BASE, ADC_INT_NUMBER1);
         ADC_clearInterruptStatus(ADCB_BASE, ADC_INT_NUMBER1);
@@ -101,8 +101,11 @@ void initFrontSuspensionSensor(void)
     //Enable ADC interrupt
     Interrupt_enable(INT_ADCB1);
 
+    //Enable Global Interrupt (INTM) and realtime interrupt (DBGM)
+    EINT;
+    ERTM;
 
-    //Start ePWM1, enabling SOCB and put counter in up-count
+    //Start ePWM1, enabling SCB and put counter in up-count
     EPWM_enableADCTrigger(EPWM1_BASE, EPWM_SOC_B);
     EPWM_setTimeBaseCounterMode(EPWM1_BASE, EPWM_COUNTER_MODE_UP);
 
