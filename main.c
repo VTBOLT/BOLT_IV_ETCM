@@ -167,7 +167,6 @@ void make_5digit_NumString(unsigned int num, uint16_t *string)
     string[2]= ((num%1000) / 100) +'0';
     string[3]= ((num%100) / 10) +'0';
     string[4]= ((num%10) / 1) +'0';
-    string[5]= 0;
 }
 
 void debugPrint(vehicleSensorData_t vehicleSensorData){
