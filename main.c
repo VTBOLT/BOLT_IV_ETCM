@@ -31,6 +31,10 @@ int main(void)
 
     //Loop forever
     while(1)
-    {;}
+    {
+        ADC_forceSOC(ADCB_BASE, ADC_SOC_NUMBER0);
+        //DEVICE_DELAY_US(1000);
+
+    }
 
 }

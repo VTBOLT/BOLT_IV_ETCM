@@ -43,8 +43,8 @@ void initEPWM(void)
 void initADCSOC(void)
 {
     //Configure the SOC. The position sensor is connected to B4
-    ADC_setupSOC(ADCB_BASE, ADC_SOC_NUMBER0, ADC_TRIGGER_EPWM1_SOCA,
-                 ADC_CH_ADCIN8, 270e-9 * DEVICE_SYSCLK_FREQ);
+    ADC_setupSOC(ADCB_BASE, ADC_SOC_NUMBER0, ADC_TRIGGER_SW_ONLY,
+                 ADC_CH_ADCIN4, 270e-9 * DEVICE_SYSCLK_FREQ);
 
     //Set the SOC0 to set interrupt 1 flag. Enable interrupt and clear flag.
     ADC_setInterruptSource(ADCB_BASE, ADC_INT_NUMBER1, ADC_SOC_NUMBER0);
@@ -95,7 +95,7 @@ void initFrontSuspensionSensor(void)
 
     //Set up the ADC and ePWM and initialize the SOC
     initADC();
-    initEPWM();
+    //initEPWM();
     initADCSOC();
 
     //Enable ADC interrupt
