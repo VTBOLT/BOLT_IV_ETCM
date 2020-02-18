@@ -8,6 +8,8 @@
 #ifndef LOOKUP_TABLE_2D_H_
 #define LOOKUP_TABLE_2D_H_
 
+#include "util.h"
+
 #define LOOKUP_TABLE_2D_SIZE 10
 
 typedef struct {
@@ -16,10 +18,6 @@ typedef struct {
     float min_value, max_value;
 } lookup_table_2d_t;
 
-/**
- * Interpolates between a start value and end value based on an amount from 0-1.
- */
-float interpolate(float start, float end, float amount);
 /**
  * Performs any initialization needed to perform lookups. Typically this will
  * entail finding the largest and smallest values in the table.

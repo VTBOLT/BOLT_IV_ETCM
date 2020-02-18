@@ -8,6 +8,8 @@
 #ifndef LOOKUP_TABLE_3D_H_
 #define LOOKUP_TABLE_3D_H_
 
+#include "util.h"
+
 #define LOOKUP_TABLE_3D_SIZE_X 10;
 #define LOOKUP_TABLE_3D_SIZE_Y 10;
 
@@ -17,10 +19,6 @@ typedef struct {
     float values[LOOKUP_TABLE_3D_SIZE_X][LOOKUP_TABLE_3D_SIZE_Y];
 } lookup_table_3d_t;
 
-/**
- * Interpolates between a start value and end value based on an amount from 0-1.
- */
-float interpolate(float start, float end, float amount);
 /**
  * Performs any initialization needed to perform lookups. Typically this will
  * entail finding the largest and smallest values in the table.
