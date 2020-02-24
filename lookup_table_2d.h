@@ -15,7 +15,7 @@
 typedef struct {
     float keys[LOOKUP_TABLE_2D_SIZE];
     float values[LOOKUP_TABLE_2D_SIZE];
-    float min_value, max_value;
+    float min_key, max_key;
 } lookup_table_2d_t;
 
 /**
