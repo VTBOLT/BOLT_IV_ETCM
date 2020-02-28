@@ -91,7 +91,7 @@ a single CPU should be defined."
 //
 // 10MHz XTAL on LaunchPad. For use with SysCtl_getClock().
 //
-#define DEVICE_OSCSRC_FREQ          10000000U
+#define DEVICE_OSCSRC_FREQ          20000000U
 
 //
 // Define to pass to SysCtl_setClock(). Will configure the clock as follows:

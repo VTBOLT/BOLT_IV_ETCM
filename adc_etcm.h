@@ -12,7 +12,6 @@
 #include "device.h"
 
 void initADC(void);
-void initEPWM(void);
 void initADCSOC(void);
 __interrupt void adcA0ISR(void);
 
