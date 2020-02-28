@@ -51,15 +51,37 @@ void main(void)
 void run(void)
 {
     float torque_request = 0.0; // likely to change type
+
     while (1)
     {
         // Pull in sensor data to local variables
         // This will use getters inside the peripheral .h/.c files
+        float rawThrottleIn = 0; // getThrottle()
+        int rawFrontSusp = 0; // getFrontSusp()
+        int rawBackSusp = 0; // getBackSusp()
 
         // Follow lookup table logic
         // Specific logic TBD
 
+        /* The basic structure will be as follows:
+         *      First, check which TC categories need to be calculated/looked up
+         *      Then, do those calculations and store the results
+         *      Look at all the results and find the largest reduction
+         *      Move forward with that
+         */
+
+        bool checks[4]; // raw_in, traction_control, anti_wheelie, anti_jerk
+
+        checks[0] = true; // raw_in will always qualify
+
+
+
+
+
         // Carry out any calculations
+
+
+
 
         // Send torque request to motor
         requestTorque(torque_request);
