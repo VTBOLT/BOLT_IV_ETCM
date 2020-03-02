@@ -44,7 +44,7 @@ void getIMUdata();
 void main(void)
 {
     init();
-    testECAP();  //does not work for frequency less than 2kHz
+    testECAP();
     run();
 
     return;
