@@ -24,12 +24,6 @@ void initADC(void)
     DEVICE_DELAY_US(1000);
 }
 
-//Initialize EPWM
-void initEPWM(void)
-{
-
-}
-
 //Initialize ADC SOC
 void initADCSOC(void)
 {

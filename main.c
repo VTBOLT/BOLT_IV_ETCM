@@ -30,6 +30,7 @@
 #include "adc_etcm.h"
 #include "dac_etcm.h"
 #include <uart_etcm.h>
+#include "ecap_etcm.h"
 
 //Function Prototypes.
 void init(void);
@@ -43,6 +44,7 @@ void getIMUdata();
 void main(void)
 {
     init();
+    testECAP();
     run();
 
     return;
@@ -193,6 +195,8 @@ void getIMUdata(){
 
 
 }
+
+
 
 //
 // End of File
