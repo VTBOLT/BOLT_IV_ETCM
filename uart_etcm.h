@@ -25,7 +25,7 @@
 #define GPIO_SCITX_DEBUG      42U
 #define GPIO_SCIRX_DEBUG      43U
 #define SCI_DEBUG_BASE        SCIA_BASE
-#define SCI_DEBUG_BAUD        115200U
+#define SCI_DEBUG_BAUD        9600U
 
 void initSCI(void);
 void initSCInoFIFO(void);

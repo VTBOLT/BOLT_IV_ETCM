@@ -191,7 +191,7 @@ void debugPrint(vehicleSensorData_t vehicleSensorData){
     make_5digit_NumString(wheelSpeedFreqIntFront, freqStringFront);
 
     // return cursor to top
-    SCIwrite(SCI_DEBUG_BASE, "\033[2J", strlen("\033[2J"));      // clear
+    //SCIwrite(SCI_DEBUG_BASE, "\033[2J", strlen("\033[2J"));      // clear
     SCIwrite(SCI_DEBUG_BASE, "\033[0;0H", strlen("\033[0;0H"));    // home
     SCIwrite(SCI_DEBUG_BASE, "\033[?25l", strlen("\033[?25l"));    // hide cursor
 
