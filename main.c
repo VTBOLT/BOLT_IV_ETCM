@@ -33,6 +33,7 @@
 #include <timer_etcm.h>
 #include <leds_etcm.h>
 #include <ecap_etcm.h>
+#include <watchdog_etcm.h>
 
 #include "string.h"     // efficiency?
 
@@ -113,11 +114,14 @@ void run(void)
     startTimer0();
     while (1)
     {
+        // reset watchdog
+        //resetWatchdog();
+
         // Get vehicle sensor current values
         getVehicleSensorData(&vehicleSensorData);
 
         // Send that data over CAN for debug
-        sendCAN_nonINT(vehicleSensorData);
+        //sendCAN_nonINT(vehicleSensorData);
 
         // Send a test CANmsg
         //CANtest();
@@ -148,16 +152,15 @@ void init(void)
     // Initialize device clock and peripherals
     Device_init();
     initGPIO();     // do not move
+    initWatchdog();
     initLEDS();
-
     initADC();
-
     initCAN();
     initTimer0();
     initSCI();
     initECAP();
-
     initInterrupts();
+
 }
 
 void make_5digit_NumString(unsigned int num, uint16_t *string)

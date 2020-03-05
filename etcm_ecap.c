@@ -9,8 +9,8 @@
 
 #include "ecap_etcm.h"
 
-#define GPIO_NUM_WHL_SPD_FRNT   16      // check input x-bar if change
-#define GPIO_WHL_SPD_FRNT       GPIO_16_GPIO16
+#define GPIO_NUM_WHL_SPD_FRNT   2      // check input x-bar if change
+#define GPIO_WHL_SPD_FRNT       GPIO_2_GPIO2
 
 /*
  * Globals

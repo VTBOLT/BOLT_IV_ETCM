@@ -13,14 +13,14 @@
 
 #define CANA_BAUD 500000        // CANA baud rate in bps
 
-#define TX_MSG_OBJ_BASE_ID 0x400   // TX message object ID.
+#define TX_MSG_OBJ_BASE_ID  0x400   // TX message object ID.
 
-#define TX_MSG_OBJ_1 1          // First TX message object. Can have up to 32 objects in total.
-#define TX_MSG_OBJ_1_ID 0x401   // First TX message object ID.
+#define TX_MSG_OBJ_1        1       // First TX message object. Can have up to 32 objects in total.
+#define TX_MSG_OBJ_1_ID     0x401   // First TX message object ID.
 
-#define MAILBOX1_MASK 0x0001    // Mailbox = msg object
+#define MAILBOX1_MASK       0x0001    // Mailbox = msg object
 
-#define CAN_MODULE_BASE CANB_BASE
+#define CAN_MODULE_BASE     CANA_BASE
 #define DEFAULT_CAN_MSG_LEN 8
 
 //
@@ -34,8 +34,8 @@
 //
 // CANB
 //
-#define DEVICE_GPIO_PIN_CANTXB      12U  // GPIO number for CANTXA
-#define DEVICE_GPIO_PIN_CANRXB      17U  // GPIO number for CANRXA
+#define DEVICE_GPIO_PIN_CANTXB      12U  // GPIO number for CANTXB
+#define DEVICE_GPIO_PIN_CANRXB      17U  // GPIO number for CANRXB
 
 
 //

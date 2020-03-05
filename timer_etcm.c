@@ -13,6 +13,7 @@
 
 #include <timer_etcm.h>
 #include <leds_etcm.h>
+#include <watchdog_etcm.h>
 
 //
 // Globals
@@ -156,10 +157,11 @@ __interrupt void cpuTimer0ISR(void)
     Interrupt_disableMaster();
 
     //cpuTimer0IntCount++;
-    toggleRedLED();
+    toggleStatusLED();
+    resetWatchdog();
 
     // send CAN data
-    sendCAN();
+    //sendCAN();
 
     //
     // Acknowledge this interrupt to receive more interrupts from group 1
