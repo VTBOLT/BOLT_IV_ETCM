@@ -14,11 +14,15 @@
 /*
  * Globals
  */
-extern volatile float signalPeriod;
-extern volatile float signalFreq;
+extern volatile float signalPeriodRear;
+extern volatile float signalFreqRear;
+
+extern volatile float signalPeriodFront;
+extern volatile float signalFreqFront;
 
 void initECAP();
 __interrupt void ecap1ISR(void);
+__interrupt void ecap2ISR(void);
 
 
 

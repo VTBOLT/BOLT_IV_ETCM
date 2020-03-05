@@ -59,7 +59,8 @@ typedef struct SensorData
 // Strings
 const char* ETCM_START = "ETCM_START\r\n";
 const char* THROTTLE_POS = "Throttle Position: ";
-const char* WHEEL_SPEED = "Wheel Speed: ";
+const char* WHEEL_SPEED_FRONT = "Front Wheel Speed: ";
+const char* WHEEL_SPEED_REAR = "Rear Wheel Speed: ";
 
 //***********************
 // Function Prototypes
@@ -114,8 +115,7 @@ void run(void)
     startTimer0();
     while (1)
     {
-        // reset watchdog
-        //resetWatchdog();
+
 
         // Get vehicle sensor current values
         getVehicleSensorData(&vehicleSensorData);
@@ -142,6 +142,8 @@ void run(void)
         // grab a throttle ADC value
         //throttleADC = getThrottleADC();
 
+        // update throttle DAC
+        setThrottleDAC(vehicleSensorData.throttlePositionRaw);
 
     }
 }
@@ -155,6 +157,7 @@ void init(void)
     initWatchdog();
     initLEDS();
     initADC();
+    initDAC();
     initCAN();
     initTimer0();
     initSCI();
@@ -174,19 +177,23 @@ void make_5digit_NumString(unsigned int num, uint16_t *string)
 
 void debugPrint(vehicleSensorData_t vehicleSensorData){
     uint16_t throttleString[5];
-    uint16_t freqString[5];
+    uint16_t freqStringRear[5];
+    uint16_t freqStringFront[5];
 
     // convert throttle ADC value to ASCII
     make_5digit_NumString(vehicleSensorData.throttlePositionRaw, throttleString);
 
     // convert wheel speed freq to ASCII
-    uint16_t wheelSpeedFreqInt = (signalFreq*100);
-    make_5digit_NumString(wheelSpeedFreqInt, freqString);
+    uint16_t wheelSpeedFreqIntRear = (signalFreqRear * 100);
+    make_5digit_NumString(wheelSpeedFreqIntRear, freqStringRear);
+    // convert wheel speed freq to ASCII
+    uint16_t wheelSpeedFreqIntFront = (signalFreqFront * 100);
+    make_5digit_NumString(wheelSpeedFreqIntFront, freqStringFront);
 
     // return cursor to top
-    SCIwrite(SCI_DEBUG_BASE, "\033[2J", 8);      // clear
-    SCIwrite(SCI_DEBUG_BASE, "\033[0;0H", 8);    // home
-    SCIwrite(SCI_DEBUG_BASE, "\033[?25l", 8);    // hide cursor
+    SCIwrite(SCI_DEBUG_BASE, "\033[2J", strlen("\033[2J"));      // clear
+    SCIwrite(SCI_DEBUG_BASE, "\033[0;0H", strlen("\033[0;0H"));    // home
+    SCIwrite(SCI_DEBUG_BASE, "\033[?25l", strlen("\033[?25l"));    // hide cursor
 
     // print data
     SCIwrite(SCI_DEBUG_BASE, ETCM_START, strlen(ETCM_START));
@@ -194,8 +201,13 @@ void debugPrint(vehicleSensorData_t vehicleSensorData){
     SCIwrite(SCI_DEBUG_BASE, throttleString, 5);
 
     SCIwrite(SCI_DEBUG_BASE, "\r\n", strlen("\r\n"));
-    SCIwrite(SCI_DEBUG_BASE, WHEEL_SPEED, strlen(WHEEL_SPEED));
-    SCIwrite(SCI_DEBUG_BASE, freqString, 5);
+    SCIwrite(SCI_DEBUG_BASE, WHEEL_SPEED_REAR, strlen(WHEEL_SPEED_REAR));
+    SCIwrite(SCI_DEBUG_BASE, freqStringRear, 5);
+
+    SCIwrite(SCI_DEBUG_BASE, "\r\n", strlen("\r\n"));
+    SCIwrite(SCI_DEBUG_BASE, WHEEL_SPEED_FRONT, strlen(WHEEL_SPEED_FRONT));
+    SCIwrite(SCI_DEBUG_BASE, freqStringFront, 5);
+
 
 
 }
@@ -209,8 +221,16 @@ void initLookup(void)
 
 
 void getVehicleSensorData(vehicleSensorData_t *vehicleSensorData){
+
+    // get throttle
     vehicleSensorData->throttlePositionRaw = getThrottleADC();
     vehicleSensorData->throttlePosition = getThrottlePercent(vehicleSensorData->throttlePositionRaw);
+
+    // get wheel speed
+    // this is set globally
+
+
+    // get
 }
 
 
@@ -431,6 +451,9 @@ void initInterrupts(void){
 
     Interrupt_register(INT_ECAP1, &ecap1ISR);
     Interrupt_enable(INT_ECAP1);
+
+    Interrupt_register(INT_ECAP2, &ecap2ISR);
+    Interrupt_enable(INT_ECAP2);
     //*******************************
 
     // enable CPU interrupts
@@ -512,7 +535,7 @@ void sendCAN(void){
     //CANA_transmitMsg(IMUdataBuffer + 16, 2, 3);   // increment pointer
 
     // half assed typecasting
-    uint16_t signalFreqInteger = (uint16_t)signalFreq;
+    uint16_t signalFreqInteger = (uint16_t)signalFreqRear;
     // put wheel speed (ecap)
     CANA_transmitMsg(&signalFreqInteger, 1, 4);     // will truncate to integer!
 }

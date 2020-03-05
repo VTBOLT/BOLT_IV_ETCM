@@ -8,11 +8,14 @@
 #ifndef DAC_ETCM_H_
 #define DAC_ETCM_H_
 
-#include "dac.h"
 #include "device.h"
+
+#define THROTTLE_DAC_BASE   DACB_BASE
+
 
 void initDAC(void);
 void requestTorque(int torque);
+void setThrottleDAC(uint16_t dacValue);
 
 
 #endif /* DAC_ETCM_H_ */
