@@ -20,6 +20,10 @@
 //
 uint16_t cpuTimer0IntCount;
 
+softwareTimers_t softwareTimers[NUM_SOFTWARE_TIMERS];
+
+
+
 /**
  * If timer does not seem to expire at expected interval, check
  * the clock pre-scaler value.
@@ -51,6 +55,9 @@ void initTimer0(void){
 
     // Load timer with default value
     configCPUTimer(CPUTIMER0_BASE, TIMER0_DEFAULT_PERIOD);
+
+    // Init software timers
+    initSoftwareTimers();
 }
 
 /**
@@ -156,17 +163,79 @@ __interrupt void cpuTimer0ISR(void)
     // prevent other interrupt jumps
     Interrupt_disableMaster();
 
+    updateSoftwareTimers();
+
     //cpuTimer0IntCount++;
-    toggleStatusLED();
-    resetWatchdog();
+    //toggleStatusLED();
+    //resetWatchdog();
 
     // send CAN data
     //sendCAN();
 
-    //
+
+
     // Acknowledge this interrupt to receive more interrupts from group 1
-    //
     Interrupt_clearACKGroup(INTERRUPT_ACK_GROUP1);
 
     Interrupt_enableMaster();
+}
+
+void initSoftwareTimers(){
+    int i;
+    for (i = 0; i < NUM_SOFTWARE_TIMERS; i++){
+        softwareTimers[i].count = 0;
+        softwareTimers[i].period = TIMER0_DEFAULT_PERIOD;
+        softwareTimers[i].expired = false;
+        softwareTimers[i].enabled = false;
+    }
+}
+
+void updateSoftwareTimers(){
+    int i;
+    for (i = 0; i < NUM_SOFTWARE_TIMERS; i++){
+        if (softwareTimers[i].enabled && !softwareTimers[i].expired){
+            softwareTimers[i].count += 1;
+        }
+    }
+}
+
+bool checkSoftwareTimer(softwareTimer_Numbers timerNumber){
+    // error check
+    if ((timerNumber >= NUM_SOFTWARE_TIMERS) || (!softwareTimers[timerNumber].enabled)){
+        return false;
+    }
+
+    if (softwareTimers[timerNumber].count >= softwareTimers[timerNumber].period){
+        softwareTimers[timerNumber].expired = true;
+
+    }
+    // check for period elapse
+    return softwareTimers[timerNumber].expired;
+}
+
+void resetSoftwareTimer(softwareTimer_Numbers timerNumber){
+    // error check
+    if ((timerNumber >= NUM_SOFTWARE_TIMERS) || (!softwareTimers[timerNumber].enabled)){
+        return;
+    }
+    softwareTimers[timerNumber].count = 0;
+    softwareTimers[timerNumber].expired = false;
+}
+
+void setSoftwareTimerPeriod(uint32_t period, softwareTimer_Numbers timerNumber){
+    // error check
+    if (timerNumber >= NUM_SOFTWARE_TIMERS){
+        return;
+    }
+
+    // disable and clear timer
+    softwareTimers[timerNumber].enabled = false;
+    softwareTimers[timerNumber].count = 0;
+
+    // set period
+    softwareTimers[timerNumber].period = period;
+
+    // enable timer
+    softwareTimers[timerNumber].enabled = true;
+
 }

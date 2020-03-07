@@ -40,9 +40,25 @@
 //****************
 // Defines
 //****************
-#define GPIO_CFG_SYNC_IN GPIO_67_GPIO67
-#define GPIO_SYNC_IN 67
-#define IMU_FRAME_SIZE 18
+#define GPIO_CFG_SYNC_IN    GPIO_67_GPIO67
+#define GPIO_SYNC_IN        67
+
+#define GPIO_CFG_BRAKE_SWITCH_FRONT     GPIO_66_GPIO66
+#define GPIO_BRAKE_SWITCH_FRONT         66
+
+#define GPIO_CFG_BRAKE_SWITCH_REAR      GPIO_131_GPIO131
+#define GPIO_BRAKE_SWITCH_REAR          131
+
+#define GPIO_CFG_THROTTLE_CLOSED_SWITCH     GPIO_6_GPIO6
+#define GPIO_THROTTLE_CLOSED_SWITCH         6
+
+#define GPIO_CFG_MAP_SWITCH_1   GPIO_105_GPIO105
+#define GPIO_MAP_SWITCH_1       105
+
+#define GPIO_CFG_MAP_SWITCH_2   GPIO_104_GPIO104
+#define GPIO_MAP_SWITCH_2       104
+
+#define IMU_FRAME_SIZE  18
 
 //***********
 // Typedefs, ...
@@ -53,6 +69,11 @@ typedef struct SensorData
     float wheelSpeedRear;
     float throttlePosition;
     uint16_t throttlePositionRaw;
+    bool frontBrakeSwitch;
+    bool rearBrakeSwitch;
+    bool throttleClosedSwitch;
+    bool mapSwitch1;
+    bool mapSwitch2;
 
 }vehicleSensorData_t;
 
@@ -61,6 +82,11 @@ const char* ETCM_START = "ETCM_START\r\n";
 const char* THROTTLE_POS = "Throttle Position: ";
 const char* WHEEL_SPEED_FRONT = "Front Wheel Speed: ";
 const char* WHEEL_SPEED_REAR = "Rear Wheel Speed: ";
+const char* BRAKE_SWITCH_FRONT = "Front Brake Switch: ";
+const char* BRAKE_SWITCH_REAR = "Rear Brake Switch: ";
+const char* THROTTLE_CLOSED_SWITCH = "Throttle Closed Switch: ";
+const char* MAP_SWITCH_1 = "Map Switch 1: ";
+const char* MAP_SWITCH_2 = "Map Switch 2: ";
 
 //***********************
 // Function Prototypes
@@ -84,6 +110,7 @@ void getVehicleSensorData(vehicleSensorData_t *vehicleSensorData);
 void sendCAN_nonINT(vehicleSensorData_t vehicleSensorData);
 void make_5digit_NumString(unsigned int num, uint16_t *string);
 void debugPrint(vehicleSensorData_t vehicleSensorData);
+void setSoftwareTimers();
 
 
 
@@ -112,13 +139,36 @@ void run(void)
     uint16_t throttleADC = 0;
 
     // start the timer
+    setSoftwareTimers();
     startTimer0();
+
     while (1)
     {
 
-
         // Get vehicle sensor current values
         getVehicleSensorData(&vehicleSensorData);
+
+        if (checkSoftwareTimer(TIMER0)){
+            // timer expired
+
+
+            resetSoftwareTimer(TIMER0);
+        }
+
+        // 250ms routines
+        if (checkSoftwareTimer(TIMER1)){
+            debugPrint(vehicleSensorData);
+
+            resetSoftwareTimer(TIMER1);
+        }
+
+        // 1000ms routines
+        if (checkSoftwareTimer(TIMER2)){
+            resetWatchdog();
+            toggleStatusLED();
+
+            resetSoftwareTimer(TIMER2);
+        }
 
         // Send that data over CAN for debug
         //sendCAN_nonINT(vehicleSensorData);
@@ -127,9 +177,7 @@ void run(void)
         //CANtest();
 
         // Flash the blue LED
-        LEDflash();
 
-        debugPrint(vehicleSensorData);
 
 
 
@@ -164,6 +212,16 @@ void init(void)
     initECAP();
     initInterrupts();
 
+
+}
+
+void setSoftwareTimers(){
+    // set timer0
+    setSoftwareTimerPeriod(20, TIMER0);
+    // set timer1
+    setSoftwareTimerPeriod(250, TIMER1);
+    // set timer 2
+    setSoftwareTimerPeriod(1000, TIMER2);
 }
 
 void make_5digit_NumString(unsigned int num, uint16_t *string)
@@ -175,20 +233,35 @@ void make_5digit_NumString(unsigned int num, uint16_t *string)
     string[4]= ((num%10) / 1) +'0';
 }
 
+
+
 void debugPrint(vehicleSensorData_t vehicleSensorData){
     uint16_t throttleString[5];
     uint16_t freqStringRear[5];
     uint16_t freqStringFront[5];
+    uint16_t brakeSwitchFront[5];
+    uint16_t brakeSwitchRear[5];
+    uint16_t throttleClosedSwitch[5];
+    uint16_t mapSwitch1[5];
+    uint16_t mapSwitch2[5];
 
     // convert throttle ADC value to ASCII
     make_5digit_NumString(vehicleSensorData.throttlePositionRaw, throttleString);
+    // convert wheel speed freq to ASCII
+    make_5digit_NumString((uint16_t)signalFreqRear, freqStringRear);
+    // convert wheel speed freq to ASCII
+    make_5digit_NumString((uint16_t)signalFreqFront, freqStringFront);
 
-    // convert wheel speed freq to ASCII
-    uint16_t wheelSpeedFreqIntRear = (signalFreqRear * 100);
-    make_5digit_NumString(wheelSpeedFreqIntRear, freqStringRear);
-    // convert wheel speed freq to ASCII
-    uint16_t wheelSpeedFreqIntFront = (signalFreqFront * 100);
-    make_5digit_NumString(wheelSpeedFreqIntFront, freqStringFront);
+    // convert brake switch to ASCII
+    make_5digit_NumString((uint16_t)vehicleSensorData.frontBrakeSwitch, brakeSwitchFront);
+    make_5digit_NumString((uint16_t)vehicleSensorData.rearBrakeSwitch, brakeSwitchRear);
+
+    // convert throttle closed switch to ASCII
+    make_5digit_NumString((uint16_t)vehicleSensorData.throttleClosedSwitch, throttleClosedSwitch);
+
+    // convert map switches
+    make_5digit_NumString((uint16_t)vehicleSensorData.mapSwitch1, mapSwitch1);
+    make_5digit_NumString((uint16_t)vehicleSensorData.mapSwitch2, mapSwitch2);
 
     // return cursor to top
     //SCIwrite(SCI_DEBUG_BASE, "\033[2J", strlen("\033[2J"));      // clear
@@ -199,14 +272,37 @@ void debugPrint(vehicleSensorData_t vehicleSensorData){
     SCIwrite(SCI_DEBUG_BASE, ETCM_START, strlen(ETCM_START));
     SCIwrite(SCI_DEBUG_BASE, THROTTLE_POS, strlen(THROTTLE_POS));
     SCIwrite(SCI_DEBUG_BASE, throttleString, 5);
-
+    // wheel speed
     SCIwrite(SCI_DEBUG_BASE, "\r\n", strlen("\r\n"));
     SCIwrite(SCI_DEBUG_BASE, WHEEL_SPEED_REAR, strlen(WHEEL_SPEED_REAR));
     SCIwrite(SCI_DEBUG_BASE, freqStringRear, 5);
-
+    // wheel speed
     SCIwrite(SCI_DEBUG_BASE, "\r\n", strlen("\r\n"));
     SCIwrite(SCI_DEBUG_BASE, WHEEL_SPEED_FRONT, strlen(WHEEL_SPEED_FRONT));
     SCIwrite(SCI_DEBUG_BASE, freqStringFront, 5);
+
+    // brake switch
+    SCIwrite(SCI_DEBUG_BASE, "\r\n", strlen("\r\n"));
+    SCIwrite(SCI_DEBUG_BASE, BRAKE_SWITCH_FRONT, strlen(BRAKE_SWITCH_FRONT));
+    SCIwrite(SCI_DEBUG_BASE, brakeSwitchFront, 5);
+
+    SCIwrite(SCI_DEBUG_BASE, "\r\n", strlen("\r\n"));
+    SCIwrite(SCI_DEBUG_BASE, BRAKE_SWITCH_REAR, strlen(BRAKE_SWITCH_REAR));
+    SCIwrite(SCI_DEBUG_BASE, brakeSwitchRear, 5);
+
+    // throttle closed switch
+    SCIwrite(SCI_DEBUG_BASE, "\r\n", strlen("\r\n"));
+    SCIwrite(SCI_DEBUG_BASE, THROTTLE_CLOSED_SWITCH, strlen(THROTTLE_CLOSED_SWITCH));
+    SCIwrite(SCI_DEBUG_BASE, throttleClosedSwitch, 5);
+
+    // map switches
+    SCIwrite(SCI_DEBUG_BASE, "\r\n", strlen("\r\n"));
+    SCIwrite(SCI_DEBUG_BASE, MAP_SWITCH_1, strlen(MAP_SWITCH_1));
+    SCIwrite(SCI_DEBUG_BASE, mapSwitch1, 5);
+
+    SCIwrite(SCI_DEBUG_BASE, "\r\n", strlen("\r\n"));
+    SCIwrite(SCI_DEBUG_BASE, MAP_SWITCH_2, strlen(MAP_SWITCH_2));
+    SCIwrite(SCI_DEBUG_BASE, mapSwitch2, 5);
 
 
 
@@ -229,8 +325,16 @@ void getVehicleSensorData(vehicleSensorData_t *vehicleSensorData){
     // get wheel speed
     // this is set globally
 
+    // get brake switch
+    vehicleSensorData->frontBrakeSwitch = GPIO_readPin(GPIO_BRAKE_SWITCH_FRONT);
+    vehicleSensorData->rearBrakeSwitch = GPIO_readPin(GPIO_BRAKE_SWITCH_REAR);
 
-    // get
+    // get throttle closed switch
+    vehicleSensorData->throttleClosedSwitch = GPIO_readPin(GPIO_THROTTLE_CLOSED_SWITCH);
+
+    // get map switches
+    vehicleSensorData->mapSwitch1 = GPIO_readPin(GPIO_MAP_SWITCH_1);
+    vehicleSensorData->mapSwitch2 = GPIO_readPin(GPIO_MAP_SWITCH_2);
 }
 
 
@@ -277,6 +381,30 @@ void initGPIO(void){
     GPIO_setDirectionMode(GPIO_SYNC_IN, GPIO_DIR_MODE_OUT);
     GPIO_writePin(GPIO_SYNC_IN, 0); // default state
 
+    // Brake Switch Front
+    GPIO_setPinConfig(GPIO_CFG_BRAKE_SWITCH_FRONT);
+    GPIO_setPadConfig(GPIO_BRAKE_SWITCH_FRONT, GPIO_PIN_TYPE_STD);
+    GPIO_setDirectionMode(GPIO_BRAKE_SWITCH_FRONT, GPIO_DIR_MODE_IN);
+
+
+    // Brake Switch Rear
+    GPIO_setPinConfig(GPIO_CFG_BRAKE_SWITCH_REAR);
+    GPIO_setPadConfig(GPIO_BRAKE_SWITCH_REAR, GPIO_PIN_TYPE_STD);
+    GPIO_setDirectionMode(GPIO_BRAKE_SWITCH_REAR, GPIO_DIR_MODE_IN);
+
+    // Throttle Closed Switch
+    GPIO_setPinConfig(GPIO_CFG_THROTTLE_CLOSED_SWITCH);
+    GPIO_setPadConfig(GPIO_THROTTLE_CLOSED_SWITCH, GPIO_PIN_TYPE_STD);
+    GPIO_setDirectionMode(GPIO_THROTTLE_CLOSED_SWITCH, GPIO_DIR_MODE_IN);
+
+    // Map Switches
+    GPIO_setPinConfig(GPIO_CFG_MAP_SWITCH_1);
+    GPIO_setPadConfig(GPIO_MAP_SWITCH_1, GPIO_PIN_TYPE_STD);
+    GPIO_setDirectionMode(GPIO_MAP_SWITCH_1, GPIO_DIR_MODE_IN);
+
+    GPIO_setPinConfig(GPIO_CFG_MAP_SWITCH_2);
+    GPIO_setPadConfig(GPIO_MAP_SWITCH_2, GPIO_PIN_TYPE_STD);
+    GPIO_setDirectionMode(GPIO_MAP_SWITCH_2, GPIO_DIR_MODE_IN);
     //********
 
 }
