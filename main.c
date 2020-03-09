@@ -29,7 +29,6 @@
 #include <can_etcm.h>
 #include "adc_etcm.h"
 #include "dac_etcm.h"
-#include <uart_etcm.h>
 #include <timer_etcm.h>
 #include <leds_etcm.h>
 #include <IMU.h>
@@ -65,6 +64,10 @@ void run(void)
     int torque_request = 0; // likely to change type
     // start the timer
     startTimer0();
+
+    float pitch;
+    float roll;
+    float yaw;
     while (1)
     {
         // Pull in sensor data to local variables
@@ -90,14 +93,27 @@ void run(void)
         //getIMUdata();
         strobeIMUSyncIn();
 
-        float temp;
-        temp = getIMUPitch();
+        pitch = getIMUPitch();
+        roll = getIMURoll();
+        yaw = getIMUYaw();
+
+        SCIWriteChar(SCI_DEBUG_BASE, "IMU Pitch: ", 11);
+        SCIWriteInt((int) pitch*100);
+
+        SCIWriteChar(SCI_DEBUG_BASE, "IMU Roll: ", 10);
+        SCIWriteInt((int) roll*100);
+
+        SCIWriteChar(SCI_DEBUG_BASE, "IMU Yaw: ", 9);
+        SCIWriteInt((int) yaw*100);
+
+        SCIWriteChar(SCI_DEBUG_BASE, "\n\r\n\r\n\r", 6);
+
+
         // after 5 seconds, reduce period to 500mS
         if (cpuTimer0IntCount >= 5)
         {
             reloadTimer0(500);
         }
-
     }
 }
 
@@ -111,6 +127,7 @@ void init(void)
 
     initTimer0();
     initIMUTransfer();
+    initDebugTransfer();
     initInterrupts();
 }
 
@@ -168,7 +185,7 @@ void initGPIO(void)
     //--------
 
     // SYNC_IN
-    GPIO_setPinConfig (GPIO_CFG_SYNC_IN);
+    GPIO_setPinConfig(GPIO_CFG_SYNC_IN);
     GPIO_setPadConfig(GPIO_SYNC_IN, GPIO_PIN_TYPE_STD);
     GPIO_setDirectionMode(GPIO_SYNC_IN, GPIO_DIR_MODE_OUT);
     GPIO_writePin(GPIO_SYNC_IN, 0); // default state

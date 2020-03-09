@@ -12,6 +12,10 @@ void initIMUInterrrupt(void);
 float getIMUPitch(void);
 float getIMURoll(void);
 float getIMUYaw(void);
+void SCIWriteInt(int intIn);
+void SCIWriteChar(uint32_t SCIbase, const char *const dataArray, int dataLength);
+void initDebugTransfer(void);
+
 
 //****************
 // Defines
@@ -24,8 +28,18 @@ float getIMUYaw(void);
 #define GPIO_SCITX_IMU          18U
 #define GPIO_SCIRX_IMU          19U
 
+
 #define SCI_IMU_BASE            SCIB_BASE
 #define SCI_IMU_BAUD            115200U
+
+// DEBUG
+#define GPIO_CFG_SCITX_DEBUG  GPIO_42_SCITXDA
+#define GPIO_CFG_SCIRX_DEBUG  GPIO_43_SCIRXDA
+#define GPIO_SCITX_DEBUG      42U
+#define GPIO_SCIRX_DEBUG      43U
+#define SCI_DEBUG_BASE        SCIA_BASE
+#define SCI_DEBUG_BAUD        9600U
+
 
 //**********
 // Globals

@@ -1,6 +1,5 @@
 #include "IMU.h"
 
-
 //Globals
 volatile float IMU_yaw;
 volatile float IMU_pitch;
@@ -29,7 +28,6 @@ void strobeIMUSyncIn(void)
     GPIO_writePin(GPIO_SYNC_IN, 0);
     // buffer will start to fill as interrupt happens
 }
-
 
 float getIMUYaw(void)
 {
@@ -95,29 +93,40 @@ void getIMUdataINT(void)
         dataIndexPrev = 0;
     }
 
-    char temp_buffer[4];
+    uint32_t temp_buffer;
+    float temp_float;
+    temp_buffer = IMUdataBuffer[7];
+    temp_buffer = temp_buffer << 8;
+    temp_buffer = temp_buffer | IMUdataBuffer[6];
+    temp_buffer = temp_buffer << 8;
+    temp_buffer = temp_buffer | IMUdataBuffer[5];
+    temp_buffer = temp_buffer << 8;
+    temp_buffer = temp_buffer | IMUdataBuffer[4];
 
-    temp_buffer[3] = IMUdataBuffer[4];
-    temp_buffer[2] = IMUdataBuffer[5];
-    temp_buffer[1] = IMUdataBuffer[6];
-    temp_buffer[0] = IMUdataBuffer[7];
+    memcpy(&temp_float, &temp_buffer, sizeof(temp_buffer));
+    IMU_yaw = temp_float;
 
-//convert the temporary buffer to a float
-    IMU_yaw = *(float *) &temp_buffer;
+    temp_buffer = IMUdataBuffer[11];
+    temp_buffer = temp_buffer << 8;
+    temp_buffer = temp_buffer | IMUdataBuffer[10];
+    temp_buffer = temp_buffer << 8;
+    temp_buffer = temp_buffer | IMUdataBuffer[9];
+    temp_buffer = temp_buffer << 8;
+    temp_buffer = temp_buffer | IMUdataBuffer[8];
 
-    temp_buffer[3] = IMUdataBuffer[8];
-    temp_buffer[2] = IMUdataBuffer[9];
-    temp_buffer[1] = IMUdataBuffer[10];
-    temp_buffer[0] = IMUdataBuffer[11];
+    memcpy(&temp_float, &temp_buffer, sizeof(temp_buffer));
+    IMU_pitch = temp_float;
 
-    IMU_pitch = *(float *) &temp_buffer;
+    temp_buffer = IMUdataBuffer[15];
+    temp_buffer = temp_buffer << 8;
+    temp_buffer = temp_buffer | IMUdataBuffer[14];
+    temp_buffer = temp_buffer << 8;
+    temp_buffer = temp_buffer | IMUdataBuffer[13];
+    temp_buffer = temp_buffer << 8;
+    temp_buffer = temp_buffer | IMUdataBuffer[12];
 
-    temp_buffer[3] = IMUdataBuffer[12];
-    temp_buffer[2] = IMUdataBuffer[13];
-    temp_buffer[1] = IMUdataBuffer[14];
-    temp_buffer[0] = IMUdataBuffer[15];
-
-    IMU_roll = *(float *) &temp_buffer;
+    memcpy(&temp_float, &temp_buffer, sizeof(temp_buffer));
+    IMU_roll = temp_float;
 
 }
 
@@ -160,7 +169,7 @@ void initIMUinterrupt(void)
     SCI_disableInterrupt(SCI_IMU_BASE, (SCI_INT_RXERR | SCI_INT_TXFF));
 
 // set the level at which the FIFO_RX flag is thrown
-    SCI_setFIFOInterruptLevel(SCI_IMU_BASE, SCI_FIFO_TX2, SCI_FIFO_RX1);
+    SCI_setFIFOInterruptLevel(SCI_IMU_BASE, SCI_FIFO_TX5, SCI_FIFO_RX1);
     SCI_performSoftwareReset(SCI_IMU_BASE);
 
 // clear buffer
@@ -173,9 +182,9 @@ void initIMUinterrupt(void)
 // see table 3-2 on pg.102 in tech. ref. manual for groups
     Interrupt_clearACKGroup(INTERRUPT_ACK_GROUP9);
 
-    IMU_yaw = 0;
-    IMU_pitch = 0;
-    IMU_roll = 0;
+    IMU_yaw = 69.420;
+    IMU_pitch = 69.420;
+    IMU_roll = 69.420;
 }
 
 /**
@@ -186,24 +195,108 @@ void initIMUTransfer(void)
 {
     // GPIO TX
     GPIO_setMasterCore(GPIO_SCITX_IMU, GPIO_CORE_CPU1);
-    GPIO_setPinConfig (GPIO_CFG_SCITX_IMU);
+    GPIO_setPinConfig(GPIO_CFG_SCITX_IMU);
     GPIO_setPadConfig(GPIO_SCITX_IMU, GPIO_PIN_TYPE_STD);
     GPIO_setDirectionMode(GPIO_SCITX_IMU, GPIO_DIR_MODE_OUT);
     GPIO_setQualificationMode(GPIO_SCITX_IMU, GPIO_QUAL_ASYNC);
 
     //GPIO RX
     GPIO_setMasterCore(GPIO_SCIRX_IMU, GPIO_CORE_CPU1);
-    GPIO_setPinConfig (GPIO_CFG_SCIRX_IMU);
+    GPIO_setPinConfig(GPIO_CFG_SCIRX_IMU);
     GPIO_setPadConfig(GPIO_SCIRX_IMU, GPIO_PIN_TYPE_STD);
     GPIO_setDirectionMode(GPIO_SCIRX_IMU, GPIO_DIR_MODE_IN);
     GPIO_setQualificationMode(GPIO_SCIRX_IMU, GPIO_QUAL_ASYNC);
 
     // configure module
     // 8N1
-    SCI_setConfig(SCI_IMU_BASE, DEVICE_LSPCLK_FREQ, SCI_IMU_BAUD, (SCI_CONFIG_WLEN_8 |SCI_CONFIG_STOP_ONE |SCI_CONFIG_PAR_NONE));
+    SCI_setConfig(
+            SCI_IMU_BASE, DEVICE_LSPCLK_FREQ, SCI_IMU_BAUD,
+            (SCI_CONFIG_WLEN_8 | SCI_CONFIG_STOP_ONE | SCI_CONFIG_PAR_NONE));
     SCI_enableModule(SCI_IMU_BASE);
 
     SCI_resetChannels(SCI_IMU_BASE);
 
     SCI_enableFIFO(SCI_IMU_BASE);
 }
+
+void initDebugTransfer(void)
+{
+    // GPIO TX
+    GPIO_setPinConfig(GPIO_CFG_SCITX_DEBUG);
+    GPIO_setPadConfig(GPIO_SCITX_DEBUG, GPIO_PIN_TYPE_STD);
+    GPIO_setDirectionMode(GPIO_SCITX_DEBUG, GPIO_DIR_MODE_OUT);
+
+    //GPIO RX
+    GPIO_setPinConfig(GPIO_CFG_SCIRX_DEBUG);
+    GPIO_setPadConfig(GPIO_SCIRX_DEBUG, GPIO_PIN_TYPE_STD);
+    GPIO_setDirectionMode(GPIO_SCIRX_DEBUG, GPIO_DIR_MODE_IN);
+
+    // configure module
+    // 8N1
+    SCI_setConfig(
+            SCI_DEBUG_BASE, DEVICE_LSPCLK_FREQ, SCI_DEBUG_BAUD,
+            (SCI_CONFIG_WLEN_8 | SCI_CONFIG_STOP_ONE | SCI_CONFIG_PAR_NONE));
+    SCI_disableLoopback(SCI_DEBUG_BASE);
+    SCI_performSoftwareReset(SCI_DEBUG_BASE);
+
+    // FIFO
+    SCI_disableFIFO(SCI_DEBUG_BASE);
+
+    SCI_enableModule(SCI_DEBUG_BASE);
+}
+
+/**
+ * initSCIwithFIFO(void) initializes the SCI module for use with
+ * the FIFO buffer.
+ */
+void initSCI_IMUwithFIFO(void)
+{
+    // GPIO TX
+    GPIO_setMasterCore(GPIO_SCITX_IMU, GPIO_CORE_CPU1);
+    GPIO_setPinConfig(GPIO_CFG_SCITX_IMU);
+    GPIO_setPadConfig(GPIO_SCITX_IMU, GPIO_PIN_TYPE_STD);
+    GPIO_setDirectionMode(GPIO_SCITX_IMU, GPIO_DIR_MODE_OUT);
+    GPIO_setQualificationMode(GPIO_SCITX_IMU, GPIO_QUAL_ASYNC);
+
+    //GPIO RX
+    GPIO_setMasterCore(GPIO_SCIRX_IMU, GPIO_CORE_CPU1);
+    GPIO_setPinConfig(GPIO_CFG_SCIRX_IMU);
+    GPIO_setPadConfig(GPIO_SCIRX_IMU, GPIO_PIN_TYPE_STD);
+    GPIO_setDirectionMode(GPIO_SCIRX_IMU, GPIO_DIR_MODE_IN);
+    GPIO_setQualificationMode(GPIO_SCIRX_IMU, GPIO_QUAL_ASYNC);
+
+    // configure module
+    // 8N1
+    SCI_setConfig(
+            SCI_IMU_BASE, DEVICE_LSPCLK_FREQ, SCI_IMU_BAUD,
+            (SCI_CONFIG_WLEN_8 | SCI_CONFIG_STOP_ONE | SCI_CONFIG_PAR_NONE));
+    SCI_enableModule(SCI_IMU_BASE);
+
+    SCI_resetChannels(SCI_IMU_BASE);
+
+    SCI_enableFIFO(SCI_IMU_BASE);
+}
+
+void SCIWriteInt(int intIn)
+{
+    char outputString[7];
+
+    outputString[0] = (intIn / 10000) + '0';
+    outputString[1] = ((intIn % 10000) / 1000) + '0';
+    outputString[2] = ((intIn % 1000) / 100) + '0';
+    outputString[3] = ((intIn % 100) / 10) + '0';
+    outputString[4] = ((intIn % 10) / 1) + '0';
+    outputString[5] = '\n';
+    outputString[6] = '\r';
+
+    SCIWriteChar(SCI_DEBUG_BASE, outputString, 7);
+}
+
+void SCIWriteChar(uint32_t SCIbase, const char * const dataArray,
+                  int dataLength)
+{
+
+    SCI_writeCharArray(SCIbase, dataArray, dataLength);
+
+}
+
