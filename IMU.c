@@ -279,7 +279,7 @@ void initSCI_IMUwithFIFO(void)
 
 void SCIWriteInt(int intIn)
 {
-    char outputString[7];
+    /*char outputString[7];
 
     outputString[0] = (intIn / 10000) + '0';
     outputString[1] = ((intIn % 10000) / 1000) + '0';
@@ -287,9 +287,32 @@ void SCIWriteInt(int intIn)
     outputString[3] = ((intIn % 100) / 10) + '0';
     outputString[4] = ((intIn % 10) / 1) + '0';
     outputString[5] = '\n';
-    outputString[6] = '\r';
+    outputString[6] = '\r';*/
 
-    SCIWriteChar(SCI_DEBUG_BASE, outputString, 7);
+    char sign;
+
+    if(intIn >= 0)
+    {
+        sign = '+';
+    }
+    else
+    {
+        sign = '-';
+        intIn = intIn * -1;
+    }
+
+    char outputString[8];
+
+    outputString[0] = sign;
+    outputString[1] = (intIn / 10000) + '0';
+    outputString[2] = ((intIn % 10000) / 1000) + '0';
+    outputString[3] = ((intIn % 1000) / 100) + '0';
+    outputString[4] = ((intIn % 100) / 10) + '0';
+    outputString[5] = ((intIn % 10) / 1) + '0';
+    outputString[6] = '\n';
+    outputString[7] = '\r';
+
+    SCIWriteChar(SCI_DEBUG_BASE, outputString, 8);
 }
 
 void SCIWriteChar(uint32_t SCIbase, const char * const dataArray,

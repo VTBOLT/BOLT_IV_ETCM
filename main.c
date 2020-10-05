@@ -51,6 +51,11 @@ void getIMUdataINT(void);
 void updateIMUbuffer(void);
 void displayIMU_CAN(void);
 
+//Variables
+const float IMU_PITCH_CORRECTION = -2.0;
+const float IMU_ROLL_CORRECTION = 0.0;
+const float IMU_YAW_CORRECTION = 129.0;
+
 void main(void)
 {
     init();
@@ -93,9 +98,9 @@ void run(void)
         //getIMUdata();
         strobeIMUSyncIn();
 
-        pitch = getIMUPitch();
-        roll = getIMURoll();
-        yaw = getIMUYaw();
+        pitch = getIMUPitch() + IMU_PITCH_CORRECTION;
+        roll = getIMURoll() + IMU_ROLL_CORRECTION;;
+        yaw = getIMUYaw() + IMU_YAW_CORRECTION;;
 
         SCIWriteChar(SCI_DEBUG_BASE, "IMU Pitch: ", 11);
         SCIWriteInt((int) pitch*100);
