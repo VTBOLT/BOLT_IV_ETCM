@@ -36,15 +36,20 @@ void setDACOutputRaw(uint16_t request) {
 
 void setDACOutputVoltage(float voltage) {
     // output_voltage = (request * ref_voltage) / 4096
-    float request = (voltage * 4096) / DAC_VREF;
+    float request = (voltage * 4095) / DAC_VREF;
     setDACOutputRaw(request);
 }
 
 //send torque request to motor controller
 void requestTorque(float torque)
 {
+    /*
     // Scale torque -> raw DAC request
     // Not scaling to voltage saves a few FP operations
     uint16_t request = (torque / MAX_TORQUE) * DAC_BITS;
     setDACOutputRaw(request);
+    */
+
+    // Original implementation unneeded - torque request is 0-5V
+    setDACOutputVoltage(torque);
 }

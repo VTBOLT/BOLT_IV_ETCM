@@ -10,8 +10,8 @@
 
 #include "dac.h"
 
-#define DAC_BASE_ADDRESS DACA_BASE
-#define DAC_VREF 3.04
+#define DAC_BASE_ADDRESS DACB_BASE
+#define DAC_VREF 3.00
 #define DAC_BITS 4096 - 1
 
 // Temporary value, this should move to a dedicated header file
