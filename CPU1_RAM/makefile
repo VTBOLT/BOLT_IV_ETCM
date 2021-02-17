@@ -4,7 +4,7 @@
 
 SHELL = cmd.exe
 
-CG_TOOL_ROOT := C:/ti/ccs930/ccs/tools/compiler/ti-cgt-c2000_18.12.4.LTS
+CG_TOOL_ROOT := C:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS
 
 GEN_OPTS__FLAG := 
 GEN_CMDS__FLAG := 
@@ -14,6 +14,7 @@ ORDERED_OBJS += \
 "./can_etcm.obj" \
 "./dac_etcm.obj" \
 "./main.obj" \
+"./rider_aids_etcm.obj" \
 "./uart_etcm.obj" \
 "./device/F2837xD_CodeStartBranch.obj" \
 "./device/device.obj" \
@@ -129,42 +130,42 @@ endif
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXE_OUTPUTS += \
-empty_driverlib_project.out \
+BOLT_main_code.out \
 
 EXE_OUTPUTS__QUOTED += \
-"empty_driverlib_project.out" \
+"BOLT_main_code.out" \
 
 BIN_OUTPUTS += \
-empty_driverlib_project.hex \
+BOLT_main_code.hex \
 
 BIN_OUTPUTS__QUOTED += \
-"empty_driverlib_project.hex" \
+"BOLT_main_code.hex" \
 
 
 # All Target
 all: $(OBJS) $(CMD_SRCS) $(LIB_SRCS) $(GEN_CMDS)
-	@$(MAKE) --no-print-directory -Onone "empty_driverlib_project.out"
+	@$(MAKE) --no-print-directory -Onone "BOLT_main_code.out"
 
 # Tool invocations
-empty_driverlib_project.out: $(OBJS) $(CMD_SRCS) $(LIB_SRCS) $(GEN_CMDS)
+BOLT_main_code.out: $(OBJS) $(CMD_SRCS) $(LIB_SRCS) $(GEN_CMDS)
 	@echo 'Building target: "$@"'
 	@echo 'Invoking: C2000 Linker'
-	"C:/ti/ccs930/ccs/tools/compiler/ti-cgt-c2000_18.12.4.LTS/bin/cl2000" -v28 -ml -mt --cla_support=cla1 --float_support=fpu32 --tmu_support=tmu0 --vcu_support=vcu2 -Ooff --advice:performance=all --define=_LAUNCHXL_F28379D --define=DEBUG --define=CPU1 --diag_suppress=10063 --diag_warning=225 --diag_wrap=off --display_error_number --abi=eabi -z -m"empty_driverlib_project.map" --stack_size=0x100 --warn_sections -i"C:/ti/ccs930/ccs/tools/compiler/ti-cgt-c2000_18.12.4.LTS/lib" -i"C:/ti/ccs930/ccs/tools/compiler/ti-cgt-c2000_18.12.4.LTS/include" --reread_libs --diag_wrap=off --display_error_number --xml_link_info="empty_driverlib_project_linkInfo.xml" --entry_point=code_start --rom_model -o "empty_driverlib_project.out" $(ORDERED_OBJS)
+	"C:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/bin/cl2000" -v28 -ml -mt --cla_support=cla1 --float_support=fpu32 --tmu_support=tmu0 --vcu_support=vcu2 -Ooff --advice:performance=all --define=_LAUNCHXL_F28379D --define=DEBUG --define=CPU1 --diag_suppress=10063 --diag_warning=225 --diag_wrap=off --display_error_number --abi=eabi -z -m"BOLT_main_code.map" --stack_size=0x100 --warn_sections -i"C:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/lib" -i"C:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/include" --reread_libs --diag_wrap=off --display_error_number --xml_link_info="BOLT_main_code_linkInfo.xml" --entry_point=code_start --rom_model -o "BOLT_main_code.out" $(ORDERED_OBJS)
 	@echo 'Finished building target: "$@"'
 	@echo ' '
 
-empty_driverlib_project.hex: $(EXE_OUTPUTS)
+BOLT_main_code.hex: $(EXE_OUTPUTS)
 	@echo 'Building files: $(strip $(EXE_OUTPUTS__QUOTED))'
 	@echo 'Invoking: C2000 Hex Utility'
-	"C:/ti/ccs930/ccs/tools/compiler/ti-cgt-c2000_18.12.4.LTS/bin/hex2000"  -o "empty_driverlib_project.hex" $(EXE_OUTPUTS__QUOTED)
+	"C:/ti/ccs1011/ccs/tools/compiler/ti-cgt-c2000_20.2.1.LTS/bin/hex2000"  -o "BOLT_main_code.hex" $(EXE_OUTPUTS__QUOTED)
 	@echo 'Finished building: $(strip $(EXE_OUTPUTS__QUOTED))'
 	@echo ' '
 
 # Other Targets
 clean:
 	-$(RM) $(BIN_OUTPUTS__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "adc_etcm.obj" "can_etcm.obj" "dac_etcm.obj" "main.obj" "uart_etcm.obj" "device\F2837xD_CodeStartBranch.obj" "device\device.obj" 
-	-$(RM) "adc_etcm.d" "can_etcm.d" "dac_etcm.d" "main.d" "uart_etcm.d" "device\device.d" 
+	-$(RM) "adc_etcm.obj" "can_etcm.obj" "dac_etcm.obj" "main.obj" "rider_aids_etcm.obj" "uart_etcm.obj" "device\F2837xD_CodeStartBranch.obj" "device\device.obj" 
+	-$(RM) "adc_etcm.d" "can_etcm.d" "dac_etcm.d" "main.d" "rider_aids_etcm.d" "uart_etcm.d" "device\device.d" 
 	-$(RM) "device\F2837xD_CodeStartBranch.d" 
 	-@echo 'Finished clean'
 	-@echo ' '

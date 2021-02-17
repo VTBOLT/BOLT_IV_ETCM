@@ -39,14 +39,17 @@ uint16_t getADCRawValue() {
     // Force read
     ADC_forceSOC(ADC_BASE_ADDRESS, ADC_SOC_NUMBER0);
     // Block until interrupt triggers to signal read completion
-    while(ADC_getInterruptStatus(ADCA_BASE, ADC_INT_NUMBER1) == false)
+    while(ADC_getInterruptStatus(ADC_BASE_ADDRESS, ADC_INT_NUMBER1) == false)
     {
     }
     // Clear the interrupt immediately
-    ADC_clearInterruptStatus(ADCA_BASE, ADC_INT_NUMBER1);
+    ADC_clearInterruptStatus(ADC_BASE_ADDRESS, ADC_INT_NUMBER1);
+
+//    DEVICE_DELAY_US(5000);
 
     // Return ADC result
-    return ADC_readResult(ADCARESULT_BASE, ADC_SOC_NUMBER0);
+    uint16_t result = ADC_readResult(ADC_RESULT_BASE_ADDRESS, ADC_SOC_NUMBER0);
+    return result;
 }
 
 double getThrottleVoltage(void) {

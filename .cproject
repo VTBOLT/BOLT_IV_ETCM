@@ -105,6 +105,7 @@
 					</fileInfo>
 					<sourceEntries>
 						<entry excluding="device/driverlib|2837xD_FLASH_lnk_cpu1.cmd" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="device/driverlib/ccs/.settings"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -201,6 +202,7 @@
 					</folderInfo>
 					<sourceEntries>
 						<entry excluding="device/driverlib|2837xD_RAM_lnk_cpu1.cmd" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="device/driverlib/ccs/.settings"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

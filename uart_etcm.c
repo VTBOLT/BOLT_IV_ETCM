@@ -57,8 +57,8 @@ void initSCIFIFO(void){
     GPIO_setDirectionMode(GPIO_SCIRX, GPIO_DIR_MODE_IN);
     GPIO_setQualificationMode(GPIO_SCIRX, GPIO_QUAL_ASYNC);
 
-    Interrupt_initModule();
-    Interrupt_initVectorTable();
+//    Interrupt_initModule();
+//    Interrupt_initVectorTable();
 
     SCI_performSoftwareReset(SCI_BASE);
 

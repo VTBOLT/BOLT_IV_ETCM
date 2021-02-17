@@ -16,6 +16,7 @@ C_SRCS += \
 ../can_etcm.c \
 ../dac_etcm.c \
 ../main.c \
+../rider_aids_etcm.c \
 ../uart_etcm.c 
 
 C_DEPS += \
@@ -23,6 +24,7 @@ C_DEPS += \
 ./can_etcm.d \
 ./dac_etcm.d \
 ./main.d \
+./rider_aids_etcm.d \
 ./uart_etcm.d 
 
 OBJS += \
@@ -30,6 +32,7 @@ OBJS += \
 ./can_etcm.obj \
 ./dac_etcm.obj \
 ./main.obj \
+./rider_aids_etcm.obj \
 ./uart_etcm.obj 
 
 OBJS__QUOTED += \
@@ -37,6 +40,7 @@ OBJS__QUOTED += \
 "can_etcm.obj" \
 "dac_etcm.obj" \
 "main.obj" \
+"rider_aids_etcm.obj" \
 "uart_etcm.obj" 
 
 C_DEPS__QUOTED += \
@@ -44,6 +48,7 @@ C_DEPS__QUOTED += \
 "can_etcm.d" \
 "dac_etcm.d" \
 "main.d" \
+"rider_aids_etcm.d" \
 "uart_etcm.d" 
 
 C_SRCS__QUOTED += \
@@ -51,6 +56,7 @@ C_SRCS__QUOTED += \
 "../can_etcm.c" \
 "../dac_etcm.c" \
 "../main.c" \
+"../rider_aids_etcm.c" \
 "../uart_etcm.c" 
 
 

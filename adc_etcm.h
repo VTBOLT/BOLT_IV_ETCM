@@ -12,7 +12,8 @@
 #include "device.h"
 
 #define ADC_BASE_ADDRESS ADCB_BASE
-#define ADC_CHANNEL ADC_CH_ADCIN5
+#define ADC_RESULT_BASE_ADDRESS ADCBRESULT_BASE
+#define ADC_CHANNEL ADC_CH_ADCIN4
 
 void initADC(void);
 //void initEPWM(void);

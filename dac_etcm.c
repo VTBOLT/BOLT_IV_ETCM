@@ -36,7 +36,7 @@ void setDACOutputRaw(uint16_t request) {
 
 void setDACOutputVoltage(float voltage) {
     // output_voltage = (request * ref_voltage) / 4096
-    float request = (voltage * 4095) / DAC_VREF;
+    uint16_t request = (voltage * 4095.0) / DAC_VREF;
     setDACOutputRaw(request);
 }
 

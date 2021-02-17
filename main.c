@@ -65,7 +65,7 @@ void run(void)
 
         // @todo - implement ADC and write getThrottle() method. Verify values with separate ADC and ensure full range of input works
         //         This could probably be done by extending Quinton's ADC code in the position_sensor branch
-        float rawThrottleIn = 0; // getThrottle()
+        float rawThrottleIn = 3; // getThrottle()
 
         torque_request = rawThrottleIn; // unmodified
 
@@ -92,8 +92,11 @@ void run(void)
         * Carry out any calculations
         */
 
+
         // Send torque request to motor - this will be the raw torque request, unmodified
-        requestTorque(torque_request); // @todo - verify functionality in DAC file over full range of output values, Stephen wrote this and it's merged
+//        requestTorque(3.00); // @todo - verify functionality in DAC file over full range of output values, Stephen wrote this and it's merged
+        float voltage = getADCRawValue() / 4096.0 * 3.0;
+        setDACOutputVoltage(voltage);
 
         // Send a test CANmsg
         /* @todo - you'll still want CAN messages out of this so that the CANlogger can pick
@@ -107,9 +110,9 @@ void run(void)
          */
 
         // Flash the blue LED - this is just debug/verify the board is actually functioning
-        LEDflash();
+//        LEDflash();
 
-        getIMUdata(); // @todo - this is Quinton's code, I'm fairly sure that it works, still verify
+//        getIMUdata(); // @todo - this is Quinton's code, I'm fairly sure that it works, still verify
 
     }
 }
@@ -123,13 +126,19 @@ void init(void)
     // Initialize device clock and peripherals
     Device_init();
     initGPIO();     // do not move
+    Interrupt_initModule();
+    Interrupt_initVectorTable();
 
     //initLookup(); // removed, no lookup table
     initADC();
     //initEPWM();   // should be removed, only TC-required
-    //initADCSOC(); // @todo - honestly I don't remember what this was for. Aux bat SOC is measured
+    initADCSOC(); // @todo - honestly I don't remember what this was for. Aux bat SOC is measured
                     // on MSP432 (and should be rewritten), check on PCB. Check with Quinton if you
                     // can't figure it out
+
+    EINT;
+    ERTM;
+
     initCAN();
     //initSCI();    // @todo - figure out which or both initSCI methods are necessary
     initSCIFIFO();
