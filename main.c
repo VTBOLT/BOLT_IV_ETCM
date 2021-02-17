@@ -9,11 +9,6 @@
 //  Will Campbell
 //  Quinton Miller
 //  Josh Collins
-//  Tyler Shaffer
-//#############################################################################
-// Tyler Shaffer, 1/8/2020: Imported can_etcm.h, noticed that a new version of
-// C2000ware exists also.
-// Tyler Shaffer, 1/8/2020: Checked CAN_A pins.
 //
 //#############################################################################
 //Notes:
@@ -26,25 +21,37 @@
 //#############################################################################
 
 // Included peripheral files
-#include <can_etcm.h>
+#include "device.h"
 #include "adc_etcm.h"
 #include "dac_etcm.h"
-#include <uart_etcm.h>
-#include "ecap_etcm.h"
+#include "device.h"
+#include "CPUTimer_etcm.h"
+#include "uart_etcm.h"
+#include "gpio_etcm.h"
+#include "interrupt_etcm.h"
+#include "epwm_etcm.h"
+#include <stdlib.h>
+#include "string.h"
+
+typedef enum {INPUT, OUTPUT} testState;
+
+//Globals
+int CPUTimer0Count = 0;
+char outButtonStatus = 0x0000;
+char resetButtonStatus = 0x0000;
 
 //Function Prototypes.
 void init(void);
+int myPow(int base, int c);
 void run(void);
 void initLookup(void);
-void CANtest(void);
-void LEDflash(void);
-void initGPIO(void);
-void getIMUdata();
+__interrupt void cpuTimer0ISR(void);
+void getInput(char* prompt, char* in, unsigned int length);
+bool Timer0Expired();
 
 void main(void)
 {
     init();
-    testECAP();
     run();
 
     return;
@@ -52,54 +59,118 @@ void main(void)
 
 void run(void)
 {
-    float torque_request = 0.0; // likely to change type
+    char read[4] = {'0','0','0','\0'};
+    char write[11] = {'0','0','0','0','0','0','0','0','0','0','\n'};
     while (1)
     {
-        // Pull in sensor data to local variables
-        // This will use getters inside the peripheral .h/.c files
+        //Resetting Values
+        int suspensionTravel[2] = {0,0};
+        int pSwitches[3] = {0,0,0};
+        int bSwitches[2] = {0,0};
+        int wSensors[2] = {0,0};
+        int tSwitch = 0;
 
-        // Follow lookup table logic
-        // Specific logic TBD
+        //Read in values from serial
+        SCIread(SCI_DEBUG_BASE, (uint16_t *) read, 3); //Front Wheel Speed
+        wSensors[0] = atoi(read);
+        SCIread(SCI_DEBUG_BASE, (uint16_t *) read, 3); //Rear Wheel Speed
+        wSensors[1] = atoi(read);
+        SCIread(SCI_DEBUG_BASE, (uint16_t *) read, 3); //Front Susp Travel
+        suspensionTravel[0] = atoi(read);
+        SCIread(SCI_DEBUG_BASE, (uint16_t *) read, 3); //Rear Susp Travel
+        suspensionTravel[1] = atoi(read);
 
-        // Carry out any calculations
+        char oneBit[1] = {'0'};
+        SCIread(SCI_DEBUG_BASE, (uint16_t *) oneBit, 1); //Front Brake
+        bSwitches[0] = atoi(oneBit);
+        SCIread(SCI_DEBUG_BASE, (uint16_t *) oneBit, 1); //Back Brake
+        bSwitches[1] = atoi(oneBit);
+        SCIread(SCI_DEBUG_BASE, (uint16_t *) oneBit, 1); //Profile 1
+        pSwitches[0] = atoi(oneBit);
+        SCIread(SCI_DEBUG_BASE, (uint16_t *) oneBit, 1); //Profile 2
+        pSwitches[1] = atoi(oneBit);
+        SCIread(SCI_DEBUG_BASE, (uint16_t *) oneBit, 1); //Profile 3
+        pSwitches[2] = atoi(oneBit);
+        SCIread(SCI_DEBUG_BASE, (uint16_t *) oneBit, 1); //Throttle
+        tSwitch = atoi(oneBit);
 
-        // Send torque request to motor
-        requestTorque(torque_request);
+        //Set Values on Pins
+        GPIO_writePin(67, pSwitches[0]); //Profile Switches (J1 5,6,7)
+        GPIO_writePin(111, pSwitches[1]);
+        GPIO_writePin(60, pSwitches[2]);
 
-        // Send a test CANmsg
-        //CANtest();
+        GPIO_writePin(61, bSwitches[0]); //Brake Switches (J2 19, 18)
+        GPIO_writePin(123, bSwitches[1]);
 
-        // Flash the blue LED
-        LEDflash();
+        GPIO_writePin(122, tSwitch); //Throttle Closed Switch (J2 17)
 
-        // uart test
-        //SCItest();
+        setDACOutputVoltage(DACA_BASE, (150 - suspensionTravel[0]) * (3.0/150)); //Suspension Travel (J3 30)
+        setDACOutputVoltage(DACB_BASE, (150 - suspensionTravel[1]) * (3.0/150)); //Suspension Travel (J7 70)
 
-       getIMUdata();
+        //Calculate PWM Signal
+        initEPWM1(2*(wSensors[0]*4*40)); //Front Wheel Speed (J4 40)
+        initEPWM2(2*(wSensors[1]*4*40)); //Rear Wheel Speed  (J4 38)
+
+        uint16_t throttle_input = getADCVal(ADCB_BASE, ADCBRESULT_BASE, ADC_SOC_NUMBER1, ADC_SOC_NUMBER2, ADC_INT_NUMBER1); //(J3 25)
+        uint16_t motor_request = getADCVal(ADCA_BASE, ADCARESULT_BASE, ADC_SOC_NUMBER1, ADC_SOC_NUMBER2, ADC_INT_NUMBER1); //(J3 29)
+
+        unsigned int c = 0;
+        while (c < 10)
+        {
+            write[9 - c] = (throttle_input % 10) + 48;
+            throttle_input /= 10;
+            c++;
+        }
+        SCIwrite(SCI_DEBUG_BASE, (uint16_t *) write, strlen(write));
+
+        c = 0;
+        while (c < 10)
+        {
+            write[9 - c] = (motor_request % 10) + 48;
+            motor_request /= 10;
+            c++;
+        }
+        SCIwrite(SCI_DEBUG_BASE, (uint16_t *) write, strlen(write));
+        /* convert ADC val to char */
 
     }
 }
-
+int myPow(int base, int c)
+{
+    unsigned int a = 0;
+    for (a = 1; a < c; a++)
+    {
+        base *= base;
+    }
+    return base;
+}
 //Initialize, runs all initialization functions
-#define GPIO_CFG_BLUE_LED GPIO_31_GPIO31
-#define GPIO_BLUE_LED 31
-
 void init(void)
 {
-    // Initialize device clock and peripherals
     Device_init();
-    initGPIO();     // do not move
-
+    Device_initGPIO();
+    initInterrupt();
     initLookup();
-    //initADC();
-    //initEPWM();
-    //initADCSOC();
-    initCAN();
-    //initSCI();
-    initSCIFIFO();
-    initDAC();
-}
 
+    initGPIO();
+
+    initADC(ADCA_BASE);
+    initADC(ADCB_BASE);
+    initADCSOC(ADCA_BASE, ADC_CH_ADCIN2, ADC_SOC_NUMBER1, ADC_SOC_NUMBER2, ADC_INT_NUMBER1);
+    initADCSOC(ADCB_BASE, ADC_CH_ADCIN3, ADC_SOC_NUMBER1, ADC_SOC_NUMBER2, ADC_INT_NUMBER1);
+
+    initSCI();
+
+    initDAC(DACA_BASE);
+    initDAC(DACB_BASE);
+
+    addInterrupt(&cpuTimer0ISR, INT_TIMER0);
+    initTimer(CPUTIMER0_BASE, 5000, 0);
+    enableInterrupts();
+    startTimer(CPUTIMER0_BASE);
+    EINT;
+    ERTM;
+}
 //Initialize lookup tables
 void initLookup(void)
 {
@@ -108,94 +179,20 @@ void initLookup(void)
     // Load tables into ROM
 }
 
-/*
- * Send out a test message over CAN
- * ID: 0x401
- */
-void CANtest(void)
+__interrupt void cpuTimer0ISR(void)
 {
-    uint16_t msg[8];
-    msg[0] = 0x01;
-    msg[1] = 0x23;
-    msg[2] = 0x45;
-    msg[3] = 0x67;
-    msg[4] = 0x89;
-    msg[5] = 0xAB;
-    msg[6] = 0xCD;
-    msg[7] = 0xEF;
-    CANA_transmitMsg(msg, 4, 1);
+    CPUTimer0Count++;
+    sampleGPIO(&outButtonStatus);
+    sampleGPIO(&resetButtonStatus);
+    Interrupt_clearACKGroup(INTERRUPT_ACK_GROUP1);
 }
 
-void LEDflash(void){
-    GPIO_writePin(GPIO_BLUE_LED, 1);
-    // pause for a bit
-    unsigned long index = 0; // why do I have to declare this here?
-    for (index = 0; index <= 1000000; index++);
-    GPIO_writePin(GPIO_BLUE_LED, 0);
-    for (index = 0; index <= 1000000; index++);
+void getInput(char* prompt, char* in, unsigned int length){
+    char* newline = "\r\n";
+    SCIwrite(SCI_DEBUG_BASE, (uint16_t *) prompt, strlen(prompt));
+    SCIwrite(SCI_DEBUG_BASE, (uint16_t *) in, length);
+    SCIwrite(SCI_DEBUG_BASE, (uint16_t *) newline, strlen(newline));
 }
-
-/**
- * Module GPIO inits are in their respective .c file.
- */
-void initGPIO(void){
-    // GPIOs
-    Device_initGPIO();      // must be called first?
-    // BLUE_LED
-    GPIO_setPinConfig(GPIO_CFG_BLUE_LED);
-    GPIO_setPadConfig(GPIO_BLUE_LED, GPIO_PIN_TYPE_STD);        // Push/pull
-    GPIO_setDirectionMode(GPIO_BLUE_LED, GPIO_DIR_MODE_OUT);
-}
-
-
-#define IMU_FRAME_SIZE 18
-void getIMUdata(){
-    // data container
-    volatile uint8_t dataBuffer[IMU_FRAME_SIZE]; // 18 byte frames
-    volatile bool IMUframeRcvd = false;
-
-    // make sure FIFO is enabled
-    if (!SCI_isFIFOEnabled(SCI_BASE)){
-        // return error
-        return;
-    }
-    // clear RX_FIFO
-    SCI_resetRxFIFO(SCI_BASE);
-
-    // configure level at which INT flag is thrown
-    // RX1 = 1 byte in buffer
-    SCI_setFIFOInterruptLevel(SCI_BASE, SCI_FIFO_TX1, SCI_FIFO_RX1);
-
-    // enable RX_FIFO INT
-    SCI_enableInterrupt(SCI_BASE, SCI_INT_RXFF);
-
-    // strobe SYNC_IN GPIO
-
-    // wait for buffer fill (INT flag)
-    while((HWREGH(SCI_BASE + SCI_O_FFRX) & SCI_FFRX_RXFFINT) != SCI_FFRX_RXFFINT);
-
-    // get data one byte at a time
-    volatile uint8_t dataIndex = 0;
-    while(!IMUframeRcvd){
-        // check buffer
-        while(SCI_getRxFIFOStatus(SCI_BASE) == SCI_FIFO_RX0);    // wait for data (will get stuck here)
-        // grab byte
-        dataBuffer[dataIndex] = SCI_readCharNonBlocking(SCI_BASE);
-        dataIndex++;
-        // check amount of data bytes received
-        if (dataIndex >= IMU_FRAME_SIZE){
-            // send buffer data over CAN
-            CANA_transmitMsg(dataBuffer, 8, 1);
-            CANA_transmitMsg(dataBuffer+8, 8, 2);   // increment pointer
-            CANA_transmitMsg(dataBuffer+16, 2, 3);   // increment pointer
-            return;
-        }
-        // loop again
-    }
-
-
-}
-
 
 
 //

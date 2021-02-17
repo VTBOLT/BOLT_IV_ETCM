@@ -1,44 +1,7 @@
-# Source: https://github.com/keen/keen-cc3200/blob/aec85cae8b4a3ca8376ba0238defa083aaf40764/.gitignore
-
-# Object files
-*.o
-*.ko
-*.obj
-*.elf
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
-
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
-
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
-
-# Code Composer Studio
-# http://processors.wiki.ti.com/index.php/Source_control_with_CCS
-Debug/
-Release/
-.xdchelp
-.config/
-.launches/
-
-*.d
-/**/subdir_rules.mk
-CPU1_RAM/makefile
+Debug
+Release
+*.xdchelp
+config
+.launches
 /CPU1_RAM/
+/.metadata/

@@ -15,12 +15,11 @@
 #define DAC_BITS 4096 - 1
 
 // Temporary value, this should move to a dedicated header file
-#define MAX_TORQUE 5.0
+#define MAX_TORQUE 150.0
 
-void initDAC(void);
-void setDACOutputVoltage(float value);
-void setDACOutputRaw(uint16_t request);
+void initDAC(uint32_t base);
+void setDACOutputVoltage(uint32_t base, float value);
+void setDACOutputRaw(uint32_t base, uint16_t request);
 void requestTorque(float torque);
 
 #endif /* DAC_ETCM_H_ */
-

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>BOLT_main_code</name>
+	<name>empty_driverlib_project</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -28,7 +28,7 @@
 		<link>
 			<name>driverlib.lib</name>
 			<type>1</type>
-			<location>C:/ti/C2000Ware_2_00_00_03_Software/driverlib/f2837xd/driverlib/ccs/Release/driverlib.lib</location>
+			<location>C:/ti/c2000/C2000Ware_2_01_00_00/driverlib/f2837xd/driverlib/ccs/Debug/driverlib.lib</location>
 		</link>
 	</linkedResources>
 	<variableList>
