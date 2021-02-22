@@ -53,6 +53,7 @@ uint16_t getADCRawValue() {
 }
 
 double getThrottleVoltage(void) {
-    return 0.0;
+    float voltage = getADCRawValue() / 4096.0 * 3.0;
+    return voltage;
 }
 

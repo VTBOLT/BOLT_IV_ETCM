@@ -65,7 +65,7 @@ void run(void)
 
         // @todo - implement ADC and write getThrottle() method. Verify values with separate ADC and ensure full range of input works
         //         This could probably be done by extending Quinton's ADC code in the position_sensor branch
-        float rawThrottleIn = 3; // getThrottle()
+        float rawThrottleIn = getThrottleVoltage(); // getThrottle()
 
         torque_request = rawThrottleIn; // unmodified
 
@@ -95,8 +95,7 @@ void run(void)
 
         // Send torque request to motor - this will be the raw torque request, unmodified
 //        requestTorque(3.00); // @todo - verify functionality in DAC file over full range of output values, Stephen wrote this and it's merged
-        float voltage = getADCRawValue() / 4096.0 * 3.0;
-        setDACOutputVoltage(voltage);
+        setDACOutputVoltage(torque_request);
 
         // Send a test CANmsg
         /* @todo - you'll still want CAN messages out of this so that the CANlogger can pick
