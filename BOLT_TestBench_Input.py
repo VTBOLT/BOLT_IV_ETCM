@@ -36,10 +36,13 @@ with open("BOLT_TestBench_Output.txt", "w") as output_file:
         print(line)
         line_data = line.split(",")
         for i in range(0, len(line_data)):
+            #input("Press Enter to send data")
             ser.open()
             data = line_data[i]
-            ser.write(data.encode())
             output_file.write(dataNames[i] + ": " + data + "\n")
+            for j in range(3 - len(data)):
+                data += '\0'
+            ser.write(data.encode())
             if (i != len(line_data) - 1):
                 ser.close()
         while (ser.in_waiting == 0):

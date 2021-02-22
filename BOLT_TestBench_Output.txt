@@ -1,0 +1,13 @@
+Front Wheel Speed: 25
+Rear Wheel Speed: 251
+Front Suspension: 1
+Rear Suspension: 149
+Brake Switch 1: 0
+Brake Switch 2: 0
+No TC: 1
+Low TC: 1
+High TC: 1
+Throttle Switch: 1
+Throttle Input: 591
+ETCM Request: 1058
+

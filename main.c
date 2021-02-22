@@ -80,18 +80,18 @@ void run(void)
         SCIread(SCI_DEBUG_BASE, (uint16_t *) read, 3); //Rear Susp Travel
         suspensionTravel[1] = atoi(read);
 
-        char oneBit[1] = {'0'};
-        SCIread(SCI_DEBUG_BASE, (uint16_t *) oneBit, 1); //Front Brake
+        char oneBit[4] = {'0','0','0','\0'};;
+        SCIread(SCI_DEBUG_BASE, (uint16_t *) oneBit, 3); //Front Brake
         bSwitches[0] = atoi(oneBit);
-        SCIread(SCI_DEBUG_BASE, (uint16_t *) oneBit, 1); //Back Brake
+        SCIread(SCI_DEBUG_BASE, (uint16_t *) oneBit, 3); //Back Brake
         bSwitches[1] = atoi(oneBit);
-        SCIread(SCI_DEBUG_BASE, (uint16_t *) oneBit, 1); //Profile 1
+        SCIread(SCI_DEBUG_BASE, (uint16_t *) oneBit, 3); //Profile 1
         pSwitches[0] = atoi(oneBit);
-        SCIread(SCI_DEBUG_BASE, (uint16_t *) oneBit, 1); //Profile 2
+        SCIread(SCI_DEBUG_BASE, (uint16_t *) oneBit, 3); //Profile 2
         pSwitches[1] = atoi(oneBit);
-        SCIread(SCI_DEBUG_BASE, (uint16_t *) oneBit, 1); //Profile 3
+        SCIread(SCI_DEBUG_BASE, (uint16_t *) oneBit, 3); //Profile 3
         pSwitches[2] = atoi(oneBit);
-        SCIread(SCI_DEBUG_BASE, (uint16_t *) oneBit, 1); //Throttle
+        SCIread(SCI_DEBUG_BASE, (uint16_t *) oneBit, 3); //Throttle
         tSwitch = atoi(oneBit);
 
         //Set Values on Pins
