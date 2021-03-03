@@ -8,6 +8,6 @@ No TC: 1
 Low TC: 1
 High TC: 1
 Throttle Switch: 1
-Throttle Input: 591
-ETCM Request: 1058
+Throttle Input: 587
+ETCM Request: 1083
 

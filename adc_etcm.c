@@ -33,6 +33,7 @@ void initADC(uint32_t base)
 //Initialize ADC SOC
 void initADCSOC(uint32_t base, ADC_Channel adc_channel, ADC_SOCNumber adcsoc0, ADC_SOCNumber adcsoc1, ADC_IntNumber adc_int)
 {
+    //TODO fix stuff
 //    ADC_setupSOC(ADCA_BASE, ADC_SOC_NUMBER0, ADC_TRIGGER_CPU1_TINT0,
 //                 ADC_CH_ADCIN0, 15);
     ADC_setupSOC(base, adcsoc0, ADC_TRIGGER_SW_ONLY,
@@ -52,5 +53,7 @@ uint16_t getADCVal(uint32_t base, uint32_t resultbase, ADC_SOCNumber adcsoc0, AD
     }
     ADC_clearInterruptStatus(base, adc_int);
 
-    return ADC_readResult(resultbase, adcsoc0);
+    //set variable then return
+    uint16_t temp_ADC_readResult = ADC_readResult(resultbase, adcsoc0);
+    return temp_ADC_readResult;
 }
