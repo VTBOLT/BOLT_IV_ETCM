@@ -45,8 +45,6 @@ uint16_t getADCRawValue() {
     // Clear the interrupt immediately
     ADC_clearInterruptStatus(ADC_BASE_ADDRESS, ADC_INT_NUMBER1);
 
-//    DEVICE_DELAY_US(5000);
-
     // Return ADC result
     uint16_t result = ADC_readResult(ADC_RESULT_BASE_ADDRESS, ADC_SOC_NUMBER0);
     return result;
