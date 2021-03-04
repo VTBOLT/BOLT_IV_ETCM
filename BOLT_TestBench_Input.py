@@ -6,7 +6,7 @@ import os
 
 dataNames = ['Front Wheel Speed', 'Rear Wheel Speed', 'Front Suspension', 'Rear Suspension',
                       'Brake Switch 1', 'Brake Switch 2', 'No TC', 'Low TC', 'High TC',
-                      'Throttle Switch']
+                      'Throttle Switch', 'Yaw Calibration', 'Pitch Calibration', 'Roll Calibration', 'Yaw', 'Pitch', 'Roll']
 # ****************** Open Serial Port ****************** #
 ser = serial.Serial()
 ser.baudrate = 115200  # int(input("Provide a Baudrate (ex. 9600, 115200, etc.):\t"))
@@ -40,7 +40,7 @@ with open("BOLT_TestBench_Output.txt", "w") as output_file:
             ser.open()
             data = line_data[i]
             output_file.write(dataNames[i] + ": " + data + "\n")
-            for j in range(3 - len(data)):
+            for j in range(6 - len(data)):
                 data += '\0'
             ser.write(data.encode())
             if (i != len(line_data) - 1):

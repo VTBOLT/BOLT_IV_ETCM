@@ -57,3 +57,4 @@ uint16_t getADCVal(uint32_t base, uint32_t resultbase, ADC_SOCNumber adcsoc0, AD
     uint16_t temp_ADC_readResult = ADC_readResult(resultbase, adcsoc0);
     return temp_ADC_readResult;
 }
+

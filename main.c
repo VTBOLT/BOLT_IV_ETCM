@@ -59,7 +59,7 @@ void main(void)
 
 void run(void)
 {
-    char read[4] = {'0','0','0','\0'};
+    char read[6] = {'0','0','0','0','0','\0'};
     char write[11] = {'0','0','0','0','0','0','0','0','0','0','\n'};
     while (1)
     {
@@ -69,30 +69,47 @@ void run(void)
         int bSwitches[2] = {0,0};
         int wSensors[2] = {0,0};
         int tSwitch = 0;
+        float ypr_calibration[3] = {0.0,0.0,0.0};
+        float ypr[3] = {0.0,0.0,0.0};
 
         //Read in values from serial
-        SCIread(SCI_DEBUG_BASE, (uint16_t *) read, 3); //Front Wheel Speed
+        SCIread(SCI_DEBUG_BASE, (uint16_t *) read, 6); //Front Wheel Speed
         wSensors[0] = atoi(read);
-        SCIread(SCI_DEBUG_BASE, (uint16_t *) read, 3); //Rear Wheel Speed
+        SCIread(SCI_DEBUG_BASE, (uint16_t *) read, 6); //Rear Wheel Speed
         wSensors[1] = atoi(read);
-        SCIread(SCI_DEBUG_BASE, (uint16_t *) read, 3); //Front Susp Travel
+        SCIread(SCI_DEBUG_BASE, (uint16_t *) read, 6); //Front Susp Travel
         suspensionTravel[0] = atoi(read);
-        SCIread(SCI_DEBUG_BASE, (uint16_t *) read, 3); //Rear Susp Travel
+        SCIread(SCI_DEBUG_BASE, (uint16_t *) read, 6); //Rear Susp Travel
         suspensionTravel[1] = atoi(read);
 
-        char oneBit[4] = {'0','0','0','\0'};;
-        SCIread(SCI_DEBUG_BASE, (uint16_t *) oneBit, 3); //Front Brake
+        char oneBit[6] = {'0','0','0','0','0','\0'};
+        SCIread(SCI_DEBUG_BASE, (uint16_t *) oneBit, 6); //Front Brake
         bSwitches[0] = atoi(oneBit);
-        SCIread(SCI_DEBUG_BASE, (uint16_t *) oneBit, 3); //Back Brake
+        SCIread(SCI_DEBUG_BASE, (uint16_t *) oneBit, 6); //Back Brake
         bSwitches[1] = atoi(oneBit);
-        SCIread(SCI_DEBUG_BASE, (uint16_t *) oneBit, 3); //Profile 1
+        SCIread(SCI_DEBUG_BASE, (uint16_t *) oneBit, 6); //Profile 1
         pSwitches[0] = atoi(oneBit);
-        SCIread(SCI_DEBUG_BASE, (uint16_t *) oneBit, 3); //Profile 2
+        SCIread(SCI_DEBUG_BASE, (uint16_t *) oneBit, 6); //Profile 2
         pSwitches[1] = atoi(oneBit);
-        SCIread(SCI_DEBUG_BASE, (uint16_t *) oneBit, 3); //Profile 3
+        SCIread(SCI_DEBUG_BASE, (uint16_t *) oneBit, 6); //Profile 3
         pSwitches[2] = atoi(oneBit);
-        SCIread(SCI_DEBUG_BASE, (uint16_t *) oneBit, 3); //Throttle
+        SCIread(SCI_DEBUG_BASE, (uint16_t *) oneBit, 6); //Throttle
         tSwitch = atoi(oneBit);
+
+        SCIread(SCI_DEBUG_BASE, (uint16_t *) read, 6); //Yaw Calibration
+        ypr_calibration[0] = atof(read);
+        SCIread(SCI_DEBUG_BASE, (uint16_t *) read, 6); //Pitch Calibration
+        ypr_calibration[1] = atof(read);
+        SCIread(SCI_DEBUG_BASE, (uint16_t *) read, 6); //Roll Calibration
+        ypr_calibration[2] = atof(read);
+
+        SCIread(SCI_DEBUG_BASE, (uint16_t *) read, 6); //Yaw
+        ypr[0] = atof(read);
+        SCIread(SCI_DEBUG_BASE, (uint16_t *) read, 6); //Pitch
+        ypr[1] = atof(read);
+        SCIread(SCI_DEBUG_BASE, (uint16_t *) read, 6); //Roll
+        ypr[2] = atof(read);
+
 
         //Set Values on Pins
         GPIO_writePin(67, pSwitches[0]); //Profile Switches (J1 5,6,7)
@@ -113,6 +130,7 @@ void run(void)
 
         uint16_t throttle_input = getADCVal(ADCB_BASE, ADCBRESULT_BASE, ADC_SOC_NUMBER1, ADC_SOC_NUMBER2, ADC_INT_NUMBER1); //(J3 25)
         uint16_t motor_request = getADCVal(ADCA_BASE, ADCARESULT_BASE, ADC_SOC_NUMBER1, ADC_SOC_NUMBER2, ADC_INT_NUMBER1); //(J3 29)
+
 
         unsigned int c = 0;
         while (c < 10)
