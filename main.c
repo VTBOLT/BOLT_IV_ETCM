@@ -35,9 +35,13 @@
 #include <can_etcm.h>
 #include "adc_etcm.h"
 #include "dac_etcm.h"
-#include <uart_etcm.h>
+#include <timer_etcm.h>
+#include <leds_etcm.h>
+#include <IMU.h>
 
-//Function Prototypes.
+//***********************
+// Function Prototypes
+//***********************
 void init(void);
 void run(void);
 void initLookup(void);
@@ -45,6 +49,18 @@ void CANtest(void);
 void LEDflash(void);
 void initGPIO(void);
 void getIMUdata();
+__interrupt void SCI_ISR(void);
+void initSCIinterrupt(void);
+void initInterrupts(void);
+void initIMUinterrupt(void);
+void getIMUdataINT(void);
+void updateIMUbuffer(void);
+void displayIMU_CAN(void);
+
+//Variables
+const float IMU_PITCH_CORRECTION = -2.0;
+const float IMU_ROLL_CORRECTION = 0.0;
+const float IMU_YAW_CORRECTION = 129.0;
 
 void main(void)
 {
@@ -56,8 +72,13 @@ void main(void)
 
 void run(void)
 {
-    float torque_request = 0.0; // likely to change type
+    int torque_request = 0; // likely to change type
+    // start the timer
+    startTimer0();
 
+    float pitch;
+    float roll;
+    float yaw;
     while (1)
     {
         // Pull in sensor data to local variables
@@ -113,13 +134,34 @@ void run(void)
 
 //        getIMUdata(); // @todo - this is Quinton's code, I'm fairly sure that it works, still verify
 
+        //getIMUdata();
+        strobeIMUSyncIn();
+
+        pitch = getIMUPitch() + IMU_PITCH_CORRECTION;
+        roll = getIMURoll() + IMU_ROLL_CORRECTION;;
+        yaw = getIMUYaw() + IMU_YAW_CORRECTION;;
+
+        SCIWriteChar(SCI_DEBUG_BASE, "IMU Pitch: ", 11);
+        SCIWriteInt((int) pitch*100);
+
+        SCIWriteChar(SCI_DEBUG_BASE, "IMU Roll: ", 10);
+        SCIWriteInt((int) roll*100);
+
+        SCIWriteChar(SCI_DEBUG_BASE, "IMU Yaw: ", 9);
+        SCIWriteInt((int) yaw*100);
+
+        SCIWriteChar(SCI_DEBUG_BASE, "\n\r\n\r\n\r", 6);
+
+
+        // after 5 seconds, reduce period to 500mS
+        if (cpuTimer0IntCount >= 5)
+        {
+            reloadTimer0(500);
+        }
     }
 }
 
 //Initialize, runs all initialization functions
-#define GPIO_CFG_BLUE_LED GPIO_31_GPIO31
-#define GPIO_BLUE_LED 31
-
 void init(void)
 {
     // Initialize device clock and peripherals
@@ -127,6 +169,7 @@ void init(void)
     initGPIO();     // do not move
     Interrupt_initModule();
     Interrupt_initVectorTable();
+    initLEDS();
 
     //initLookup(); // removed, no lookup table
     initADC();
@@ -142,6 +185,10 @@ void init(void)
     //initSCI();    // @todo - figure out which or both initSCI methods are necessary
     initSCIFIFO();
     initDAC();
+    initTimer0();
+    initIMUTransfer();
+    initDebugTransfer();
+    initInterrupts();
 }
 
 //Initialize lookup tables (should be unused)
@@ -176,72 +223,63 @@ void LEDflash(void){
     GPIO_writePin(GPIO_BLUE_LED, 1);
     // pause for a bit
     unsigned long index = 0; // why do I have to declare this here?
-    for (index = 0; index <= 1000000; index++);
+    for (index = 0; index <= 1000000; index++)
+        ;
     GPIO_writePin(GPIO_BLUE_LED, 0);
-    for (index = 0; index <= 1000000; index++);
+    for (index = 0; index <= 1000000; index++)
+        ;
 }
 
 /**
+ * SCI_FIFO_RX will throw an interrupt every time there is at least
+ * one byte in the buffer. This function is called by the SCI_ISR()
+ * to fetch the data and store it in a global container.
+ *
+ * TODO: Verify frame integrity (start-of-header, checksum)
+ */
+
+void initInterrupts(void)
+{
+// Initialize PIE and clear PIE registers. Disables CPU interrupts.
+    Interrupt_initModule();
+// Initialize the PIE vector table with pointers to the shell Interrupt
+    Interrupt_initVectorTable();
+
+//*******************************
+// Interrupt init calls go here
+//-------------------------------
+    initIMUinterrupt();
+    initTimer0Interrupt();
+
+//*******************************
+
+// enable CPU interrupts
+// this should always be last
+// see Pg. 100 of Tech Ref Manual
+    Interrupt_enableMaster();
+//EINT;
+//ERTM;
+}
+/**
  * Module GPIO inits are in their respective .c file.
  */
-void initGPIO(void){
-    // GPIOs
+void initGPIO(void)
+{
     Device_initGPIO();      // must be called first?
-    // BLUE_LED
-    GPIO_setPinConfig(GPIO_CFG_BLUE_LED);
-    GPIO_setPadConfig(GPIO_BLUE_LED, GPIO_PIN_TYPE_STD);        // Push/pull
-    GPIO_setDirectionMode(GPIO_BLUE_LED, GPIO_DIR_MODE_OUT);
-}
 
+    //********
+    // GPIOs
+    //--------
 
-#define IMU_FRAME_SIZE 18
-void getIMUdata(){
-    // data container
-    volatile uint8_t dataBuffer[IMU_FRAME_SIZE]; // 18 byte frames
-    volatile bool IMUframeRcvd = false;
+    // SYNC_IN
+    GPIO_setPinConfig(GPIO_CFG_SYNC_IN);
+    GPIO_setPadConfig(GPIO_SYNC_IN, GPIO_PIN_TYPE_STD);
+    GPIO_setDirectionMode(GPIO_SYNC_IN, GPIO_DIR_MODE_OUT);
+    GPIO_writePin(GPIO_SYNC_IN, 0); // default state
 
-    // make sure FIFO is enabled
-    if (!SCI_isFIFOEnabled(SCI_BASE)){
-        // return error
-        return;
-    }
-    // clear RX_FIFO
-    SCI_resetRxFIFO(SCI_BASE);
-
-    // configure level at which INT flag is thrown
-    // RX1 = 1 byte in buffer
-    SCI_setFIFOInterruptLevel(SCI_BASE, SCI_FIFO_TX1, SCI_FIFO_RX1);
-
-    // enable RX_FIFO INT
-    SCI_enableInterrupt(SCI_BASE, SCI_INT_RXFF);
-
-    // strobe SYNC_IN GPIO
-
-    // wait for buffer fill (INT flag)
-    while((HWREGH(SCI_BASE + SCI_O_FFRX) & SCI_FFRX_RXFFINT) != SCI_FFRX_RXFFINT);
-
-    // get data one byte at a time
-    volatile uint8_t dataIndex = 0;
-    while(!IMUframeRcvd){
-        // check buffer
-        while(SCI_getRxFIFOStatus(SCI_BASE) == SCI_FIFO_RX0);    // wait for data (will get stuck here)
-        // grab byte
-        dataBuffer[dataIndex] = SCI_readCharNonBlocking(SCI_BASE);
-        dataIndex++;
-        // check amount of data bytes received
-        if (dataIndex >= IMU_FRAME_SIZE){
-            // send buffer data over CAN
-            //CANA_transmitMsg(dataBuffer, 8, 1);
-            //CANA_transmitMsg(dataBuffer+8, 8, 2);   // increment pointer
-            //CANA_transmitMsg(dataBuffer+16, 2, 3);   // increment pointer
-            return;
-        }
-        // loop again
-    }
-
+    //********
 
 }
-
 //
 // End of File
 //
