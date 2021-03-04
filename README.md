@@ -21,12 +21,12 @@ To create a CSV for inputting into the C2000, follow the list of columns below
         - Profile Switch 2 (1 or 0)
         - Profile Switch 3 (1 or 0)
         - Throttle Switch (1 or 0)
-        - Yaw Calibration (3 Digits, decimal, 2 Digits) (Need to find units and range)
-        - Pitch Calibration (3 Digits, decimal, 2 Digits) (Need to find units and range)
-        - Roll Calibration (3 Digits, decimal, 2 Digits) (Need to find units and range)
-        - Yaw (3 Digits, decimal, 2 Digits) (Need to find units and range)
-        - Pitch (3 Digits, decimal, 2 Digits) (Need to find units and range)
-        - Roll (3 Digits, decimal, 2 Digits) (Need to find units and range)
+        - Yaw Calibration (999.99 - 0) (Need to find units and range)
+        - Pitch Calibration (999.99 - 0) (Need to find units and range)
+        - Roll Calibration (999.99 - 0) (Need to find units and range)
+        - Yaw (999.99 - 0) (Need to find units and range)
+        - Pitch (999.99 - 0) (Need to find units and range)
+        - Roll (999.99 - 0) (Need to find units and range)
 
 Once you have a CSV, start up the CCS project on the C2000 and start up the Python Script
 BOLT_TestBench_Input.py and follow the prompts. (COM port, and input file).
