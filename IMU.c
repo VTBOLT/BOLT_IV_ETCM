@@ -55,6 +55,21 @@ float getIMURoll(void)
     return IMU_roll;
 }
 
+float getIMUYawM(void)
+{
+    return IMU_yaw_measured;
+}
+
+float getIMUPitchM(void)
+{
+    return IMU_pitch_measured;
+}
+
+float getIMURollM(void)
+{
+    return IMU_roll_measured;
+}
+
 /**
  * Module GPIO inits are in their respective .c file.
  */
