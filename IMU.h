@@ -4,6 +4,7 @@
 #include "device.h"
 #include "driverlib.h"
 #include "leds_etcm.h"
+#include "kalman.h"
 
 void strobeIMUSyncIn(void);
 void initIMUTransfer(void);

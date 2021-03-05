@@ -5,6 +5,17 @@ volatile float IMU_yaw;
 volatile float IMU_pitch;
 volatile float IMU_roll;
 
+volatile float IMU_yaw_measured;
+volatile float IMU_pitch_measured;
+volatile float IMU_roll_measured;
+
+volatile float estimateError_yaw;
+volatile float measurementError_yaw;
+volatile float estimateError_pitch;
+volatile float measurementError_pitch;
+volatile float estimateError_roll;
+volatile float measurementError_roll;
+
 volatile uint8_t IMUdataBuffer[IMU_FRAME_SIZE]; // 18 byte frames
 volatile bool IMUframeRcvd = false;
 
@@ -104,7 +115,7 @@ void getIMUdataINT(void)
     temp_buffer = temp_buffer | IMUdataBuffer[4];
 
     memcpy(&temp_float, &temp_buffer, sizeof(temp_buffer));
-    IMU_yaw = temp_float;
+    IMU_yaw_measured = temp_float;
 
     temp_buffer = IMUdataBuffer[11];
     temp_buffer = temp_buffer << 8;
@@ -115,7 +126,7 @@ void getIMUdataINT(void)
     temp_buffer = temp_buffer | IMUdataBuffer[8];
 
     memcpy(&temp_float, &temp_buffer, sizeof(temp_buffer));
-    IMU_pitch = temp_float;
+    IMU_pitch_measured = temp_float;
 
     temp_buffer = IMUdataBuffer[15];
     temp_buffer = temp_buffer << 8;
@@ -126,8 +137,15 @@ void getIMUdataINT(void)
     temp_buffer = temp_buffer | IMUdataBuffer[12];
 
     memcpy(&temp_float, &temp_buffer, sizeof(temp_buffer));
-    IMU_roll = temp_float;
-
+    IMU_roll_measured = temp_float;
+	
+	IMU_yaw = kalmanEstimate(IMU_yaw, estimateError_yaw, measurementError_yaw, IMU_yaw_measured);
+	IMU_pitch = kalmanEstimate(IMU_pitch, estimateError_pitch, measurementError_pitch, IMU_pitch_measured);
+	IMU_roll = kalmanEstimate(IMU_roll, estimateError_roll, measurementError_roll, IMU_roll_measured);
+	
+	estimateError_yaw = newESTerror(estimateError_yaw, measurementError_yaw);
+	estimateError_pitch = newESTerror(estimateError_pitch, measurementError_pitch);
+	estimateError_roll = newESTerror(estimateError_roll, measurementError_roll);
 }
 
 /**
@@ -185,6 +203,16 @@ void initIMUinterrupt(void)
     IMU_yaw = 69.420;
     IMU_pitch = 69.420;
     IMU_roll = 69.420;
+    IMU_yaw_measured = 69.420;
+    IMU_pitch_measured = 69.420;
+    IMU_roll_measured = 69.420;
+    
+	estimateError_yaw = 2.0;
+	measurementError_yaw = 4.0;
+	estimateError_pitch = 2.0;
+	measurementError_pitch = 4.0;
+	estimateError_roll = 2.0;
+	measurementError_roll = 4.0;
 }
 
 /**
