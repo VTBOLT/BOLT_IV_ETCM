@@ -38,6 +38,7 @@
 #include <timer_etcm.h>
 #include <leds_etcm.h>
 #include <IMU.h>
+#include <uart_etcm.h>
 
 //***********************
 // Function Prototypes
@@ -72,7 +73,7 @@ void main(void)
 
 void run(void)
 {
-    int torque_request = 0; // likely to change type
+    float torque_request = 0; // likely to change type
     // start the timer
     startTimer0();
 
@@ -178,8 +179,8 @@ void init(void)
                     // on MSP432 (and should be rewritten), check on PCB. Check with Quinton if you
                     // can't figure it out
 
-    EINT;
-    ERTM;
+//    EINT;
+//    ERTM;
 
     initCAN();
     //initSCI();    // @todo - figure out which or both initSCI methods are necessary
