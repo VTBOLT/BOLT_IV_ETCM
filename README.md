@@ -11,19 +11,6 @@ To setup your system to run the python script to interface with the C2000, you w
 To create a CSV for inputting into the C2000, follow the list of columns below
  (There's no limit to the number of rows you can have)
 
-        - Front Wheel Speed (RPM, 3 Digits, 0 - 459)
-        - Back Wheel Speed (RPM, 3 Digits, 0 - 459)
-        - Front Wheel Suspension (cm, 3 Digits, 0 - 150) -> This only goes up to 3V
-        - Back Wheel Suspension (cm, 3 Digits, 0 - 150) -> This only goes up to 3V
-        - Front Brake Switch 1 (1 or 0)
-        - Back Brake Switch 2 (1 or 0)
-        - Profile Switch 1 (1 or 0)
-        - Profile Switch 2 (1 or 0)
-        - Profile Switch 3 (1 or 0)
-        - Throttle Switch (1 or 0)
-        - Yaw Calibration (999.99 - 0) (Need to find units and range)
-        - Pitch Calibration (999.99 - 0) (Need to find units and range)
-        - Roll Calibration (999.99 - 0) (Need to find units and range)
         - Yaw (999.99 - 0) (Need to find units and range)
         - Pitch (999.99 - 0) (Need to find units and range)
         - Roll (999.99 - 0) (Need to find units and range)
