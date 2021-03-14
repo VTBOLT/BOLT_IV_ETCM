@@ -32,8 +32,12 @@
 #include "epwm_etcm.h"
 #include <stdlib.h>
 #include "string.h"
+#include <math.h>
 
-typedef enum {INPUT, OUTPUT} testState;
+typedef enum
+{
+    INPUT, OUTPUT
+} testState;
 
 //Globals
 int CPUTimer0Count = 0;
@@ -59,98 +63,50 @@ void main(void)
 
 void run(void)
 {
-    char read[6] = {'0','0','0','0','0','\0'};
-    char write[11] = {'0','0','0','0','0','0','0','0','0','0','\n'};
+    char read[9] = { '0', '0', '0', '0', '0', '0', '0', '0', '\0' };
+    char write[11] = { '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '\n' };
     while (1)
     {
         //Resetting Values
-        int suspensionTravel[2] = {0,0};
-        int pSwitches[3] = {0,0,0};
-        int bSwitches[2] = {0,0};
-        int wSensors[2] = {0,0};
-        int tSwitch = 0;
-        float ypr_calibration[3] = {0.0,0.0,0.0};
-        float ypr[3] = {0.0,0.0,0.0};
+        float ypr[3] = { 0.0, 0.0, 0.0 };
 
-        //Read in values from serial
-        SCIread(SCI_DEBUG_BASE, (uint16_t *) read, 6); //Front Wheel Speed
-        wSensors[0] = atoi(read);
-        SCIread(SCI_DEBUG_BASE, (uint16_t *) read, 6); //Rear Wheel Speed
-        wSensors[1] = atoi(read);
-        SCIread(SCI_DEBUG_BASE, (uint16_t *) read, 6); //Front Susp Travel
-        suspensionTravel[0] = atoi(read);
-        SCIread(SCI_DEBUG_BASE, (uint16_t *) read, 6); //Rear Susp Travel
-        suspensionTravel[1] = atoi(read);
+        SCIread(SCI_DEBUG_BASE, (uint16_t *) read, 9); //Yaw
+        ypr[0] = atof(read) + .00001;
+        SCIread(SCI_DEBUG_BASE, (uint16_t *) read, 9); //Pitch
+        ypr[1] = atof(read) + .00001;
+        SCIread(SCI_DEBUG_BASE, (uint16_t *) read, 9); //Roll
+        ypr[2] = atof(read) + .00001;;
 
-        char oneBit[6] = {'0','0','0','0','0','\0'};
-        SCIread(SCI_DEBUG_BASE, (uint16_t *) oneBit, 6); //Front Brake
-        bSwitches[0] = atoi(oneBit);
-        SCIread(SCI_DEBUG_BASE, (uint16_t *) oneBit, 6); //Back Brake
-        bSwitches[1] = atoi(oneBit);
-        SCIread(SCI_DEBUG_BASE, (uint16_t *) oneBit, 6); //Profile 1
-        pSwitches[0] = atoi(oneBit);
-        SCIread(SCI_DEBUG_BASE, (uint16_t *) oneBit, 6); //Profile 2
-        pSwitches[1] = atoi(oneBit);
-        SCIread(SCI_DEBUG_BASE, (uint16_t *) oneBit, 6); //Profile 3
-        pSwitches[2] = atoi(oneBit);
-        SCIread(SCI_DEBUG_BASE, (uint16_t *) oneBit, 6); //Throttle
-        tSwitch = atoi(oneBit);
+        // for testing purposes... these will need to be set by the Kalman Filter functions
+        float output_yaw = ypr[0];
+        float output_pitch = ypr[1];
+        float output_roll = ypr[2];
 
-        SCIread(SCI_DEBUG_BASE, (uint16_t *) read, 6); //Yaw Calibration
-        ypr_calibration[0] = atof(read);
-        SCIread(SCI_DEBUG_BASE, (uint16_t *) read, 6); //Pitch Calibration
-        ypr_calibration[1] = atof(read);
-        SCIread(SCI_DEBUG_BASE, (uint16_t *) read, 6); //Roll Calibration
-        ypr_calibration[2] = atof(read);
+        // redundant, but easier to loop through
+        float output_ypr[] = { output_yaw, output_pitch, output_roll };
 
-        SCIread(SCI_DEBUG_BASE, (uint16_t *) read, 6); //Yaw
-        ypr[0] = atof(read);
-        SCIread(SCI_DEBUG_BASE, (uint16_t *) read, 6); //Pitch
-        ypr[1] = atof(read);
-        SCIread(SCI_DEBUG_BASE, (uint16_t *) read, 6); //Roll
-        ypr[2] = atof(read);
+        // assumed precision of the float... places past decimal point
+        int precision = 4;
 
+        int i;
+        int j;
 
-        //Set Values on Pins
-        GPIO_writePin(67, pSwitches[0]); //Profile Switches (J1 5,6,7)
-        GPIO_writePin(111, pSwitches[1]);
-        GPIO_writePin(60, pSwitches[2]);
-
-        GPIO_writePin(61, bSwitches[0]); //Brake Switches (J2 19, 18)
-        GPIO_writePin(123, bSwitches[1]);
-
-        GPIO_writePin(122, tSwitch); //Throttle Closed Switch (J2 17)
-
-        setDACOutputVoltage(DACA_BASE, (150 - suspensionTravel[0]) * (3.0/150)); //Suspension Travel (J3 30)
-        setDACOutputVoltage(DACB_BASE, (150 - suspensionTravel[1]) * (3.0/150)); //Suspension Travel (J7 70)
-
-        //Calculate PWM Signal
-        initEPWM1(2*(wSensors[0]*4*40)); //Front Wheel Speed (J4 40)
-        initEPWM2(2*(wSensors[1]*4*40)); //Rear Wheel Speed  (J4 38)
-
-        uint16_t throttle_input = getADCVal(ADCB_BASE, ADCBRESULT_BASE, ADC_SOC_NUMBER1, ADC_SOC_NUMBER2, ADC_INT_NUMBER1); //(J3 25)
-        uint16_t motor_request = getADCVal(ADCA_BASE, ADCARESULT_BASE, ADC_SOC_NUMBER1, ADC_SOC_NUMBER2, ADC_INT_NUMBER1); //(J3 29)
-
-
-        unsigned int c = 0;
-        while (c < 10)
+        for (i = 0; i < 3; i++)
         {
-            write[9 - c] = (throttle_input % 10) + 48;
-            throttle_input /= 10;
-            c++;
+            long temp_value = (long)(output_ypr[i] * powf(10.0, precision));
+            for (j = 0; j < precision; j++)
+            {
+                write[9 - j] = (char) ((temp_value % 10) + 48);
+                temp_value /= 10;
+            }
+            write[9 - precision] = '.';
+            for (j = precision + 1; j < 10; j++)
+            {
+                write[9 - j] = (char) ((temp_value % 10) + 48);
+                temp_value /= 10;
+            }
+            SCIwrite(SCI_DEBUG_BASE, (uint16_t *) write, strlen(write));
         }
-        SCIwrite(SCI_DEBUG_BASE, (uint16_t *) write, strlen(write));
-
-        c = 0;
-        while (c < 10)
-        {
-            write[9 - c] = (motor_request % 10) + 48;
-            motor_request /= 10;
-            c++;
-        }
-        SCIwrite(SCI_DEBUG_BASE, (uint16_t *) write, strlen(write));
-        /* convert ADC val to char */
-
     }
 }
 int myPow(int base, int c)
@@ -174,8 +130,10 @@ void init(void)
 
     initADC(ADCA_BASE);
     initADC(ADCB_BASE);
-    initADCSOC(ADCA_BASE, ADC_CH_ADCIN2, ADC_SOC_NUMBER1, ADC_SOC_NUMBER2, ADC_INT_NUMBER1);
-    initADCSOC(ADCB_BASE, ADC_CH_ADCIN3, ADC_SOC_NUMBER1, ADC_SOC_NUMBER2, ADC_INT_NUMBER1);
+    initADCSOC(ADCA_BASE, ADC_CH_ADCIN2, ADC_SOC_NUMBER1, ADC_SOC_NUMBER2,
+               ADC_INT_NUMBER1);
+    initADCSOC(ADCB_BASE, ADC_CH_ADCIN3, ADC_SOC_NUMBER1, ADC_SOC_NUMBER2,
+               ADC_INT_NUMBER1);
 
     initSCI();
 
@@ -205,13 +163,13 @@ __interrupt void cpuTimer0ISR(void)
     Interrupt_clearACKGroup(INTERRUPT_ACK_GROUP1);
 }
 
-void getInput(char* prompt, char* in, unsigned int length){
+void getInput(char* prompt, char* in, unsigned int length)
+{
     char* newline = "\r\n";
     SCIwrite(SCI_DEBUG_BASE, (uint16_t *) prompt, strlen(prompt));
     SCIwrite(SCI_DEBUG_BASE, (uint16_t *) in, length);
     SCIwrite(SCI_DEBUG_BASE, (uint16_t *) newline, strlen(newline));
 }
-
 
 //
 // End of File

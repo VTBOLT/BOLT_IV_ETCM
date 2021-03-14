@@ -4,9 +4,7 @@ import csv
 import time
 import os
 
-dataNames = ['Front Wheel Speed', 'Rear Wheel Speed', 'Front Suspension', 'Rear Suspension',
-                      'Brake Switch 1', 'Brake Switch 2', 'No TC', 'Low TC', 'High TC',
-                      'Throttle Switch', 'Yaw Calibration', 'Pitch Calibration', 'Roll Calibration', 'Yaw', 'Pitch', 'Roll']
+dataNames = ['Yaw', 'Pitch', 'Roll']
 # ****************** Open Serial Port ****************** #
 ser = serial.Serial()
 ser.baudrate = 115200  # int(input("Provide a Baudrate (ex. 9600, 115200, etc.):\t"))
@@ -40,23 +38,29 @@ with open("BOLT_TestBench_Output.txt", "w") as output_file:
             ser.open()
             data = line_data[i]
             output_file.write(dataNames[i] + ": " + data + "\n")
-            for j in range(6 - len(data)):
+            for j in range(9 - len(data)):
                 data += '\0'
             ser.write(data.encode())
             if (i != len(line_data) - 1):
                 ser.close()
         while (ser.in_waiting == 0):
-            print("Waiting for Throttle Input from C2000.........")
+            print("Waiting for Yaw Output from C2000.........")
             time.sleep(1)
-        output = int(ser.read(11).decode("utf-8"))
+        output = float(ser.read(11).decode("utf-8"))
         print(str(output))
-        output_file.write("Throttle Input: " + str(output) + "\n")
+        output_file.write("Yaw Output: " + str(output) + "\n")
         while (ser.in_waiting == 0):
-            print("Waiting for ETCM Request from C2000.........")
+            print("Waiting for Pitch Output from C2000.........")
             time.sleep(1)
-        output = int(ser.read(11).decode("utf-8"))
+        output = float(ser.read(11).decode("utf-8"))
         print(str(output))
-        output_file.write("ETCM Request: " + str(output) + "\n\n")
+        output_file.write("Pitch Output: " + str(output) + "\n\n")
+        while (ser.in_waiting == 0):
+            print("Waiting for Roll Output from C2000.........")
+            time.sleep(1)
+        output = float(ser.read(11).decode("utf-8"))
+        print(str(output))
+        output_file.write("Roll Output: " + str(output) + "\n")
         ser.close()
 # ****************** CSV Reading & TXT Writing ****************** #
 

@@ -1,19 +1,7 @@
-Front Wheel Speed: 25
-Rear Wheel Speed: 251
-Front Suspension: 1
-Rear Suspension: 149
-Brake Switch 1: 0
-Brake Switch 2: 0
-No TC: 1
-Low TC: 1
-High TC: 1
-Throttle Switch: 1
-Yaw Calibration: 20.1
-Pitch Calibration: 123.45
-Roll Calibration: 0.25
 Yaw: 21.1
 Pitch: 124.45
 Roll: 1.25 
-Throttle Input: 595
-ETCM Request: 924
+Yaw Output: 21.1
+Pitch Output: 124.45
 
+Roll Output: 1.25
