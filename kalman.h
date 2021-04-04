@@ -3,9 +3,9 @@
 #ifndef kalman_H_
 #define kalman_H_
 
-volatile float kalmanGain(volatile float eEST, volatile float eMEA);
-volatile float kalmanEstimate(volatile float prevEST, volatile float eEST, volatile float eMEA, volatile float measurement);
-volatile float newESTerror(volatile float prevESTe, volatile float eMEA);
+ float kalmanGain( float eEST,  float eMEA);
+ float kalmanEstimate( float prevEST,  float eEST,  float eMEA,  float measurement);
+ float newESTerror( float prevESTe,  float eMEA);
 
 
 #endif

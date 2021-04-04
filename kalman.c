@@ -8,14 +8,14 @@
 
 #include "kalman.h"
 
-volatile float kalmanGain(volatile float eEST, volatile float eMEA) {
+float kalmanGain(float eEST, float eMEA) {
 	return eEST/(eEST+eMEA);
 }
 
-volatile float kalmanEstimate(volatile float prevEST, volatile float eEST, volatile float eMEA, volatile float measurement) {
+float kalmanEstimate(float prevEST, float eEST, float eMEA, float measurement) {
 	return prevEST + kalmanGain(eEST, eMEA) * (measurement - prevEST);
 }
 
-volatile float newESTerror(volatile float prevESTe, volatile float eMEA) {
+float newESTerror(float prevESTe, float eMEA) {
 	return (prevESTe * eMEA)/(eMEA + prevESTe);
 }
