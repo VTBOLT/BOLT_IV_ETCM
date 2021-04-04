@@ -17,11 +17,12 @@ def main(args):
 		partition = n / len(result)
 		count = int (i / partition)
 		for index in range(0, len(result[count])):
-			error = round(result[count][index] + random.uniform(-0.05 * result[count][index], 0.05 * result[count][index]), 3)
+			error = 0.05 * result[count][index]
+			valueError = round(result[count][index] + random.uniform(-1 * error, error), 3)
 			if index == len(result[count]) - 1:
-				print(error)
+				print(valueError)
 			else:
-				print(error, end = ", ")
+				print(valueError, end = ", ")
 
 
 def populate_directions(directions):
