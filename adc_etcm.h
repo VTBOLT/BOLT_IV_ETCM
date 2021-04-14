@@ -11,14 +11,16 @@
 #include "adc.h"
 #include "device.h"
 
-#define ADC_BASE_ADDRESS ADCB_BASE
-#define ADC_RESULT_BASE_ADDRESS ADCBRESULT_BASE
-#define ADC_CHANNEL ADC_CH_ADCIN4
+#define THROTTLE_ADC_BASE_ADDRESS ADCB_BASE
+#define THROTTLE_ADC_RESULT_BASE_ADDRESS ADCBRESULT_BASE
+#define THROTTLE_ADC_CHANNEL ADC_CH_ADCIN4
+#define THROTTLE_ADC_SOC ADC_SOC_NUMBER0
+#define THROTTLE_ADC_INT_NUM ADC_INT_NUMBER2
 
-void initADC(void);
+void initThrottleADC(void);
 //void initEPWM(void);
-void initADCSOC(void);
-uint16_t getADCRawValue(void);
+void initThrottleADCSOC(void);
+uint16_t getThrottleADCRawValue(void);
 double getThrottleVoltage(void);
 //__interrupt void adcA0ISR(void);
 
