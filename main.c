@@ -33,12 +33,13 @@
 
 // Included peripheral files
 #include <can_etcm.h>
-#include "adc_etcm.h"
-#include "dac_etcm.h"
+#include <adc_etcm.h>
+#include <dac_etcm.h>
 #include <timer_etcm.h>
 #include <leds_etcm.h>
 #include <IMU.h>
 #include <uart_etcm.h>
+#include <front_suspension_sensor.h>
 
 //***********************
 // Function Prototypes
@@ -67,10 +68,10 @@ void main(void)
 {
     init();
     run();
-
-    return;
 }
 
+
+//Main, calls init and run
 void run(void)
 {
     float torque_request = 0; // likely to change type
@@ -82,6 +83,7 @@ void run(void)
     float yaw;
     while (1)
     {
+        ADC_forceSOC(ADCB_BASE, ADC_SOC_NUMBER0);
         // Pull in sensor data to local variables
         // This will use getters inside the peripheral .h/.c files
 
@@ -170,18 +172,15 @@ void init(void)
     initGPIO();     // do not move
     Interrupt_initModule();
     Interrupt_initVectorTable();
+
+    EINT;
+    ERTM;
+
     initLEDS();
-
     //initLookup(); // removed, no lookup table
-    initADC();
-    //initEPWM();   // should be removed, only TC-required
-    initADCSOC(); // @todo - honestly I don't remember what this was for. Aux bat SOC is measured
-                    // on MSP432 (and should be rewritten), check on PCB. Check with Quinton if you
-                    // can't figure it out
-
-//    EINT;
-//    ERTM;
-
+    initFrontSuspensionSensor();
+    initThrottleADC();
+    initThrottleADCSOC();
     initCAN();
     //initSCI();    // @todo - figure out which or both initSCI methods are necessary
     initSCIFIFO();
@@ -242,9 +241,9 @@ void LEDflash(void){
 void initInterrupts(void)
 {
 // Initialize PIE and clear PIE registers. Disables CPU interrupts.
-    Interrupt_initModule();
+//    Interrupt_initModule();
 // Initialize the PIE vector table with pointers to the shell Interrupt
-    Interrupt_initVectorTable();
+//    Interrupt_initVectorTable();
 
 //*******************************
 // Interrupt init calls go here
