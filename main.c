@@ -40,6 +40,7 @@
 #include <IMU.h>
 #include <uart_etcm.h>
 #include <front_suspension_sensor.h>
+#include <ecap_etcm.h>
 
 //***********************
 // Function Prototypes
@@ -74,93 +75,103 @@ void main(void)
 //Main, calls init and run
 void run(void)
 {
-    float torque_request = 0; // likely to change type
-    // start the timer
-    startTimer0();
+//    float torque_request = 0; // likely to change type
+//    // start the timer
+//    startTimer0();
+//
+//    float pitch;
+//    float roll;
+//    float yaw;
+//    while (1)
+//    {
+//        // Pull in sensor data to local variables
+//        // This will use getters inside the peripheral .h/.c files
+//
+//        // @todo - implement ADC and write getThrottle() method. Verify values with separate ADC and ensure full range of input works
+//        //         This could probably be done by extending Quinton's ADC code in the position_sensor branch
+//        float rawThrottleIn = getThrottleVoltage(); // getThrottle()
+//
+//        torque_request = rawThrottleIn; // unmodified
+//
+//        /* No TC, unnecessary
+//        int rawFrontSusp = 0; // getFrontSusp()
+//        int rawBackSusp = 0; // getBackSusp()
+//        *
+//        *
+//        * Follow lookup table logic
+//        * Specific logic TBD
+//        *
+//        * The basic structure will be as follows:
+//        *      First, check which TC categories need to be calculated/looked up
+//        *      Then, do those calculations and store the results
+//        *      Look at all the results and find the largest reduction
+//        *      Move forward with that
+//        *
+//        *
+//        *bool checks[4]; // raw_in, traction_control, anti_wheelie, anti_jerk
+//        *
+//        *checks[0] = true; // raw_in will always qualify
+//        *
+//        *
+//        * Carry out any calculations
+//        */
+//
+//
+//        // Send torque request to motor - this will be the raw torque request, unmodified
+////        requestTorque(3.00); // @todo - verify functionality in DAC file over full range of output values, Stephen wrote this and it's merged
+//        setDACOutputVoltage(torque_request);
+//
+//        // Send a test CANmsg
+//        /* @todo - you'll still want CAN messages out of this so that the CANlogger can pick
+//         * them up and you can record and verify that IO throttle matches up. See can_etcm.h
+//         * and can_etcm.c, written by Tyler. For any further functionality, implement from
+//         * the CAN examples. They can be finicky and you should make sure there aren't any
+//         * jumpers or other hardware on the silkscreen that need to be arranged in a certain
+//         * way, but the examples will work. Also, consider buying a CAN analyzer.
+//        //CANtest()
+//         * @todo - verify test works, then put in actual data
+//         */
+//
+//        // Flash the blue LED - this is just debug/verify the board is actually functioning
+////        LEDflash();
+//
+////        getIMUdata(); // @todo - this is Quinton's code, I'm fairly sure that it works, still verify
+//
+//        //getIMUdata();
+////        strobeIMUSyncIn();
+////
+////        pitch = getIMUPitch() + IMU_PITCH_CORRECTION;
+////        roll = getIMURoll() + IMU_ROLL_CORRECTION;;
+////        yaw = getIMUYaw() + IMU_YAW_CORRECTION;;
+////
+////        SCIWriteChar(SCI_DEBUG_BASE, "IMU Pitch: ", 11);
+////        SCIWriteInt((int) pitch*100);
+////
+////        SCIWriteChar(SCI_DEBUG_BASE, "IMU Roll: ", 10);
+////        SCIWriteInt((int) roll*100);
+////
+////        SCIWriteChar(SCI_DEBUG_BASE, "IMU Yaw: ", 9);
+////        SCIWriteInt((int) yaw*100);
+//
+//        SCIWriteChar(SCI_DEBUG_BASE, "\n\r\n\r\n\r", 6);
+//        SCIWriteChar(SCI_DEBUG_BASE, "Front RPM: ", 11);
+//        SCIWriteInt(getRPMFront());
+//        SCIWriteChar(SCI_DEBUG_BASE, "Rear RPM: ", 10);
+//        SCIWriteInt(getRPMRear());
+//
+//
+//        // after 5 seconds, reduce period to 500mS
+//        if (cpuTimer0IntCount >= 5)
+//        {
+//            reloadTimer0(500);
+//        }
+//    }
 
-    float pitch;
-    float roll;
-    float yaw;
     while (1)
     {
         ADC_forceSOC(ADCB_BASE, ADC_SOC_NUMBER0);
         // Pull in sensor data to local variables
         // This will use getters inside the peripheral .h/.c files
-
-        // @todo - implement ADC and write getThrottle() method. Verify values with separate ADC and ensure full range of input works
-        //         This could probably be done by extending Quinton's ADC code in the position_sensor branch
-        float rawThrottleIn = getThrottleVoltage(); // getThrottle()
-
-        torque_request = rawThrottleIn; // unmodified
-
-        /* No TC, unnecessary
-        int rawFrontSusp = 0; // getFrontSusp()
-        int rawBackSusp = 0; // getBackSusp()
-        *
-        *
-        * Follow lookup table logic
-        * Specific logic TBD
-        *
-        * The basic structure will be as follows:
-        *      First, check which TC categories need to be calculated/looked up
-        *      Then, do those calculations and store the results
-        *      Look at all the results and find the largest reduction
-        *      Move forward with that
-        *
-        *
-        *bool checks[4]; // raw_in, traction_control, anti_wheelie, anti_jerk
-        *
-        *checks[0] = true; // raw_in will always qualify
-        *
-        *
-        * Carry out any calculations
-        */
-
-
-        // Send torque request to motor - this will be the raw torque request, unmodified
-//        requestTorque(3.00); // @todo - verify functionality in DAC file over full range of output values, Stephen wrote this and it's merged
-        setDACOutputVoltage(torque_request);
-
-        // Send a test CANmsg
-        /* @todo - you'll still want CAN messages out of this so that the CANlogger can pick
-         * them up and you can record and verify that IO throttle matches up. See can_etcm.h
-         * and can_etcm.c, written by Tyler. For any further functionality, implement from
-         * the CAN examples. They can be finicky and you should make sure there aren't any
-         * jumpers or other hardware on the silkscreen that need to be arranged in a certain
-         * way, but the examples will work. Also, consider buying a CAN analyzer.
-        //CANtest()
-         * @todo - verify test works, then put in actual data
-         */
-
-        // Flash the blue LED - this is just debug/verify the board is actually functioning
-//        LEDflash();
-
-//        getIMUdata(); // @todo - this is Quinton's code, I'm fairly sure that it works, still verify
-
-        //getIMUdata();
-        strobeIMUSyncIn();
-
-        pitch = getIMUPitch() + IMU_PITCH_CORRECTION;
-        roll = getIMURoll() + IMU_ROLL_CORRECTION;;
-        yaw = getIMUYaw() + IMU_YAW_CORRECTION;;
-
-        SCIWriteChar(SCI_DEBUG_BASE, "IMU Pitch: ", 11);
-        SCIWriteInt((int) pitch*100);
-
-        SCIWriteChar(SCI_DEBUG_BASE, "IMU Roll: ", 10);
-        SCIWriteInt((int) roll*100);
-
-        SCIWriteChar(SCI_DEBUG_BASE, "IMU Yaw: ", 9);
-        SCIWriteInt((int) yaw*100);
-
-        SCIWriteChar(SCI_DEBUG_BASE, "\n\r\n\r\n\r", 6);
-
-
-        // after 5 seconds, reduce period to 500mS
-        if (cpuTimer0IntCount >= 5)
-        {
-            reloadTimer0(500);
-        }
     }
 }
 
@@ -173,14 +184,49 @@ void init(void)
     Interrupt_initModule();
     Interrupt_initVectorTable();
 
+    //
+    // Configure GPIO 1 as rear eCAP input
+    //
+    XBAR_setInputPin(XBAR_INPUT7, 1);
+    GPIO_setPinConfig(GPIO_1_GPIO1);
+    GPIO_setDirectionMode(1, GPIO_DIR_MODE_IN);
+    GPIO_setQualificationMode(1, GPIO_QUAL_ASYNC);
+
+    //
+    // Configure GPIO 2 as front eCAP input
+    //
+    XBAR_setInputPin(XBAR_INPUT8, 2);
+    GPIO_setPinConfig(GPIO_2_GPIO2);
+    GPIO_setDirectionMode(2, GPIO_DIR_MODE_IN);
+    GPIO_setQualificationMode(2, GPIO_QUAL_ASYNC);
+
+    //
+    // Interrupts that are used in this example are re-mapped to ISR functions
+    // found within this file.
+    //
+    Interrupt_register(INT_ECAP1, &ecap1ISR);
+    Interrupt_register(INT_ECAP2, &ecap1ISR);
+
+    initLEDS();
+
+    //initLookup(); // removed, no lookup table
+    initEPWM();   // should be removed, only TC-required
+    initECAP();
+                    // on MSP432 (and should be rewritten), check on PCB. Check with Quinton if you
+                    // can't figure it out
+
+    //
+    // Enable interrupts required for this example
+    //
+    Interrupt_enable(INT_ECAP1);
+    Interrupt_enable(INT_ECAP2);
+
     EINT;
     ERTM;
 
-    initLEDS();
-    //initLookup(); // removed, no lookup table
-    initFrontSuspensionSensor();
     initThrottleADC();
     initThrottleADCSOC();
+    initFrontSuspensionSensor();
     initCAN();
     //initSCI();    // @todo - figure out which or both initSCI methods are necessary
     initSCIFIFO();

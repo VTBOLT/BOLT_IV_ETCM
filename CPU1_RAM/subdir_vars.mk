@@ -9,13 +9,14 @@ CMD_SRCS += \
 ../2837xD_RAM_lnk_cpu1.cmd 
 
 LIB_SRCS += \
-C:/ti/C2000Ware_2_01_00_00_Software/driverlib/f2837xd/driverlib/ccs/Release/driverlib.lib 
+C:/ti/C2000Ware_2_00_00_03_Software/driverlib/f2837xd/driverlib/ccs/Release/driverlib.lib 
 
 C_SRCS += \
 ../IMU.c \
 ../adc_etcm.c \
 ../can_etcm.c \
 ../dac_etcm.c \
+../ecap_etcm.c \
 ../leds_etcm.c \
 ../main.c \
 ../rider_aids_etcm.c \
@@ -27,6 +28,7 @@ C_DEPS += \
 ./adc_etcm.d \
 ./can_etcm.d \
 ./dac_etcm.d \
+./ecap_etcm.d \
 ./leds_etcm.d \
 ./main.d \
 ./rider_aids_etcm.d \
@@ -38,6 +40,7 @@ OBJS += \
 ./adc_etcm.obj \
 ./can_etcm.obj \
 ./dac_etcm.obj \
+./ecap_etcm.obj \
 ./leds_etcm.obj \
 ./main.obj \
 ./rider_aids_etcm.obj \
@@ -49,6 +52,7 @@ OBJS__QUOTED += \
 "adc_etcm.obj" \
 "can_etcm.obj" \
 "dac_etcm.obj" \
+"ecap_etcm.obj" \
 "leds_etcm.obj" \
 "main.obj" \
 "rider_aids_etcm.obj" \
@@ -60,6 +64,7 @@ C_DEPS__QUOTED += \
 "adc_etcm.d" \
 "can_etcm.d" \
 "dac_etcm.d" \
+"ecap_etcm.d" \
 "leds_etcm.d" \
 "main.d" \
 "rider_aids_etcm.d" \
@@ -71,6 +76,7 @@ C_SRCS__QUOTED += \
 "../adc_etcm.c" \
 "../can_etcm.c" \
 "../dac_etcm.c" \
+"../ecap_etcm.c" \
 "../leds_etcm.c" \
 "../main.c" \
 "../rider_aids_etcm.c" \

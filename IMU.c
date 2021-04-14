@@ -321,7 +321,6 @@ void SCIWriteInt(int intIn)
 void SCIWriteChar(uint32_t SCIbase, const char * const dataArray,
                   int dataLength)
 {
-
     SCI_writeCharArray(SCIbase, dataArray, dataLength);
 
 }
