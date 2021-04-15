@@ -11,10 +11,10 @@
 #include "ecap.h"
 #include "device.h"
 
-void runECAP(void);
-void initECAP(void);
-void initEPWM(void);
-void testECAP(void);
+void runSpeedSensorECAP(void);
+void initSpeedSensorECAP(void);
+void initSpeedSensorEPWM(void);
+void testSpeedSensorECAP(void);
 __interrupt void ecap1ISR(void);
 uint16_t getRPMFront();
 uint16_t getRPMRear();

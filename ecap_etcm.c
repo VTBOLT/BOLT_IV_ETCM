@@ -54,10 +54,10 @@ volatile float rpm_front;
 //
 // Function Prototypes
 //
-void runECAP(void);
-void initECAP(void);
-void initEPWM(void);
-void testECAP(void);
+void runSpeedSensorECAP(void);
+void initSpeedSensorECAP(void);
+void initSpeedSensorEPWM(void);
+void testSpeedSensorECAP(void);
 __interrupt void ecap1ISR(void);
 uint32_t getRPMRear();
 uint32_t getFrequencyRear();
@@ -67,7 +67,7 @@ uint32_t getFrequencyFront();
 //
 // Main
 //
-void runECAP(void)
+void runSpeedSensorECAP(void)
 {
     //
     // Initialize device clock and peripherals
@@ -116,8 +116,8 @@ void runECAP(void)
     //
     // Configure ePWM and eCAP
     //
-    initEPWM();
-    initECAP();
+    initSpeedSensorEPWM();
+    initSpeedSensorECAP();
 
     //
     // Initialize counters:
@@ -153,7 +153,7 @@ void runECAP(void)
 //
 // initEPWM - Configure ePWM
 //
-void initEPWM()
+void initSpeedSensorEPWM()
 {
     //
     // Disable sync(Freeze clock to PWM as well)
@@ -187,7 +187,7 @@ void initEPWM()
 //
 // initECAP - Configure eCAP
 //
-void initECAP()
+void initSpeedSensorECAP()
 {
     //
     // Disable ,clear all capture flags and interrupts

@@ -39,7 +39,7 @@
 #include <leds_etcm.h>
 #include <IMU.h>
 #include <uart_etcm.h>
-#include <front_suspension_sensor.h>
+#include <suspension_sensor.h>
 #include <ecap_etcm.h>
 
 //***********************
@@ -181,9 +181,6 @@ void init(void)
     // Initialize device clock and peripherals
     Device_init();
     initGPIO();     // do not move
-    Interrupt_initModule();
-    Interrupt_initVectorTable();
-
     //
     // Configure GPIO 1 as rear eCAP input
     //
@@ -200,6 +197,9 @@ void init(void)
     GPIO_setDirectionMode(2, GPIO_DIR_MODE_IN);
     GPIO_setQualificationMode(2, GPIO_QUAL_ASYNC);
 
+    Interrupt_initModule();
+    Interrupt_initVectorTable();
+
     //
     // Interrupts that are used in this example are re-mapped to ISR functions
     // found within this file.
@@ -208,10 +208,9 @@ void init(void)
     Interrupt_register(INT_ECAP2, &ecap1ISR);
 
     initLEDS();
-
     //initLookup(); // removed, no lookup table
-    initEPWM();   // should be removed, only TC-required
-    initECAP();
+    initSpeedSensorEPWM();   // should be removed, only TC-required
+    initSpeedSensorECAP();
                     // on MSP432 (and should be rewritten), check on PCB. Check with Quinton if you
                     // can't figure it out
 
@@ -224,13 +223,14 @@ void init(void)
     EINT;
     ERTM;
 
-    initThrottleADC();
-    initThrottleADCSOC();
+//    initThrottleADC();
+//    initThrottleADCSOC();
     initFrontSuspensionSensor();
+    initRearSuspensionSensor();
     initCAN();
     //initSCI();    // @todo - figure out which or both initSCI methods are necessary
     initSCIFIFO();
-    initDAC();
+//    initDAC();
     initTimer0();
     initIMUTransfer();
     initDebugTransfer();
@@ -276,14 +276,6 @@ void LEDflash(void){
         ;
 }
 
-/**
- * SCI_FIFO_RX will throw an interrupt every time there is at least
- * one byte in the buffer. This function is called by the SCI_ISR()
- * to fetch the data and store it in a global container.
- *
- * TODO: Verify frame integrity (start-of-header, checksum)
- */
-
 void initInterrupts(void)
 {
 // Initialize PIE and clear PIE registers. Disables CPU interrupts.
@@ -306,6 +298,7 @@ void initInterrupts(void)
 //EINT;
 //ERTM;
 }
+
 /**
  * Module GPIO inits are in their respective .c file.
  */
@@ -326,6 +319,3 @@ void initGPIO(void)
     //********
 
 }
-//
-// End of File
-//
