@@ -63,7 +63,7 @@ __interrupt void frontSuspensionISR(void)
     frontSensorSample = ADC_readResult(ADCBRESULT_BASE, FRONT_SUSP_SENSOR_ADC_SOC);
 
     //27.3 is the number of adc units in 1 mm of suspension travel.
-    frontSensorPosition = 150 - (frontSensorSample / 27.3);
+    frontSensorPosition = (150 - frontSensorSample) / 27.3;
 
     //Check if the sensor is completely extended.
     frontWheelie = (frontSensorPosition == 150);
@@ -99,14 +99,14 @@ void initFrontSuspensionSensor(void)
 
     //Set up the ADC and ePWM and initialize the SOC
     initFrontSuspensionSensorADC();
-    //initFrontSuspensionEPWM();
+    initFrontSuspensionSensorEPWM();
     initFrontSuspensionSensorADCSOC();
 
     //Enable ADC interrupt
     Interrupt_enable(FRONT_SUSP_SENSOR_ADC_INT);
 
     //Start ePWM1, enabling SCB and put counter in up-count
-    EPWM_enableADCTrigger(FRONT_SUSP_SENSOR_EPWM_BASE, EPWM_SOC_B);
+    EPWM_enableADCTrigger(FRONT_SUSP_SENSOR_EPWM_BASE, FRONT_SUSP_SENSOR_EPWM_SOC);
     EPWM_setTimeBaseCounterMode(FRONT_SUSP_SENSOR_EPWM_BASE, EPWM_COUNTER_MODE_UP);
 
 }
@@ -166,7 +166,7 @@ __interrupt void rearSuspensionISR(void)
     rearSensorSample = ADC_readResult(ADCBRESULT_BASE, REAR_SUSP_SENSOR_ADC_SOC);
 
     //27.3 is the number of adc units in 1 mm of suspension travel.
-    rearSensorPosition = 150 - (rearSensorSample / 27.3);
+    rearSensorPosition = (150 - rearSensorSample) / 27.3;
 
     //Check if the sensor is completely extended.
     rearWheelie = (rearSensorPosition == 150);
@@ -202,14 +202,14 @@ void initRearSuspensionSensor(void)
 
     //Set up the ADC and ePWM and initialize the SOC
     initRearSuspensionSensorADC();
-    //initRearSuspensionEPWM();
+    initRearSuspensionSensorEPWM();
     initRearSuspensionSensorADCSOC();
 
     //Enable ADC interrupt
     Interrupt_enable(REAR_SUSP_SENSOR_ADC_INT);
 
     //Start ePWM1, enabling SCB and put counter in up-count
-    EPWM_enableADCTrigger(REAR_SUSP_SENSOR_EPWM_BASE, EPWM_SOC_B);
+    EPWM_enableADCTrigger(REAR_SUSP_SENSOR_EPWM_BASE, REAR_SUSP_SENSOR_EPWM_SOC);
     EPWM_setTimeBaseCounterMode(REAR_SUSP_SENSOR_EPWM_BASE, EPWM_COUNTER_MODE_UP);
 
 }

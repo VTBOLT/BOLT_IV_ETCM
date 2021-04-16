@@ -41,6 +41,7 @@
 #include <uart_etcm.h>
 #include <suspension_sensor.h>
 #include <ecap_etcm.h>
+#include <inc/hw_ints.h>
 
 //***********************
 // Function Prototypes
@@ -181,21 +182,7 @@ void init(void)
     // Initialize device clock and peripherals
     Device_init();
     initGPIO();     // do not move
-    //
-    // Configure GPIO 1 as rear eCAP input
-    //
-    XBAR_setInputPin(XBAR_INPUT7, 1);
-    GPIO_setPinConfig(GPIO_1_GPIO1);
-    GPIO_setDirectionMode(1, GPIO_DIR_MODE_IN);
-    GPIO_setQualificationMode(1, GPIO_QUAL_ASYNC);
 
-    //
-    // Configure GPIO 2 as front eCAP input
-    //
-    XBAR_setInputPin(XBAR_INPUT8, 2);
-    GPIO_setPinConfig(GPIO_2_GPIO2);
-    GPIO_setDirectionMode(2, GPIO_DIR_MODE_IN);
-    GPIO_setQualificationMode(2, GPIO_QUAL_ASYNC);
 
     Interrupt_initModule();
     Interrupt_initVectorTable();
@@ -211,8 +198,6 @@ void init(void)
     //initLookup(); // removed, no lookup table
     initSpeedSensorEPWM();   // should be removed, only TC-required
     initSpeedSensorECAP();
-                    // on MSP432 (and should be rewritten), check on PCB. Check with Quinton if you
-                    // can't figure it out
 
     //
     // Enable interrupts required for this example
@@ -288,7 +273,7 @@ void initInterrupts(void)
 //-------------------------------
     initIMUinterrupt();
     initTimer0Interrupt();
-
+    initSpeedSensorInterrupts();
 //*******************************
 
 // enable CPU interrupts
@@ -306,16 +291,12 @@ void initGPIO(void)
 {
     Device_initGPIO();      // must be called first?
 
-    //********
-    // GPIOs
-    //--------
-
     // SYNC_IN
     GPIO_setPinConfig(GPIO_CFG_SYNC_IN);
     GPIO_setPadConfig(GPIO_SYNC_IN, GPIO_PIN_TYPE_STD);
     GPIO_setDirectionMode(GPIO_SYNC_IN, GPIO_DIR_MODE_OUT);
     GPIO_writePin(GPIO_SYNC_IN, 0); // default state
-
     //********
 
+    initSpeedSensorGPIO();
 }

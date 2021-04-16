@@ -90,21 +90,7 @@ void runSpeedSensorECAP(void)
     //
     Interrupt_initVectorTable();
 
-    //
-    // Configure GPIO 1 as rear eCAP input
-    //
-    XBAR_setInputPin(XBAR_INPUT7, 1);
-    GPIO_setPinConfig(GPIO_1_GPIO1);
-    GPIO_setDirectionMode(1, GPIO_DIR_MODE_IN);
-    GPIO_setQualificationMode(1, GPIO_QUAL_ASYNC);
-
-    //
-    // Configure GPIO 2 as front eCAP input
-    //
-    XBAR_setInputPin(XBAR_INPUT8, 2);
-    GPIO_setPinConfig(GPIO_2_GPIO2);
-    GPIO_setDirectionMode(2, GPIO_DIR_MODE_IN);
-    GPIO_setQualificationMode(2, GPIO_QUAL_ASYNC);
+    initSpeedSensorGPIO();
 
     //
     // Interrupts that are used in this example are re-mapped to ISR functions
@@ -182,6 +168,24 @@ void initSpeedSensorEPWM()
     // Enable sync and clock to PWM
     //
     SysCtl_enablePeripheral(SYSCTL_PERIPH_CLK_TBCLKSYNC);
+}
+
+void initSpeedSensorGPIO() {
+    //
+    // Configure GPIO 1 as rear eCAP input
+    //
+    XBAR_setInputPin(XBAR_INPUT7, 1);
+    GPIO_setPinConfig(GPIO_1_GPIO1);
+    GPIO_setDirectionMode(1, GPIO_DIR_MODE_IN);
+    GPIO_setQualificationMode(1, GPIO_QUAL_ASYNC);
+
+    //
+    // Configure GPIO 2 as front eCAP input
+    //
+    XBAR_setInputPin(XBAR_INPUT8, 2);
+    GPIO_setPinConfig(GPIO_2_GPIO2);
+    GPIO_setDirectionMode(2, GPIO_DIR_MODE_IN);
+    GPIO_setQualificationMode(2, GPIO_QUAL_ASYNC);
 }
 
 //
@@ -332,6 +336,14 @@ __interrupt void ecap1ISR(void)
     // Acknowledge the group interrupt for more interrupts.
     //
     Interrupt_clearACKGroup(INTERRUPT_ACK_GROUP4);
+}
+
+void initSpeedSensorInterrupts(void) {
+    Interrupt_register(INT_ECAP1, &ecap1ISR);
+    Interrupt_register(INT_ECAP2, &ecap1ISR);
+
+    Interrupt_enable(INT_ECAP1);
+    Interrupt_enable(INT_ECAP2);
 }
 
 uint32_t getRPMRear()

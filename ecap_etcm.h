@@ -14,6 +14,8 @@
 void runSpeedSensorECAP(void);
 void initSpeedSensorECAP(void);
 void initSpeedSensorEPWM(void);
+void initSpeedSensorGPIO(void);
+void initSpeedSensorInterrupts(void);
 void testSpeedSensorECAP(void);
 __interrupt void ecap1ISR(void);
 uint16_t getRPMFront();
