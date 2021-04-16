@@ -183,27 +183,13 @@ void init(void)
     Device_init();
     initGPIO();     // do not move
 
-
     Interrupt_initModule();
     Interrupt_initVectorTable();
-
-    //
-    // Interrupts that are used in this example are re-mapped to ISR functions
-    // found within this file.
-    //
-    Interrupt_register(INT_ECAP1, &ecap1ISR);
-    Interrupt_register(INT_ECAP2, &ecap1ISR);
 
     initLEDS();
     //initLookup(); // removed, no lookup table
     initSpeedSensorEPWM();   // should be removed, only TC-required
     initSpeedSensorECAP();
-
-    //
-    // Enable interrupts required for this example
-    //
-    Interrupt_enable(INT_ECAP1);
-    Interrupt_enable(INT_ECAP2);
 
     EINT;
     ERTM;
@@ -248,6 +234,20 @@ void CANtest(void)
     msg[6] = 0xCD;
     msg[7] = 0xEF;
     CANA_transmitMsg(msg, 4, 1);
+}
+
+void logWheelSpeedCAN(void) {
+    uint16_t *msg;
+    float left = getRPMFront();
+    float right = getRPMRear();
+
+    // Message should be 8 *bytes* in length;
+    msg = (uint16_t*)(&left);
+    CANA_transmitMsg(msg, 8, 1);
+
+    msg = (uint16_t*)(&right);
+    CANA_transmitMsg(msg, 8, 1);
+
 }
 
 void LEDflash(void){
