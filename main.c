@@ -183,6 +183,7 @@ void init(void)
     Device_init();
     initGPIO();     // do not move
 
+    // Interrupt
     Interrupt_initModule();
     Interrupt_initVectorTable();
 
@@ -190,9 +191,6 @@ void init(void)
     //initLookup(); // removed, no lookup table
     initSpeedSensorEPWM();   // should be removed, only TC-required
     initSpeedSensorECAP();
-
-    EINT;
-    ERTM;
 
 //    initThrottleADC();
 //    initThrottleADCSOC();
@@ -280,8 +278,8 @@ void initInterrupts(void)
 // this should always be last
 // see Pg. 100 of Tech Ref Manual
     Interrupt_enableMaster();
-//EINT;
-//ERTM;
+    EINT;
+    ERTM;
 }
 
 /**
