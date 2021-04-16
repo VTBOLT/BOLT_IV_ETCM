@@ -24,7 +24,7 @@
  * Call once to initialize CAN A module.
  *
  */
-void initCAN(void)
+void CANA_init(void)
 {
     // Initialize GPIO and configure GPIO pins for CANTX/CANRX
     // on module A
@@ -137,4 +137,10 @@ bool CANA_transmitMsg(uint16_t *msgData, uint16_t msgLEN, uint16_t mailbox)
      */
 
     return !CANTXerror;
+}
+
+bool CANA_transmitFloat(float *value, uint16_t mailbox)
+{
+    uint16_t *msg = (uint16_t*)(value);
+    return CANA_transmitMsg(msg, sizeof(float), mailbox);
 }

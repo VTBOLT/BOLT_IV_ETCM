@@ -196,7 +196,7 @@ void init(void)
 //    initThrottleADCSOC();
     initFrontSuspensionSensor();
     initRearSuspensionSensor();
-    initCAN();
+    CANA_init();
     //initSCI();    // @todo - figure out which or both initSCI methods are necessary
     initSCIFIFO();
 //    initDAC();
@@ -235,17 +235,24 @@ void CANtest(void)
 }
 
 void logWheelSpeedCAN(void) {
-    uint16_t *msg;
-    float left = getRPMFront();
-    float right = getRPMRear();
+    uint16_t mailbox = 1; // Valid mailboxes range from 1-32
+
+    float frontRpm = getRPMFront();
+    float rearRpm = getRPMRear();
+    float frontSuspPos = getFrontSensorPosition();
+    float rearSuspPos = getRearSensorPosition();
+    float yaw = getIMUYaw();
+    float pitch = getIMUPitch();
+    float roll = getIMURoll();
 
     // Message should be 8 *bytes* in length;
-    msg = (uint16_t*)(&left);
-    CANA_transmitMsg(msg, 8, 1);
-
-    msg = (uint16_t*)(&right);
-    CANA_transmitMsg(msg, 8, 1);
-
+    CANA_transmitFloat(&frontRpm, mailbox++);
+    CANA_transmitFloat(&rearRpm, mailbox++);
+    CANA_transmitFloat(&frontSuspPos, mailbox++);
+    CANA_transmitFloat(&rearSuspPos, mailbox++);
+    CANA_transmitFloat(&yaw, mailbox++);
+    CANA_transmitFloat(&pitch, mailbox++);
+    CANA_transmitFloat(&roll, mailbox++);
 }
 
 void LEDflash(void){
@@ -266,19 +273,16 @@ void initInterrupts(void)
 // Initialize the PIE vector table with pointers to the shell Interrupt
 //    Interrupt_initVectorTable();
 
-//*******************************
-// Interrupt init calls go here
-//-------------------------------
+    // Interrupt init calls go here
     initIMUinterrupt();
     initTimer0Interrupt();
     initSpeedSensorInterrupts();
-//*******************************
 
-// enable CPU interrupts
-// this should always be last
-// see Pg. 100 of Tech Ref Manual
+    // Allows CPU to respond to interrupts - this should always be last - see Pg. 100 of Tech Ref Manual
     Interrupt_enableMaster();
+    // Enable interrupts
     EINT;
+    // Enable debug events
     ERTM;
 }
 
@@ -294,7 +298,6 @@ void initGPIO(void)
     GPIO_setPadConfig(GPIO_SYNC_IN, GPIO_PIN_TYPE_STD);
     GPIO_setDirectionMode(GPIO_SYNC_IN, GPIO_DIR_MODE_OUT);
     GPIO_writePin(GPIO_SYNC_IN, 0); // default state
-    //********
 
     initSpeedSensorGPIO();
 }

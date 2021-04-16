@@ -49,9 +49,8 @@
 /*
  * Prototypes
  */
-extern void initCAN(void);
-
-extern bool CANA_transmitMsg(uint16_t *msgData, uint16_t msgLEN, uint16_t mailbox);
-
+void CANA_init(void);
+bool CANA_transmitMsg(uint16_t *msgData, uint16_t msgLEN, uint16_t mailbox);
+bool CANA_transmitFloat(float *value, uint16_t mailbox);
 
 #endif /* CAN_ETCM_H_ */

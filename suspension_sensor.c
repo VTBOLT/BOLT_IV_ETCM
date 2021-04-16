@@ -1,11 +1,11 @@
 #include "suspension_sensor.h"
 
 uint16_t frontSensorSample;
-volatile int16_t frontSensorPosition;
+volatile float frontSensorPosition;
 volatile bool frontWheelie;
 
 uint16_t rearSensorSample;
-volatile int16_t rearSensorPosition;
+volatile float rearSensorPosition;
 volatile bool rearWheelie;
 
 //Initialize and power up the ADC
@@ -82,7 +82,7 @@ __interrupt void frontSuspensionISR(void)
     Interrupt_clearACKGroup(INTERRUPT_ACK_GROUP1);
 }
 
-uint16_t getFrontSensorPosition(void)
+float getFrontSensorPosition(void)
 {
     return frontSensorPosition;
 }
@@ -185,7 +185,7 @@ __interrupt void rearSuspensionISR(void)
     Interrupt_clearACKGroup(INTERRUPT_ACK_GROUP1);
 }
 
-uint16_t getRearSensorPosition(void)
+float getRearSensorPosition(void)
 {
     return rearSensorPosition;
 }

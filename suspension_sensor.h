@@ -27,14 +27,14 @@ void initFrontSuspensionSensorADC(void);
 void initFrontSuspensionSensorADCSOC(void);
 void initFrontSuspensionSensorEPWM(void);
 void initFrontSuspensionSensor(void);
-uint16_t getFrontSensorPosition(void);
+float getFrontSensorPosition(void);
 bool getFrontWheelieStatus(void);
 
 void initRearSuspensionSensorADC(void);
 void initRearSuspensionSensorADCSOC(void);
 void initRearSuspensionSensorEPWM(void);
 void initRearSuspensionSensor(void);
-uint16_t getRearSensorPosition(void);
+float getRearSensorPosition(void);
 bool getRearWheelieStatus(void);
 
 #endif
