@@ -286,10 +286,10 @@ void initGPIO(void)
     Device_initGPIO();      // must be called first?
 
     // SYNC_IN
-    GPIO_setPinConfig(GPIO_CFG_SYNC_IN);
-    GPIO_setPadConfig(GPIO_SYNC_IN, GPIO_PIN_TYPE_STD);
-    GPIO_setDirectionMode(GPIO_SYNC_IN, GPIO_DIR_MODE_OUT);
-    GPIO_writePin(GPIO_SYNC_IN, 0); // default state
+    GPIO_setPinConfig(IMU_GPIO_CFG_SYNC_IN);
+    GPIO_setPadConfig(IMU_GPIO_SYNC_IN, GPIO_PIN_TYPE_STD);
+    GPIO_setDirectionMode(IMU_GPIO_SYNC_IN, GPIO_DIR_MODE_OUT);
+    GPIO_writePin(IMU_GPIO_SYNC_IN, 0); // default state
 
     initSpeedSensorGPIO();
 }

@@ -11,12 +11,12 @@
 #include "device.h"
 #include "driverlib.h"
 
-#define GPIO_CFG_SCITX  GPIO_56_SCITXDC
-#define GPIO_CFG_SCIRX  GPIO_139_SCIRXDC
-#define GPIO_SCITX      56U
-#define GPIO_SCIRX      139U
-#define SCI_BASE        SCIC_BASE
-#define SCI_BAUD        9600U
+#define UART_GPIO_CFG_SCITX  GPIO_56_SCITXDC
+#define UART_GPIO_CFG_SCIRX  GPIO_139_SCIRXDC
+#define UART_GPIO_SCITX      56U
+#define UART_GPIO_SCIRX      139U
+#define UART_SCI_BASE        SCIC_BASE
+#define UART_SCI_BAUD        9600U
 
 void initSCI(void);
 void SCItest(void);

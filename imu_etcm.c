@@ -26,9 +26,9 @@ void strobeIMUSyncIn(void)
     }
 
     // strobe SYNC_IN GPIO
-    GPIO_writePin(GPIO_SYNC_IN, 1);
+    GPIO_writePin(IMU_GPIO_SYNC_IN, 1);
     // reset SYNC_IN GPIO
-    GPIO_writePin(GPIO_SYNC_IN, 0);
+    GPIO_writePin(IMU_GPIO_SYNC_IN, 0);
     // buffer will start to fill as interrupt happens
 }
 
@@ -57,10 +57,10 @@ void initIMUSyncIn(void)
 //--------
 
 // SYNC_IN
-    GPIO_setPinConfig(GPIO_CFG_SYNC_IN);
-    GPIO_setPadConfig(GPIO_SYNC_IN, GPIO_PIN_TYPE_STD);
-    GPIO_setDirectionMode(GPIO_SYNC_IN, GPIO_DIR_MODE_OUT);
-    GPIO_writePin(GPIO_SYNC_IN, 0); // default state
+    GPIO_setPinConfig(IMU_GPIO_CFG_SYNC_IN);
+    GPIO_setPadConfig(IMU_GPIO_SYNC_IN, GPIO_PIN_TYPE_STD);
+    GPIO_setDirectionMode(IMU_GPIO_SYNC_IN, GPIO_DIR_MODE_OUT);
+    GPIO_writePin(IMU_GPIO_SYNC_IN, 0); // default state
 
 //********
 
@@ -69,8 +69,8 @@ void initIMUSyncIn(void)
 void getIMUdataINT(void)
 {
 // get current amount of data in FIFO
-    uint8_t FIFOdebug = HWREGH(SCI_IMU_BASE + SCI_O_FFRX);
-    uint8_t FIFOsize = SCI_getRxFIFOStatus(SCI_IMU_BASE);
+    uint8_t FIFOdebug = HWREGH(IMU_SCI_BASE + SCI_O_FFRX);
+    uint8_t FIFOsize = SCI_getRxFIFOStatus(IMU_SCI_BASE);
 
 // get the data from the FIFO
     uint8_t dataIndex = 0;
@@ -86,7 +86,7 @@ void getIMUdataINT(void)
     for (; dataIndex < FIFOsize; dataIndex++)
     {
         IMUdataBuffer[dataIndex + dataIndexPrev] = SCI_readCharNonBlocking(
-        SCI_IMU_BASE);
+        IMU_SCI_BASE);
     }
     dataIndexPrev = dataIndexPrev + dataIndex;
 // complete packet received
@@ -154,8 +154,8 @@ __interrupt void SCI_ISR(void)
 // Do not do this. FIFO is automatically cleared as data is removed.
 // SCI_resetRxFIFO(SCI_IMU_BASE);
 
-    SCI_clearOverflowStatus(SCI_IMU_BASE);
-    SCI_clearInterruptStatus(SCI_IMU_BASE, SCI_INT_RXFF);
+    SCI_clearOverflowStatus(IMU_SCI_BASE);
+    SCI_clearInterruptStatus(IMU_SCI_BASE, SCI_INT_RXFF);
 
 // Issue PIE ack
     Interrupt_clearACKGroup(INTERRUPT_ACK_GROUP9);
@@ -168,15 +168,15 @@ void initIMUinterrupt(void)
     Interrupt_register(INT_SCIB_RX, SCI_ISR);
 
 // enable SCI FIFO interrupts
-    SCI_enableInterrupt(SCI_IMU_BASE, SCI_INT_RXFF);
-    SCI_disableInterrupt(SCI_IMU_BASE, (SCI_INT_RXERR | SCI_INT_TXFF));
+    SCI_enableInterrupt(IMU_SCI_BASE, SCI_INT_RXFF);
+    SCI_disableInterrupt(IMU_SCI_BASE, (SCI_INT_RXERR | SCI_INT_TXFF));
 
 // set the level at which the FIFO_RX flag is thrown
-    SCI_setFIFOInterruptLevel(SCI_IMU_BASE, SCI_FIFO_TX5, SCI_FIFO_RX1);
-    SCI_performSoftwareReset(SCI_IMU_BASE);
+    SCI_setFIFOInterruptLevel(IMU_SCI_BASE, SCI_FIFO_TX5, SCI_FIFO_RX1);
+    SCI_performSoftwareReset(IMU_SCI_BASE);
 
 // clear buffer
-    SCI_resetRxFIFO(SCI_IMU_BASE);
+    SCI_resetRxFIFO(IMU_SCI_BASE);
 
 // enable SCI_RX PIE interrupt
     Interrupt_enable(INT_SCIB_RX);
@@ -197,55 +197,55 @@ void initIMUinterrupt(void)
 void initIMUTransfer(void)
 {
     // GPIO TX
-    GPIO_setMasterCore(GPIO_SCITX_IMU, GPIO_CORE_CPU1);
-    GPIO_setPinConfig(GPIO_CFG_SCITX_IMU);
-    GPIO_setPadConfig(GPIO_SCITX_IMU, GPIO_PIN_TYPE_STD);
-    GPIO_setDirectionMode(GPIO_SCITX_IMU, GPIO_DIR_MODE_OUT);
-    GPIO_setQualificationMode(GPIO_SCITX_IMU, GPIO_QUAL_ASYNC);
+    GPIO_setMasterCore(IMU_GPIO_SCITX, GPIO_CORE_CPU1);
+    GPIO_setPinConfig(IMU_GPIO_CFG_SCITX);
+    GPIO_setPadConfig(IMU_GPIO_SCITX, GPIO_PIN_TYPE_STD);
+    GPIO_setDirectionMode(IMU_GPIO_SCITX, GPIO_DIR_MODE_OUT);
+    GPIO_setQualificationMode(IMU_GPIO_SCITX, GPIO_QUAL_ASYNC);
 
     //GPIO RX
-    GPIO_setMasterCore(GPIO_SCIRX_IMU, GPIO_CORE_CPU1);
-    GPIO_setPinConfig(GPIO_CFG_SCIRX_IMU);
-    GPIO_setPadConfig(GPIO_SCIRX_IMU, GPIO_PIN_TYPE_STD);
-    GPIO_setDirectionMode(GPIO_SCIRX_IMU, GPIO_DIR_MODE_IN);
-    GPIO_setQualificationMode(GPIO_SCIRX_IMU, GPIO_QUAL_ASYNC);
+    GPIO_setMasterCore(IMU_GPIO_SCIRX, GPIO_CORE_CPU1);
+    GPIO_setPinConfig(IMU_GPIO_CFG_SCIRX);
+    GPIO_setPadConfig(IMU_GPIO_SCIRX, GPIO_PIN_TYPE_STD);
+    GPIO_setDirectionMode(IMU_GPIO_SCIRX, GPIO_DIR_MODE_IN);
+    GPIO_setQualificationMode(IMU_GPIO_SCIRX, GPIO_QUAL_ASYNC);
 
     // configure module
     // 8N1
     SCI_setConfig(
-            SCI_IMU_BASE, DEVICE_LSPCLK_FREQ, SCI_IMU_BAUD,
+            IMU_SCI_BASE, DEVICE_LSPCLK_FREQ, IMU_SCI_BAUD,
             (SCI_CONFIG_WLEN_8 | SCI_CONFIG_STOP_ONE | SCI_CONFIG_PAR_NONE));
-    SCI_enableModule(SCI_IMU_BASE);
+    SCI_enableModule(IMU_SCI_BASE);
 
-    SCI_resetChannels(SCI_IMU_BASE);
+    SCI_resetChannels(IMU_SCI_BASE);
 
-    SCI_enableFIFO(SCI_IMU_BASE);
+    SCI_enableFIFO(IMU_SCI_BASE);
 }
 
 void initDebugTransfer(void)
 {
     // GPIO TX
-    GPIO_setPinConfig(GPIO_CFG_SCITX_DEBUG);
-    GPIO_setPadConfig(GPIO_SCITX_DEBUG, GPIO_PIN_TYPE_STD);
-    GPIO_setDirectionMode(GPIO_SCITX_DEBUG, GPIO_DIR_MODE_OUT);
+    GPIO_setPinConfig(DEBUG_GPIO_CFG_SCITX);
+    GPIO_setPadConfig(DEBUG_GPIO_SCITX, GPIO_PIN_TYPE_STD);
+    GPIO_setDirectionMode(DEBUG_GPIO_SCITX, GPIO_DIR_MODE_OUT);
 
     //GPIO RX
-    GPIO_setPinConfig(GPIO_CFG_SCIRX_DEBUG);
-    GPIO_setPadConfig(GPIO_SCIRX_DEBUG, GPIO_PIN_TYPE_STD);
-    GPIO_setDirectionMode(GPIO_SCIRX_DEBUG, GPIO_DIR_MODE_IN);
+    GPIO_setPinConfig(DEBUG_GPIO_CFG_SCIRX);
+    GPIO_setPadConfig(DEBUG_GPIO_SCIRX, GPIO_PIN_TYPE_STD);
+    GPIO_setDirectionMode(DEBUG_GPIO_SCIRX, GPIO_DIR_MODE_IN);
 
     // configure module
     // 8N1
     SCI_setConfig(
-            SCI_DEBUG_BASE, DEVICE_LSPCLK_FREQ, SCI_DEBUG_BAUD,
+            DEBUG_SCI_BASE, DEVICE_LSPCLK_FREQ, DEBUG_SCI_BAUD,
             (SCI_CONFIG_WLEN_8 | SCI_CONFIG_STOP_ONE | SCI_CONFIG_PAR_NONE));
-    SCI_disableLoopback(SCI_DEBUG_BASE);
-    SCI_performSoftwareReset(SCI_DEBUG_BASE);
+    SCI_disableLoopback(DEBUG_SCI_BASE);
+    SCI_performSoftwareReset(DEBUG_SCI_BASE);
 
     // FIFO
-    SCI_disableFIFO(SCI_DEBUG_BASE);
+    SCI_disableFIFO(DEBUG_SCI_BASE);
 
-    SCI_enableModule(SCI_DEBUG_BASE);
+    SCI_enableModule(DEBUG_SCI_BASE);
 }
 
 /**
@@ -255,29 +255,29 @@ void initDebugTransfer(void)
 void initSCI_IMUwithFIFO(void)
 {
     // GPIO TX
-    GPIO_setMasterCore(GPIO_SCITX_IMU, GPIO_CORE_CPU1);
-    GPIO_setPinConfig(GPIO_CFG_SCITX_IMU);
-    GPIO_setPadConfig(GPIO_SCITX_IMU, GPIO_PIN_TYPE_STD);
-    GPIO_setDirectionMode(GPIO_SCITX_IMU, GPIO_DIR_MODE_OUT);
-    GPIO_setQualificationMode(GPIO_SCITX_IMU, GPIO_QUAL_ASYNC);
+    GPIO_setMasterCore(IMU_GPIO_SCITX, GPIO_CORE_CPU1);
+    GPIO_setPinConfig(IMU_GPIO_CFG_SCITX);
+    GPIO_setPadConfig(IMU_GPIO_SCITX, GPIO_PIN_TYPE_STD);
+    GPIO_setDirectionMode(IMU_GPIO_SCITX, GPIO_DIR_MODE_OUT);
+    GPIO_setQualificationMode(IMU_GPIO_SCITX, GPIO_QUAL_ASYNC);
 
     //GPIO RX
-    GPIO_setMasterCore(GPIO_SCIRX_IMU, GPIO_CORE_CPU1);
-    GPIO_setPinConfig(GPIO_CFG_SCIRX_IMU);
-    GPIO_setPadConfig(GPIO_SCIRX_IMU, GPIO_PIN_TYPE_STD);
-    GPIO_setDirectionMode(GPIO_SCIRX_IMU, GPIO_DIR_MODE_IN);
-    GPIO_setQualificationMode(GPIO_SCIRX_IMU, GPIO_QUAL_ASYNC);
+    GPIO_setMasterCore(IMU_GPIO_SCIRX, GPIO_CORE_CPU1);
+    GPIO_setPinConfig(IMU_GPIO_CFG_SCIRX);
+    GPIO_setPadConfig(IMU_GPIO_SCIRX, GPIO_PIN_TYPE_STD);
+    GPIO_setDirectionMode(IMU_GPIO_SCIRX, GPIO_DIR_MODE_IN);
+    GPIO_setQualificationMode(IMU_GPIO_SCIRX, GPIO_QUAL_ASYNC);
 
     // configure module
     // 8N1
     SCI_setConfig(
-            SCI_IMU_BASE, DEVICE_LSPCLK_FREQ, SCI_IMU_BAUD,
+            IMU_SCI_BASE, DEVICE_LSPCLK_FREQ, IMU_SCI_BAUD,
             (SCI_CONFIG_WLEN_8 | SCI_CONFIG_STOP_ONE | SCI_CONFIG_PAR_NONE));
-    SCI_enableModule(SCI_IMU_BASE);
+    SCI_enableModule(IMU_SCI_BASE);
 
-    SCI_resetChannels(SCI_IMU_BASE);
+    SCI_resetChannels(IMU_SCI_BASE);
 
-    SCI_enableFIFO(SCI_IMU_BASE);
+    SCI_enableFIFO(IMU_SCI_BASE);
 }
 
 void SCIWriteInt(int intIn)
@@ -315,7 +315,7 @@ void SCIWriteInt(int intIn)
     outputString[6] = '\n';
     outputString[7] = '\r';
 
-    SCIWriteChar(SCI_DEBUG_BASE, outputString, 8);
+    SCIWriteChar(DEBUG_SCI_BASE, outputString, 8);
 }
 
 void SCIWriteChar(uint32_t SCIbase, const char * const dataArray,
