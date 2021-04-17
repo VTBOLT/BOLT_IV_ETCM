@@ -43,23 +43,15 @@
 #include <ecap_etcm.h>
 #include <inc/hw_ints.h>
 
-//***********************
+
 // Function Prototypes
-//***********************
-void init(void);
 void run(void);
-void initLookup(void);
 void CANtest(void);
 void LEDflash(void);
+void init(void);
+void initLookup(void);
 void initGPIO(void);
-void getIMUdata();
-__interrupt void SCI_ISR(void);
-void initSCIinterrupt(void);
 void initInterrupts(void);
-void initIMUinterrupt(void);
-void getIMUdataINT(void);
-void updateIMUbuffer(void);
-void displayIMU_CAN(void);
 
 //Variables
 const float IMU_PITCH_CORRECTION = -2.0;
@@ -234,7 +226,7 @@ void CANtest(void)
     CANA_transmitMsg(msg, 4, 1);
 }
 
-void logWheelSpeedCAN(void) {
+void logCAN(void) {
     uint16_t mailbox = 1; // Valid mailboxes range from 1-32
 
     float frontRpm = getRPMFront();
@@ -268,9 +260,9 @@ void LEDflash(void){
 
 void initInterrupts(void)
 {
-// Initialize PIE and clear PIE registers. Disables CPU interrupts.
+    // Initialize PIE and clear PIE registers. Disables CPU interrupts.
 //    Interrupt_initModule();
-// Initialize the PIE vector table with pointers to the shell Interrupt
+    // Initialize the PIE vector table with pointers to the shell Interrupt
 //    Interrupt_initVectorTable();
 
     // Interrupt init calls go here
