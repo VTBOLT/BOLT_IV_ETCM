@@ -5,7 +5,7 @@
  *      Author: cjosh
  */
 
-#include "dac_etcm.h"
+#include <motor_control_etcm.h>
 #include "device.h"
 
 /*

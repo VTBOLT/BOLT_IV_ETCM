@@ -1,5 +1,5 @@
-#include "IMU.h"
 #include <driverlib.h>
+#include <imu_etcm.h>
 #include <string.h>
 #include <stdlib.h>
 

@@ -5,7 +5,7 @@
  *      Author: willc
  */
 
-#include "adc_etcm.h"
+#include <throttle_input_etcm.h>
 
 //Initialize and power up the ADC
 void initThrottleADC(void)

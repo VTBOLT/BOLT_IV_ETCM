@@ -5,8 +5,8 @@
  *      Author: Erin Freck
  */
 
-#ifndef ECAP_ETCM_H_
-#define ECAP_ETCM_H_
+#ifndef SPEED_SENSOR_ETCM_H_
+#define SPEED_SENSOR_ETCM_H_
 
 #include "ecap.h"
 #include "device.h"
@@ -23,4 +23,4 @@ uint16_t getRPMRear();
 uint16_t getFrequencyFront();
 uint16_t getFrequencyRear();
 
-#endif /* ECAP_ETCM_H_ */
+#endif /* SPEED_SENSOR_ETCM_H_ */

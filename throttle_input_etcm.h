@@ -5,8 +5,8 @@
  *      Author: willc
  */
 
-#ifndef ADC_ETCM_H_
-#define ADC_ETCM_H_
+#ifndef THROTTLE_INPUT_ETCM_H_
+#define THROTTLE_INPUT_ETCM_H_
 
 #include "adc.h"
 #include "device.h"
@@ -25,4 +25,4 @@ double getThrottleVoltage(void);
 //__interrupt void adcA0ISR(void);
 
 
-#endif /* ADC_ETCM_H_ */
+#endif /* THROTTLE_INPUT_ETCM_H_ */

@@ -5,8 +5,8 @@
  *      Author: Stephen Welch
  */
 
-#ifndef DAC_ETCM_H_
-#define DAC_ETCM_H_
+#ifndef MOTOR_CONTROL_ETCM_H_
+#define MOTOR_CONTROL_ETCM_H_
 
 #include "dac.h"
 
@@ -22,5 +22,5 @@ void setDACOutputVoltage(float value);
 void setDACOutputRaw(uint16_t request);
 void requestTorque(float torque);
 
-#endif /* DAC_ETCM_H_ */
+#endif /* MOTOR_CONTROL_ETCM_H_ */
 

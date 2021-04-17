@@ -5,7 +5,7 @@
  *      Author: willc
  */
 
-#include "rider_aids_etcm.h"
+#include <rider_aids_etcm.h>
 
 bool checkTC(uint32_t frontWhlSpd, uint32_t backWhlSpd)
 {

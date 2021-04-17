@@ -1,5 +1,5 @@
-#ifndef IMU_H_
-#define IMU_H_
+#ifndef IMU_ETCM_H_
+#define IMU_ETCM_H_
 
 #include "device.h"
 #include "driverlib.h"

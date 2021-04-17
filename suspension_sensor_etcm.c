@@ -1,4 +1,4 @@
-#include "suspension_sensor.h"
+#include <suspension_sensor_etcm.h>
 
 uint16_t frontSensorSample;
 volatile float frontSensorPosition;

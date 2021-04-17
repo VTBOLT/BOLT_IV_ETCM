@@ -33,15 +33,15 @@
 
 // Included peripheral files
 #include <can_etcm.h>
-#include <adc_etcm.h>
-#include <dac_etcm.h>
+#include <imu_etcm.h>
 #include <timer_etcm.h>
 #include <leds_etcm.h>
-#include <IMU.h>
 #include <uart_etcm.h>
-#include <suspension_sensor.h>
-#include <ecap_etcm.h>
 #include <inc/hw_ints.h>
+#include <motor_control_etcm.h>
+#include <speed_sensor_etcm.h>
+#include <suspension_sensor_etcm.h>
+#include <throttle_input_etcm.h>
 
 
 // Function Prototypes
