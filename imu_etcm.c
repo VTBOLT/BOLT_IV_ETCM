@@ -146,7 +146,7 @@ __interrupt void SCI_ISR(void)
 //*****************
 // do stuff here
 //-----------------
-    toggleRedLED();
+    toggleRedLed();
     getIMUdataINT();
 //****************
 

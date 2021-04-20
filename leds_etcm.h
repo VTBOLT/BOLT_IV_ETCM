@@ -20,6 +20,6 @@
 #define GPIO_CFG_BLUE_LED GPIO_31_GPIO31
 #define GPIO_BLUE_LED 31
 
-extern void toggleRedLED(void);
+extern void toggleRedLed(void);
 extern void initLEDS(void);
 #endif /* LEDS_ETCM_H_ */

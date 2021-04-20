@@ -19,7 +19,7 @@ void initLEDS(void){
     GPIO_setDirectionMode(GPIO_BLUE_LED, GPIO_DIR_MODE_OUT);
 }
 
-void toggleRedLED(){
+void toggleRedLed(){
     static uint8_t toggleBit = 1;
     GPIO_writePin(GPIO_RED_LED, (toggleBit&0x01));
     toggleBit = ~toggleBit;
