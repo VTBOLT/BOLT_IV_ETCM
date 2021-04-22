@@ -57,6 +57,9 @@ void initInterrupts(void);
 const float IMU_PITCH_CORRECTION = -2.0;
 const float IMU_ROLL_CORRECTION = 0.0;
 const float IMU_YAW_CORRECTION = 129.0;
+float yaw_Offset = 0;
+float pitch_Offset = 0;
+float roll_Offset = 0;
 
 void main(void)
 {
@@ -75,6 +78,10 @@ void run(void)
 //    float pitch;
 //    float roll;
 //    float yaw;
+      yaw_Offset = getIMUAverageYaw();
+      pitch_Offset = getIMUAveragePitch();
+      roll_Offset = getIMUAverageRoll();
+
 //    while (1)
 //    {
 //        // Pull in sensor data to local variables
