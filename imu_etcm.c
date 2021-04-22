@@ -7,6 +7,9 @@
 volatile float IMU_yaw;
 volatile float IMU_pitch;
 volatile float IMU_roll;
+float yaw_Offset;
+float pitch_Offset;
+float roll_Offset;
 
 volatile uint8_t IMUdataBuffer[IMU_FRAME_SIZE]; // 18 byte frames
 volatile bool IMUframeRcvd = false;
@@ -34,18 +37,54 @@ void strobeIMUSyncIn(void)
 
 float getIMUYaw(void)
 {
-    return IMU_yaw;
+    return IMU_yaw - yaw_Offset;
 }
 
 float getIMUPitch(void)
 {
-    return IMU_pitch;
+    return IMU_pitch - pitch_Offset;
 }
 
 float getIMURoll(void)
 {
-    return IMU_roll;
+    return IMU_roll - roll_Offset;
 }
+
+float getIMUAverageYaw(void)
+{
+    float sum = 0;
+    for (int i = 0; i < 100; i++)
+    {
+            sum = sum + getIMUYaw();
+            DEVICE_DELAY_US(10);
+    }
+    return sum / 100;
+}
+
+float getIMUAveragePitch(void)
+{
+    float sum = 0;
+    for (int i = 0; i < 100; i++)
+    {
+            sum = sum + getIMUPitch();
+            DEVICE_DELAY_US(10);
+    }
+    return sum / 100;
+}
+
+float getIMUAverageRoll(void)
+{
+    float sum = 0;
+    for (int i = 0; i < 100; i++)
+    {
+            sum = sum + getIMURoll();
+            DEVICE_DELAY_US(10);
+    }
+    return sum / 100;
+}
+
+
+
 
 /**
  * Module GPIO inits are in their respective .c file.
