@@ -52,6 +52,7 @@ void updateIMUbuffer(void);
 void displayIMU_CAN(void);
 
 //Variables
+// TODO: get rid of this 
 const float IMU_PITCH_CORRECTION = -2.0;
 const float IMU_ROLL_CORRECTION = 0.0;
 const float IMU_YAW_CORRECTION = 129.0;
@@ -65,7 +66,10 @@ void main(void)
 }
 
 void run(void)
-{
+{   
+    //TODO: - Calibrate the IMU before we enter the loop
+    //      - Get rid of hard-coded calibration
+
     int torque_request = 0; // likely to change type
     // start the timer
     startTimer0();
@@ -97,7 +101,7 @@ void run(void)
 
         //getIMUdata();
         strobeIMUSyncIn();
-
+        
         pitch = getIMUPitch() + IMU_PITCH_CORRECTION;
         roll = getIMURoll() + IMU_ROLL_CORRECTION;;
         yaw = getIMUYaw() + IMU_YAW_CORRECTION;;
