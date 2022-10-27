@@ -1,1 +1,12 @@
-"./IMU.obj" "./adc_etcm.obj" "./can_etcm.obj" "./dac_etcm.obj" "./leds_etcm.obj" "./main.obj" "./timer_etcm.obj" "./device/F2837xD_CodeStartBranch.obj" "./device/device.obj" "../2837xD_RAM_lnk_cpu1.cmd" "C:/ti/C2000Ware_2_01_00_00_Software/driverlib/f2837xd/driverlib/ccs/Release/driverlib.lib" -llibc.a 
+"./IMU.obj"
+"./adc_etcm.obj"
+"./can_etcm.obj"
+"./dac_etcm.obj"
+"./leds_etcm.obj"
+"./main.obj"
+"./timer_etcm.obj"
+"./device/F2837xD_CodeStartBranch.obj"
+"./device/device.obj"
+"../2837xD_RAM_lnk_cpu1.cmd"
+"C:/ti/C2000Ware_2_01_00_00_Software/driverlib/f2837xd/driverlib/ccs/Release/driverlib.lib"
+-llibc.a
