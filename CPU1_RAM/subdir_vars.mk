@@ -9,7 +9,7 @@ CMD_SRCS += \
 ../2837xD_RAM_lnk_cpu1.cmd 
 
 LIB_SRCS += \
-C:/ti/C2000Ware_2_01_00_00_Software/driverlib/f2837xd/driverlib/ccs/Release/driverlib.lib 
+C:/ti/C2000Ware_4_02_00_00/driverlib/f2837xd/driverlib/ccs/Release/driverlib.lib 
 
 C_SRCS += \
 ../IMU.c \

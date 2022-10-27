@@ -20,7 +20,7 @@ ORDERED_OBJS += \
 "./device/F2837xD_CodeStartBranch.obj" \
 "./device/device.obj" \
 "../2837xD_RAM_lnk_cpu1.cmd" \
-"C:/ti/C2000Ware_2_01_00_00_Software/driverlib/f2837xd/driverlib/ccs/Release/driverlib.lib" \
+"C:/ti/C2000Ware_4_02_00_00/driverlib/f2837xd/driverlib/ccs/Release/driverlib.lib" \
 $(GEN_CMDS__FLAG) \
 -llibc.a \
 
